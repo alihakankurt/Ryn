@@ -6,51 +6,45 @@
 namespace Ryn
 {
     template <typename TOther, typename TSelf>
-    static constexpr TOther As(const TSelf& value)
+    static constexpr inline TOther As(const TSelf& value)
     {
         static_assert(!Is<TSelf, TOther>, "Cannot cast between the same types");
         return static_cast<TOther>(value);
     }
 
     template <Pointer TOther, Pointer TSelf>
-    static constexpr TOther As(TSelf value)
+    static constexpr inline TOther As(TSelf value)
     {
         static_assert(!Is<TSelf, TOther>, "Cannot cast between the same types");
         return reinterpret_cast<TOther>(value);
     }
 
-    template <FunctionPointer TFunction>
-    static constexpr TFunction As(void* handle)
-    {
-        return As<TFunction>(handle);
-    }
-
     template <typename TSelf>
-    static constexpr TSelf&& Move(TSelf&& value) noexcept
+    static constexpr inline TSelf&& Move(TSelf&& value) noexcept
     {
         return As<RemoveReference<TSelf>&&>(value);
     }
 
     template <typename TSelf>
-    static constexpr TSelf&& Forward(RemoveReference<TSelf>& value) noexcept
+    static constexpr inline TSelf&& Forward(RemoveReference<TSelf>& value) noexcept
     {
         return As<TSelf&&>(value);
     }
 
     template <typename TSelf>
-    static constexpr TSelf&& Forward(RemoveReference<TSelf>&& value) noexcept
+    static constexpr inline TSelf&& Forward(RemoveReference<TSelf>&& value) noexcept
     {
         return As<TSelf&&>(value);
     }
 
     template <Enum TEnum>
-    static constexpr UnderlyingType<TEnum> operator+(TEnum self) noexcept
+    static constexpr inline UnderlyingType<TEnum> operator+(TEnum self) noexcept
     {
         return As<UnderlyingType<TEnum>>(self);
     }
 
     template <Enum TEnum>
-    static constexpr TEnum operator|(TEnum self, TEnum other) noexcept
+    static constexpr inline TEnum operator|(TEnum self, TEnum other) noexcept
     {
         return As<TEnum>(+self | +other);
     }
