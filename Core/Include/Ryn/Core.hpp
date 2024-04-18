@@ -5,5 +5,6 @@
 #include <Ryn/Core/Traits.hpp>
 #include <Ryn/Core/Concepts.hpp>
 #include <Ryn/Core/Casts.hpp>
+#include <Ryn/Core/String.hpp>
 
 #endif

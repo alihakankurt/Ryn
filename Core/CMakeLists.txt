@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 project(Ryn.Core VERSION 0.1.0 LANGUAGES CXX)
 
 set(Sources
-    Source/Core.cpp
+    Source/String.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${Sources})

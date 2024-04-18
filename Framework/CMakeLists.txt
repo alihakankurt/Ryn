@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 project(Ryn.Framework VERSION 0.1.0 LANGUAGES CXX)
 
 set(Sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Console.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Game.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Ryn.cpp
 )

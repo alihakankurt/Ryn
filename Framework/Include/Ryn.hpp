@@ -6,6 +6,7 @@
 #include <Ryn/Collections.hpp>
 #include <Ryn/Rendering.hpp>
 #include <Ryn/Windowing.hpp>
+#include <Ryn/Framework/Console.hpp>
 #include <Ryn/Framework/Game.hpp>
 
 namespace Ryn

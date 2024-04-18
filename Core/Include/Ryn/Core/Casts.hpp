@@ -56,6 +56,13 @@ namespace Ryn
     {
         return As<UnderlyingType<TSelf>>(self);
     }
+
+    template <typename TSelf>
+    requires IsEnum<TSelf>
+    static constexpr TSelf operator|(TSelf self, TSelf other) noexcept
+    {
+        return As<TSelf>(+self | +other);
+    }
 }
 
 #endif
