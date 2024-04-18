@@ -13,58 +13,58 @@ namespace Ryn
     concept IsAny = IsAnyTrait<TSelf, TOthers...>::Value;
 
     template <typename TSelf>
-    concept IsSignedInteger = SignedIntegerTrait<TSelf>::Value;
+    concept SignedInteger = SignedIntegerTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsUnsignedInteger = UnsignedIntegerTrait<TSelf>::Value;
+    concept UnsignedInteger = UnsignedIntegerTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsInteger = IntegerTrait<TSelf>::Value;
+    concept Integer = IntegerTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsFloatingPoint = FloatingPointTrait<TSelf>::Value;
+    concept FloatingPoint = FloatingPointTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsSignedNumber = SignedNumberTrait<TSelf>::Value;
+    concept SignedNumber = SignedNumberTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsUnsignedNumber = UnsignedNumberTrait<TSelf>::Value;
+    concept UnsignedNumber = UnsignedNumberTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsNumber = NumberTrait<TSelf>::Value;
+    concept Number = NumberTrait<TSelf>::Value;
 
     template <typename TSelf>
     using RemoveReference = typename ReferenceTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsReference = ReferenceTrait<TSelf>::Value;
+    concept Reference = ReferenceTrait<TSelf>::Value;
 
     template <typename TSelf>
     using RemovePointer = typename PointerTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsPointer = PointerTrait<TSelf>::Value;
+    concept Pointer = PointerTrait<TSelf>::Value;
 
     template <typename TSelf>
-    using RemoveConst = typename ConstTrait<TSelf>::Type;
+    using RemoveConstant = typename ConstantTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsConst = ConstTrait<TSelf>::Value;
+    concept Constant = ConstantTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsEnum = EnumTrait<TSelf>::Value;
+    concept Enum = EnumTrait<TSelf>::Value;
 
     template <typename TSelf>
     using UnderlyingType = typename UnderlyingTypeTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsFunction = FunctionPointerTrait<TSelf>::Value;
+    concept FunctionPointer = FunctionPointerTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsPrimitiveType = PrimitiveTypeTrait<TSelf>::Value;
+    concept PrimitiveType = PrimitiveTypeTrait<TSelf>::Value;
 
     template <typename TSelf>
-    concept IsValueType = IsValueTypeTrait<TSelf>::Value;
+    concept ValueType = ValueTypeTrait<TSelf>::Value;
 }
 
 #endif

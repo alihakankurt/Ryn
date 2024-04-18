@@ -5,20 +5,19 @@
 
 namespace Ryn
 {
-    template <typename TScalar>
-    requires IsNumber<TScalar>
+    template <Number TNumber>
     struct Vector2
     {
-        TScalar X;
-        TScalar Y;
+        TNumber X;
+        TNumber Y;
 
         Vector2()
         {
-            X = Math::Zero<TScalar>;
-            Y = Math::Zero<TScalar>;
+            X = Math::Zero<TNumber>;
+            Y = Math::Zero<TNumber>;
         }
 
-        Vector2(TScalar x, TScalar y)
+        Vector2(TNumber x, TNumber y)
         {
             X = x;
             Y = y;
@@ -26,11 +25,8 @@ namespace Ryn
 
         Vector2 operator-() const
         {
-            if constexpr (!IsSignedNumber<TScalar>)
-                return *this;
-
-            TScalar x = Math::Negate(X);
-            TScalar y = Math::Negate(Y);
+            TNumber x = Math::Negate(X);
+            TNumber y = Math::Negate(Y);
             return Vector2{x, y};
         }
 
@@ -62,30 +58,30 @@ namespace Ryn
             return *this;
         }
 
-        Vector2 operator*(TScalar scalar) const
+        Vector2 operator*(TNumber scalar) const
         {
             Vector2 result = *this;
             result *= scalar;
             return result;
         }
 
-        Vector2& operator*=(TScalar scalar)
+        Vector2& operator*=(TNumber scalar)
         {
             X = Math::Multiply(X, scalar);
             Y = Math::Multiply(Y, scalar);
             return *this;
         }
 
-        Vector2 operator/(TScalar scalar) const
+        Vector2 operator/(TNumber scalar) const
         {
             Vector2 result = *this;
             result /= scalar;
             return result;
         }
 
-        Vector2& operator/=(TScalar scalar)
+        Vector2& operator/=(TNumber scalar)
         {
-            if (Math::ApproximatelyEqual(scalar, Math::Zero<TScalar>))
+            if (Math::ApproximatelyEqual(scalar, Math::Zero<TNumber>))
                 return *this;
 
             X = Math::Divide(X, scalar);
@@ -104,36 +100,36 @@ namespace Ryn
             return !(*this == other);
         }
 
-        TScalar Dot(const Vector2& other) const
+        TNumber Dot(const Vector2& other) const
         {
-            TScalar x = Math::Multiply(X, other.X);
-            TScalar y = Math::Multiply(Y, other.Y);
+            TNumber x = Math::Multiply(X, other.X);
+            TNumber y = Math::Multiply(Y, other.Y);
             return Math::Add(x, y);
         }
 
-        TScalar LengthSquared() const
+        TNumber LengthSquared() const
         {
             return Dot(*this);
         }
 
-        TScalar Length() const
+        TNumber Length() const
         {
             return Math::Sqrt(LengthSquared());
         }
 
         Vector2 Normalize() const
         {
-            TScalar length = Length();
-            if (Math::ApproximatelyEqual(length, Math::Zero<TScalar>))
+            TNumber length = Length();
+            if (Math::ApproximatelyEqual(length, Math::Zero<TNumber>))
                 return *this;
 
             return *this / length;
         }
 
-        Vector2 Lerp(const Vector2& target, TScalar time) const
+        Vector2 Lerp(const Vector2& target, TNumber time) const
         {
-            TScalar x = Math::Lerp(X, target.X, time);
-            TScalar y = Math::Lerp(Y, target.Y, time);
+            TNumber x = Math::Lerp(X, target.X, time);
+            TNumber y = Math::Lerp(Y, target.Y, time);
             return Vector2{x, y};
         }
     };

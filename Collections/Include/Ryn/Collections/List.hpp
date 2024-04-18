@@ -5,50 +5,31 @@
 
 namespace Ryn
 {
-    template <typename T>
+    template <typename TItem>
     class List
     {
       private:
         static constexpr usize DefaultCapacity = 4;
 
       private:
-        T* _data;
+        TItem* _data;
         usize _count;
         usize _capacity;
 
       public:
         List(usize capacity = 0)
         {
-            _data = (capacity > 0) ? new T[capacity] : nullptr;
+            _data = (capacity > 0) ? new TItem[capacity] : nullptr;
             _count = 0;
             _capacity = capacity;
         }
 
         List(const List& other)
         {
-            _data = new T[other._capacity];
+            _data = new TItem[other._capacity];
             _count = other._count;
             _capacity = other._capacity;
-
-            for (usize i = 0; i < _count; i += 1)
-                _data[i] = other._data[i];
-        }
-
-        List& operator=(const List& other)
-        {
-            if (this == &other)
-                return *this;
-
-            delete[] _data;
-
-            _data = new T[other._capacity];
-            _count = other._count;
-            _capacity = other._capacity;
-
-            for (usize i = 0; i < _count; i += 1)
-                _data[i] = other._data[i];
-
-            return *this;
+            Memory::Copy(_data, other._data, _count);
         }
 
         List(List&& other)
@@ -60,6 +41,26 @@ namespace Ryn
             other._data = nullptr;
             other._count = 0;
             other._capacity = 0;
+        }
+
+        ~List()
+        {
+            delete[] _data;
+        }
+
+        List& operator=(const List& other)
+        {
+            if (this == &other)
+                return *this;
+
+            delete[] _data;
+
+            _data = new TItem[other._capacity];
+            _count = other._count;
+            _capacity = other._capacity;
+            Memory::Copy(_data, other._data, _count);
+
+            return *this;
         }
 
         List& operator=(List&& other)
@@ -80,9 +81,14 @@ namespace Ryn
             return *this;
         }
 
-        ~List()
+        TItem& operator[](usize index)
         {
-            delete[] _data;
+            return _data[index];
+        }
+
+        const TItem& operator[](usize index) const
+        {
+            return _data[index];
         }
 
         usize Count() const
@@ -90,12 +96,7 @@ namespace Ryn
             return _count;
         }
 
-        T& operator[](usize index)
-        {
-            return _data[index];
-        }
-
-        void Add(T&& item)
+        void Add(TItem&& item)
         {
             if (_count >= _capacity)
                 Resize(_capacity << 1);
@@ -104,7 +105,7 @@ namespace Ryn
             _count += 1;
         }
 
-        void Insert(usize index, T&& item)
+        void Insert(usize index, TItem&& item)
         {
             if (index > _count)
                 return;
@@ -112,14 +113,12 @@ namespace Ryn
             if (_count >= _capacity)
                 Resize(_capacity << 1);
 
-            for (usize i = _count; i > index; i -= 1)
-                _data[i] = _data[i - 1];
-
+            Memory::Shift(_data + index, _count - index, 1);
             _data[index] = item;
             _count += 1;
         }
 
-        bool Remove(const T& item)
+        bool Remove(const TItem& item)
         {
             for (usize i = 0; i < _count; i += 1)
                 if (_data[i] == item)
@@ -133,9 +132,7 @@ namespace Ryn
             if (index >= _count)
                 return false;
 
-            for (usize i = index; i < _count - 1; i += 1)
-                _data[i] = _data[i + 1];
-
+            Memory::Shift(_data + index + 1, _count - index - 1, -1);
             _count -= 1;
             return true;
         }
@@ -148,14 +145,11 @@ namespace Ryn
       private:
         void Resize(usize newCapacity)
         {
-            newCapacity = (newCapacity > 0) ? newCapacity : DefaultCapacity;
-            T* newData = new T[newCapacity];
-            for (usize i = 0; i < _count; i += 1)
-                newData[i] = _data[i];
-
+            _capacity = (newCapacity > 0) ? newCapacity : DefaultCapacity;
+            TItem* newData = new TItem[_capacity];
+            Memory::Copy(newData, _data, _count);
             delete[] _data;
             _data = newData;
-            _capacity = newCapacity;
         }
     };
 }

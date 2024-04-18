@@ -5,26 +5,25 @@
 
 namespace Ryn
 {
-    template <typename TScalar>
-    requires IsNumber<TScalar>
+    template <Number TNumber>
     struct Matrix4x4
     {
-        TScalar M11;
-        TScalar M12;
-        TScalar M13;
-        TScalar M14;
-        TScalar M21;
-        TScalar M22;
-        TScalar M23;
-        TScalar M24;
-        TScalar M31;
-        TScalar M32;
-        TScalar M33;
-        TScalar M34;
-        TScalar M41;
-        TScalar M42;
-        TScalar M43;
-        TScalar M44;
+        TNumber M11;
+        TNumber M12;
+        TNumber M13;
+        TNumber M14;
+        TNumber M21;
+        TNumber M22;
+        TNumber M23;
+        TNumber M24;
+        TNumber M31;
+        TNumber M32;
+        TNumber M33;
+        TNumber M34;
+        TNumber M41;
+        TNumber M42;
+        TNumber M43;
+        TNumber M44;
 
         Matrix4x4()
         {
@@ -34,7 +33,7 @@ namespace Ryn
             M44 = 1;
         }
 
-        Matrix4x4(const TScalar (&elements)[4][4])
+        Matrix4x4(const TNumber (&elements)[4][4])
         {
             M11 = elements[0][0];
             M12 = elements[0][1];
@@ -59,11 +58,27 @@ namespace Ryn
 
         Matrix4x4 operator-() const
         {
-            if constexpr (!IsSignedNumber<TScalar>)
-                return *this;
-
             Matrix4x4 result = *this;
-            result *= Math::Negate(Math::One<TScalar>);
+            result.M11 = Math::Negate(result.M11);
+            result.M12 = Math::Negate(result.M12);
+            result.M13 = Math::Negate(result.M13);
+            result.M14 = Math::Negate(result.M14);
+
+            result.M21 = Math::Negate(result.M21);
+            result.M22 = Math::Negate(result.M22);
+            result.M23 = Math::Negate(result.M23);
+            result.M24 = Math::Negate(result.M24);
+
+            result.M31 = Math::Negate(result.M31);
+            result.M32 = Math::Negate(result.M32);
+            result.M33 = Math::Negate(result.M33);
+            result.M34 = Math::Negate(result.M34);
+
+            result.M41 = Math::Negate(result.M41);
+            result.M42 = Math::Negate(result.M42);
+            result.M43 = Math::Negate(result.M43);
+            result.M44 = Math::Negate(result.M44);
+
             return result;
         }
 
@@ -165,14 +180,14 @@ namespace Ryn
             return *this;
         }
 
-        Matrix4x4 operator*(TScalar scalar) const
+        Matrix4x4 operator*(TNumber scalar) const
         {
             Matrix4x4 result = *this;
             result *= scalar;
             return result;
         }
 
-        Matrix4x4& operator*=(TScalar scalar)
+        Matrix4x4& operator*=(TNumber scalar)
         {
             M11 = Math::Multiply(M11, scalar);
             M12 = Math::Multiply(M12, scalar);
@@ -197,16 +212,16 @@ namespace Ryn
             return *this;
         }
 
-        Matrix4x4 operator/(TScalar scalar) const
+        Matrix4x4 operator/(TNumber scalar) const
         {
             Matrix4x4 result = *this;
             result /= scalar;
             return result;
         }
 
-        Matrix4x4& operator/=(TScalar scalar)
+        Matrix4x4& operator/=(TNumber scalar)
         {
-            if (Math::ApproximatelyEqual(scalar, Math::Zero<TScalar>))
+            if (Math::ApproximatelyEqual(scalar, Math::Zero<TNumber>))
                 return *this;
 
             M11 = Math::Divide(M11, scalar);
@@ -245,19 +260,19 @@ namespace Ryn
             return !(*this == other);
         }
 
-        TScalar Determinant() const
+        TNumber Determinant() const
         {
-            TScalar a = Math::Multiply(M33, M44) - Math::Multiply(M34, M43);
-            TScalar b = Math::Multiply(M32, M44) - Math::Multiply(M34, M42);
-            TScalar c = Math::Multiply(M32, M43) - Math::Multiply(M33, M42);
-            TScalar d = Math::Multiply(M31, M44) - Math::Multiply(M34, M41);
-            TScalar e = Math::Multiply(M31, M43) - Math::Multiply(M33, M41);
-            TScalar f = Math::Multiply(M31, M42) - Math::Multiply(M32, M41);
+            TNumber a = Math::Multiply(M33, M44) - Math::Multiply(M34, M43);
+            TNumber b = Math::Multiply(M32, M44) - Math::Multiply(M34, M42);
+            TNumber c = Math::Multiply(M32, M43) - Math::Multiply(M33, M42);
+            TNumber d = Math::Multiply(M31, M44) - Math::Multiply(M34, M41);
+            TNumber e = Math::Multiply(M31, M43) - Math::Multiply(M33, M41);
+            TNumber f = Math::Multiply(M31, M42) - Math::Multiply(M32, M41);
 
-            TScalar g = Math::Multiply(M22, a) - Math::Multiply(M23, b) + Math::Multiply(M24, c);
-            TScalar h = Math::Multiply(M21, a) - Math::Multiply(M23, d) + Math::Multiply(M24, e);
-            TScalar i = Math::Multiply(M21, b) - Math::Multiply(M22, d) + Math::Multiply(M24, f);
-            TScalar j = Math::Multiply(M21, c) - Math::Multiply(M22, e) + Math::Multiply(M23, f);
+            TNumber g = Math::Multiply(M22, a) - Math::Multiply(M23, b) + Math::Multiply(M24, c);
+            TNumber h = Math::Multiply(M21, a) - Math::Multiply(M23, d) + Math::Multiply(M24, e);
+            TNumber i = Math::Multiply(M21, b) - Math::Multiply(M22, d) + Math::Multiply(M24, f);
+            TNumber j = Math::Multiply(M21, c) - Math::Multiply(M22, e) + Math::Multiply(M23, f);
 
             return Math::Multiply(M11, g) - Math::Multiply(M12, h) + Math::Multiply(M13, i) - Math::Multiply(M14, j);
         }

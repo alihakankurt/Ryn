@@ -6,33 +6,23 @@
 namespace Ryn
 {
     template <typename TOther, typename TSelf>
-    requires (IsValueType<TSelf> && IsValueType<TOther> && !Is<TSelf, TOther>)
+    static constexpr TOther As(const TSelf& value)
+    {
+        static_assert(!Is<TSelf, TOther>, "Cannot cast between the same types");
+        return static_cast<TOther>(value);
+    }
+
+    template <Pointer TOther, Pointer TSelf>
     static constexpr TOther As(TSelf value)
     {
-        if constexpr (IsPointer<TSelf> && IsPointer<TOther>)
-            return reinterpret_cast<TOther>(value);
-        else
-            return static_cast<TOther>(value);
+        static_assert(!Is<TSelf, TOther>, "Cannot cast between the same types");
+        return reinterpret_cast<TOther>(value);
     }
 
-    template <typename TOther, typename TSelf>
-    requires (!IsValueType<TSelf> && !IsValueType<TOther> && !Is<TSelf, TOther>)
-    static constexpr TOther As(const TSelf& value) noexcept
+    template <FunctionPointer TFunction>
+    static constexpr TFunction As(void* handle)
     {
-        return static_cast<TOther>(value);
-    }
-
-    template <typename TOther, typename TSelf>
-    static constexpr TOther As(TSelf& value) noexcept
-    {
-        return static_cast<TOther>(value);
-    }
-
-    template <typename TSelf>
-    requires IsFunction<TSelf>
-    static constexpr TSelf As(void* handle)
-    {
-        return reinterpret_cast<TSelf>(handle);
+        return As<TFunction>(handle);
     }
 
     template <typename TSelf>
@@ -53,18 +43,16 @@ namespace Ryn
         return As<TSelf&&>(value);
     }
 
-    template <typename TSelf>
-    requires IsEnum<TSelf>
-    static constexpr UnderlyingType<TSelf> operator+(TSelf self) noexcept
+    template <Enum TEnum>
+    static constexpr UnderlyingType<TEnum> operator+(TEnum self) noexcept
     {
-        return As<UnderlyingType<TSelf>>(self);
+        return As<UnderlyingType<TEnum>>(self);
     }
 
-    template <typename TSelf>
-    requires IsEnum<TSelf>
-    static constexpr TSelf operator|(TSelf self, TSelf other) noexcept
+    template <Enum TEnum>
+    static constexpr TEnum operator|(TEnum self, TEnum other) noexcept
     {
-        return As<TSelf>(+self | +other);
+        return As<TEnum>(+self | +other);
     }
 }
 

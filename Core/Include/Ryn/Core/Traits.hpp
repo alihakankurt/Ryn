@@ -101,14 +101,14 @@ namespace Ryn
     };
 
     template <typename TSelf>
-    struct ConstTrait
+    struct ConstantTrait
     {
         using Type = TSelf;
         static constexpr bool Value = false;
     };
 
     template <typename TSelf>
-    struct ConstTrait<const TSelf>
+    struct ConstantTrait<const TSelf>
     {
         using Type = TSelf;
         static constexpr bool Value = true;
@@ -152,7 +152,7 @@ namespace Ryn
     };
 
     template <typename TSelf>
-    struct IsValueTypeTrait
+    struct ValueTypeTrait
     {
         static constexpr bool Value = PrimitiveTypeTrait<TSelf>::Value || PointerTrait<TSelf>::Value || EnumTrait<TSelf>::Value;
     };
