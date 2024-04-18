@@ -12,7 +12,7 @@ namespace Ryn
         GLFW::WindowHint(GLFW::WindowHints::ContextVersionMajor, 4);
         GLFW::WindowHint(GLFW::WindowHints::ContextVersionMinor, 1);
 
-        _handle = GLFW::CreateWindow(config.Width, config.Height, config.Title, nullptr, nullptr);
+        _handle = GLFW::CreateWindow(As<i32>(config.Width), As<i32>(config.Height), config.Title, nullptr, nullptr);
         GLFW::MakeContextCurrent(_handle);
     }
 

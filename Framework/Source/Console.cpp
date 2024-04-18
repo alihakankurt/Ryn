@@ -8,7 +8,7 @@ namespace Ryn
         return Platform::Write(&value, 1);
     }
 
-    bool Console::Write(const char* value)
+    bool Console::Write(cstring value)
     {
         return Platform::Write(value, string::Length(value));
     }
@@ -42,7 +42,7 @@ namespace Ryn
         usize index = bufferSize - 1;
         while (value != 0)
         {
-            buffer[index] = '0' + (value % 10);
+            buffer[index] = '0' + As<char>(value % 10);
             index -= 1;
             value /= 10;
         }
@@ -79,7 +79,7 @@ namespace Ryn
         usize index = bufferSize - 1;
         while (value != 0)
         {
-            buffer[index] = '0' + (value % 10);
+            buffer[index] = '0' + As<char>(value % 10);
             index -= 1;
             value /= 10;
         }
@@ -106,7 +106,7 @@ namespace Ryn
         while (fraction > 0.0)
         {
             fraction *= 10.0;
-            buffer[index] = '0' + As<u64>(fraction);
+            buffer[index] = '0' + As<char>(fraction);
             index -= 1;
             fraction -= As<f64>(As<u64>(fraction));
         }

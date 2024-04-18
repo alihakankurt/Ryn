@@ -12,7 +12,7 @@
 
 namespace Ryn::Platform
 {
-    Module LoadModule(const char* path)
+    Module LoadModule(cstring path)
     {
         return dlopen(path, RTLD_LAZY);
     }
@@ -22,7 +22,7 @@ namespace Ryn::Platform
         dlclose(handle);
     }
 
-    void* LoadFunction(void* handle, const char* name)
+    void* LoadFunction(void* handle, cstring name)
     {
         return dlsym(handle, name);
     }
@@ -34,9 +34,10 @@ namespace Ryn::Platform
         return As<u64>(tv.tv_sec * 1'000'000 + tv.tv_usec);
     }
 
-    bool Write(const char* value, usize length)
+    bool Write(cstring value, usize length)
     {
-        return write(STDOUT_FILENO, value, length) == length;
+        isize result = write(STDOUT_FILENO, value, length);
+        return result >= 0 && As<usize>(result) == length;
     }
 }
 

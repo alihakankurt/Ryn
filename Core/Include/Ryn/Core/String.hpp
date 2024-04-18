@@ -13,7 +13,7 @@ namespace Ryn
 
       public:
         string();
-        string(const char* str);
+        string(cstring str);
         string(const string& other);
         string(string&& other) noexcept;
         ~string();
@@ -30,9 +30,9 @@ namespace Ryn
         string& operator+=(const string& other);
 
         usize Length() const;
-        const char* Data() const;
+        cstring Data() const;
 
-        static usize Length(const char* str);
+        static usize Length(cstring str);
     };
 }
 

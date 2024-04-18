@@ -1,4 +1,6 @@
 #include <Ryn/Core/String.hpp>
+#include <Ryn/Core/Casts.hpp>
+#include <Ryn/Core/Memory.hpp>
 
 namespace Ryn
 {
@@ -8,21 +10,19 @@ namespace Ryn
         _data = nullptr;
     }
 
-    string::string(const char* str)
+    string::string(cstring str)
     {
         _length = string::Length(str);
 
         _data = new char[_length];
-        for (usize i = 0; i < _length; i++)
-            _data[i] = str[i];
+        Memory::Copy(_data, str, _length);
     }
 
     string::string(const string& other)
     {
         _length = other._length;
         _data = new char[_length];
-        for (usize i = 0; i < _length; i++)
-            _data[i] = other._data[i];
+        Memory::Copy(_data, other._data, _length);
     }
 
     string::string(string&& other) noexcept
@@ -47,8 +47,7 @@ namespace Ryn
 
         _length = other._length;
         _data = new char[_length];
-        for (usize i = 0; i < _length; i++)
-            _data[i] = other._data[i];
+        Memory::Copy(_data, other._data, _length);
 
         return *this;
     }
@@ -73,9 +72,32 @@ namespace Ryn
         if (_length != other._length)
             return false;
 
-        for (usize i = 0; i < _length; i++)
-            if (_data[i] != other._data[i])
+        usize length = _length;
+        usize* selfData = As<usize*>(_data);
+        usize* otherData = As<usize*>(other._data);
+
+        while (length >= sizeof(usize))
+        {
+            if (*selfData != *otherData)
                 return false;
+
+            selfData += 1;
+            otherData += 1;
+            length -= sizeof(usize);
+        }
+
+        char* selfCharData = As<char*>(selfData);
+        char* otherCharData = As<char*>(otherData);
+
+        while (length > 0)
+        {
+            if (*selfCharData != *otherCharData)
+                return false;
+
+            selfCharData += 1;
+            otherCharData += 1;
+            length -= 1;
+        }
 
         return true;
     }
@@ -99,18 +121,16 @@ namespace Ryn
 
     string& string::operator+=(const string& other)
     {
-        char* temp = _data;
-        _data = new char[_length + other._length];
+        usize newLength = _length + other._length;
+        char* newData = new char[newLength];
 
-        for (usize i = 0; i < _length; i++)
-            _data[i] = temp[i];
+        Memory::Copy(newData, _data, _length);
+        Memory::Copy(newData + _length, other._data, other._length);
 
-        for (usize i = 0; i < other._length; i++)
-            _data[_length + i] = other._data[i];
+        delete[] _data;
 
-        _length += other._length;
-
-        delete[] temp;
+        _length = newLength;
+        _data = newData;
 
         return *this;
     }
@@ -120,12 +140,12 @@ namespace Ryn
         return _length;
     }
 
-    const char* string::Data() const
+    cstring string::Data() const
     {
         return _data;
     }
 
-    usize string::Length(const char* str)
+    usize string::Length(cstring str)
     {
         usize length = 0;
         while (str[length] != '\0')

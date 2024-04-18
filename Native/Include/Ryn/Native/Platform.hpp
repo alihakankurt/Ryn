@@ -7,21 +7,21 @@ namespace Ryn::Platform
 {
     using Module = void*;
 
-    Module LoadModule(const char* path);
+    Module LoadModule(cstring path);
 
     void FreeModule(Module handle);
 
-    void* LoadFunction(Module handle, const char* name);
+    void* LoadFunction(Module handle, cstring name);
 
     template <typename TFunction>
-    inline TFunction LoadFunction(Module handle, const char* name)
+    inline TFunction LoadFunction(Module handle, cstring name)
     {
         return As<TFunction>(LoadFunction(handle, name));
     }
 
     u64 GetTime();
 
-    bool Write(const char* value, usize length);
+    bool Write(cstring value, usize length);
 }
 
 #endif

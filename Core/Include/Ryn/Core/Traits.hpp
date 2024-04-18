@@ -69,42 +69,49 @@ namespace Ryn
     struct ReferenceTrait
     {
         using Type = TSelf;
+        static constexpr bool Value = false;
     };
 
     template <typename TSelf>
     struct ReferenceTrait<TSelf&>
     {
         using Type = TSelf;
+        static constexpr bool Value = true;
     };
 
     template <typename TSelf>
     struct ReferenceTrait<TSelf&&>
     {
         using Type = TSelf;
+        static constexpr bool Value = true;
     };
 
     template <typename TSelf>
     struct PointerTrait
     {
         using Type = TSelf;
+        static constexpr bool Value = false;
     };
 
     template <typename TSelf>
     struct PointerTrait<TSelf*>
     {
         using Type = TSelf;
+        static constexpr bool Value = true;
     };
 
     template <typename TSelf>
     struct ConstTrait
     {
         using Type = TSelf;
+        static constexpr bool Value = false;
     };
 
     template <typename TSelf>
     struct ConstTrait<const TSelf>
     {
         using Type = TSelf;
+        static constexpr bool Value = true;
     };
 
     template <typename TSelf>
@@ -139,16 +146,15 @@ namespace Ryn
     };
 
     template <typename TSelf>
-    struct IsValueTypeTrait
+    struct PrimitiveTypeTrait
     {
-        static constexpr bool Value = false;
+        static constexpr bool Value = NumberTrait<TSelf>::Value || IsAnyTrait<TSelf, bool, char>::Value;
     };
 
     template <typename TSelf>
-    requires NumberTrait<TSelf>::Value || PointerTrait<TSelf>::Value || EnumTrait<TSelf>::Value
-    struct IsValueTypeTrait<TSelf>
+    struct IsValueTypeTrait
     {
-        static constexpr bool Value = true;
+        static constexpr bool Value = PrimitiveTypeTrait<TSelf>::Value || PointerTrait<TSelf>::Value || EnumTrait<TSelf>::Value;
     };
 }
 

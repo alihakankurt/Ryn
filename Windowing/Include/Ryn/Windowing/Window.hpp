@@ -7,9 +7,9 @@ namespace Ryn
 {
     struct WindowConfig
     {
-        i32 Width;
-        i32 Height;
-        const char* Title;
+        usize Width;
+        usize Height;
+        cstring Title;
     };
 
     class Window

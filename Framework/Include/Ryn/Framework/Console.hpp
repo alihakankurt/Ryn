@@ -8,7 +8,7 @@ namespace Ryn
     struct Console
     {
         static bool Write(char value);
-        static bool Write(const char* value);
+        static bool Write(cstring value);
         static bool Write(const string& value);
 
         static bool Write(i8 value);

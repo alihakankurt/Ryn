@@ -6,14 +6,17 @@
 namespace Ryn
 {
     template <typename TOther, typename TSelf>
-    requires (IsValueType<TSelf> && IsValueType<TOther>)
+    requires (IsValueType<TSelf> && IsValueType<TOther> && !Is<TSelf, TOther>)
     static constexpr TOther As(TSelf value)
     {
-        return static_cast<TOther>(value);
+        if constexpr (IsPointer<TSelf> && IsPointer<TOther>)
+            return reinterpret_cast<TOther>(value);
+        else
+            return static_cast<TOther>(value);
     }
 
     template <typename TOther, typename TSelf>
-    requires (!IsValueType<TSelf> && !IsValueType<TOther>)
+    requires (!IsValueType<TSelf> && !IsValueType<TOther> && !Is<TSelf, TOther>)
     static constexpr TOther As(const TSelf& value) noexcept
     {
         return static_cast<TOther>(value);

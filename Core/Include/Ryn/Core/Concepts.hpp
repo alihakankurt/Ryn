@@ -37,19 +37,19 @@ namespace Ryn
     using RemoveReference = typename ReferenceTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsReference = IsAny<TSelf, RemoveReference<TSelf>&, RemoveReference<TSelf>&&>;
+    concept IsReference = ReferenceTrait<TSelf>::Value;
 
     template <typename TSelf>
     using RemovePointer = typename PointerTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsPointer = Is<TSelf, RemovePointer<TSelf>*>;
+    concept IsPointer = PointerTrait<TSelf>::Value;
 
     template <typename TSelf>
     using RemoveConst = typename ConstTrait<TSelf>::Type;
 
     template <typename TSelf>
-    concept IsConst = Is<TSelf, const RemoveConst<TSelf>>;
+    concept IsConst = ConstTrait<TSelf>::Value;
 
     template <typename TSelf>
     concept IsEnum = EnumTrait<TSelf>::Value;
@@ -59,6 +59,9 @@ namespace Ryn
 
     template <typename TSelf>
     concept IsFunction = FunctionPointerTrait<TSelf>::Value;
+
+    template <typename TSelf>
+    concept IsPrimitiveType = PrimitiveTypeTrait<TSelf>::Value;
 
     template <typename TSelf>
     concept IsValueType = IsValueTypeTrait<TSelf>::Value;
