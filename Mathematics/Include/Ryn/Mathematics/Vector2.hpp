@@ -9,9 +9,8 @@ namespace Ryn
     requires IsNumber<TScalar>
     struct Vector2
     {
-        TScalar Elements[2];
-        TScalar& X = Elements[0];
-        TScalar& Y = Elements[1];
+        TScalar X;
+        TScalar Y;
 
         Vector2()
         {
@@ -25,40 +24,11 @@ namespace Ryn
             Y = y;
         }
 
-        Vector2(const Vector2& other)
-        {
-            X = other.X;
-            Y = other.Y;
-        }
-
-        Vector2& operator=(const Vector2& other)
-        {
-            X = other.X;
-            Y = other.Y;
-            return *this;
-        }
-
-        Vector2(Vector2&& other)
-        {
-            X = other.X;
-            Y = other.Y;
-        }
-
-        Vector2& operator=(Vector2&& other)
-        {
-            X = other.X;
-            Y = other.Y;
-            return *this;
-        }
-
-        TScalar& operator[](usize index)
-        {
-            return Elements[index];
-        }
-
         Vector2 operator-() const
-        requires IsSignedNumber<TScalar>
         {
+            if constexpr (!IsSignedNumber<TScalar>)
+                return *this;
+
             TScalar x = Math::Negate(X);
             TScalar y = Math::Negate(Y);
             return Vector2{x, y};
@@ -66,9 +36,9 @@ namespace Ryn
 
         Vector2 operator+(const Vector2& other) const
         {
-            TScalar x = Math::Add(X, other.X);
-            TScalar y = Math::Add(Y, other.Y);
-            return Vector2{x, y};
+            Vector2 result = *this;
+            result += other;
+            return result;
         }
 
         Vector2& operator+=(const Vector2& other)
@@ -80,9 +50,9 @@ namespace Ryn
 
         Vector2 operator-(const Vector2& other) const
         {
-            TScalar x = Math::Subtract(X, other.X);
-            TScalar y = Math::Subtract(Y, other.Y);
-            return Vector2{x, y};
+            Vector2 result = *this;
+            result -= other;
+            return result;
         }
 
         Vector2& operator-=(const Vector2& other)
@@ -94,9 +64,9 @@ namespace Ryn
 
         Vector2 operator*(TScalar scalar) const
         {
-            TScalar x = Math::Multiply(X, scalar);
-            TScalar y = Math::Multiply(Y, scalar);
-            return Vector2{x, y};
+            Vector2 result = *this;
+            result *= scalar;
+            return result;
         }
 
         Vector2& operator*=(TScalar scalar)
@@ -108,17 +78,14 @@ namespace Ryn
 
         Vector2 operator/(TScalar scalar) const
         {
-            if (scalar == Math::Zero<TScalar>)
-                return *this;
-
-            TScalar x = Math::Divide(X, scalar);
-            TScalar y = Math::Divide(Y, scalar);
-            return Vector2{x, y};
+            Vector2 result = *this;
+            result /= scalar;
+            return result;
         }
 
         Vector2& operator/=(TScalar scalar)
         {
-            if (scalar == Math::Zero<TScalar>)
+            if (Math::ApproximatelyEqual(scalar, Math::Zero<TScalar>))
                 return *this;
 
             X = Math::Divide(X, scalar);
@@ -135,6 +102,39 @@ namespace Ryn
         bool operator!=(const Vector2& other) const
         {
             return !(*this == other);
+        }
+
+        TScalar Dot(const Vector2& other) const
+        {
+            TScalar x = Math::Multiply(X, other.X);
+            TScalar y = Math::Multiply(Y, other.Y);
+            return Math::Add(x, y);
+        }
+
+        TScalar LengthSquared() const
+        {
+            return Dot(*this);
+        }
+
+        TScalar Length() const
+        {
+            return Math::Sqrt(LengthSquared());
+        }
+
+        Vector2 Normalize() const
+        {
+            TScalar length = Length();
+            if (Math::ApproximatelyEqual(length, Math::Zero<TScalar>))
+                return *this;
+
+            return *this / length;
+        }
+
+        Vector2 Lerp(const Vector2& target, TScalar time) const
+        {
+            TScalar x = Math::Lerp(X, target.X, time);
+            TScalar y = Math::Lerp(Y, target.Y, time);
+            return Vector2{x, y};
         }
     };
 }

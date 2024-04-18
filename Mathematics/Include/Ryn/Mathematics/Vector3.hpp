@@ -9,10 +9,9 @@ namespace Ryn
     requires IsNumber<TScalar>
     struct Vector3
     {
-        TScalar Elements[3];
-        TScalar& X = Elements[0];
-        TScalar& Y = Elements[1];
-        TScalar& Z = Elements[2];
+        TScalar X;
+        TScalar Y;
+        TScalar Z;
 
         Vector3()
         {
@@ -28,44 +27,11 @@ namespace Ryn
             Z = z;
         }
 
-        Vector3(const Vector3& other)
-        {
-            X = other.X;
-            Y = other.Y;
-            Z = other.Z;
-        }
-
-        Vector3& operator=(const Vector3& other)
-        {
-            X = other.X;
-            Y = other.Y;
-            Z = other.Z;
-            return *this;
-        }
-
-        Vector3(Vector3&& other)
-        {
-            X = other.X;
-            Y = other.Y;
-            Z = other.Z;
-        }
-
-        Vector3& operator=(Vector3&& other)
-        {
-            X = other.X;
-            Y = other.Y;
-            Z = other.Z;
-            return *this;
-        }
-
-        TScalar& operator[](usize index)
-        {
-            return Elements[index];
-        }
-
         Vector3 operator-() const
-        requires IsSignedNumber<TScalar>
         {
+            if constexpr (!IsSignedNumber<TScalar>)
+                return *this;
+
             TScalar x = Math::Negate(X);
             TScalar y = Math::Negate(Y);
             TScalar z = Math::Negate(Z);
@@ -74,10 +40,9 @@ namespace Ryn
 
         Vector3 operator+(const Vector3& other) const
         {
-            TScalar x = Math::Add(X, other.X);
-            TScalar y = Math::Add(Y, other.Y);
-            TScalar z = Math::Add(Z, other.Z);
-            return Vector3{x, y, z};
+            Vector3 result = *this;
+            result += other;
+            return result;
         }
 
         Vector3& operator+=(const Vector3& other)
@@ -90,10 +55,9 @@ namespace Ryn
 
         Vector3 operator-(const Vector3& other) const
         {
-            TScalar x = Math::Subtract(X, other.X);
-            TScalar y = Math::Subtract(Y, other.Y);
-            TScalar z = Math::Subtract(Z, other.Z);
-            return Vector3{x, y, z};
+            Vector3 result = *this;
+            result -= other;
+            return result;
         }
 
         Vector3& operator-=(const Vector3& other)
@@ -106,10 +70,9 @@ namespace Ryn
 
         Vector3 operator*(TScalar scalar) const
         {
-            TScalar x = Math::Multiply(X, scalar);
-            TScalar y = Math::Multiply(Y, scalar);
-            TScalar z = Math::Multiply(Z, scalar);
-            return Vector3{x, y, z};
+            Vector3 result = *this;
+            result *= scalar;
+            return result;
         }
 
         Vector3& operator*=(TScalar scalar)
@@ -122,13 +85,9 @@ namespace Ryn
 
         Vector3 operator/(TScalar scalar) const
         {
-            if (scalar == Math::Zero<TScalar>)
-                return *this;
-
-            TScalar x = Math::Divide(X, scalar);
-            TScalar y = Math::Divide(Y, scalar);
-            TScalar z = Math::Divide(Z, scalar);
-            return Vector3{x, y, z};
+            Vector3 result = *this;
+            result /= scalar;
+            return result;
         }
 
         Vector3& operator/=(TScalar scalar)
@@ -152,6 +111,49 @@ namespace Ryn
         bool operator!=(const Vector3& other) const
         {
             return !(*this == other);
+        }
+
+        TScalar Dot(const Vector3& other) const
+        {
+            TScalar x = Math::Multiply(X, other.X);
+            TScalar y = Math::Multiply(Y, other.Y);
+            TScalar z = Math::Multiply(Z, other.Z);
+            return Math::Add(Math::Add(x, y), z);
+        }
+
+        Vector3 Cross(const Vector3& other) const
+        {
+            TScalar x = Math::Subtract(Math::Multiply(Y, other.Z), Math::Multiply(Z, other.Y));
+            TScalar y = Math::Subtract(Math::Multiply(Z, other.X), Math::Multiply(X, other.Z));
+            TScalar z = Math::Subtract(Math::Multiply(X, other.Y), Math::Multiply(Y, other.X));
+            return Vector3{x, y, z};
+        }
+
+        TScalar LengthSquared() const
+        {
+            return Dot(*this);
+        }
+
+        TScalar Length() const
+        {
+            return Math::Sqrt(LengthSquared());
+        }
+
+        Vector3 Normalize() const
+        {
+            TScalar length = Length();
+            if (Math::ApproximatelyEqual(length, Math::Zero<TScalar>))
+                return *this;
+
+            return *this / length;
+        }
+
+        Vector3 Lerp(const Vector3& target, TScalar time) const
+        {
+            TScalar x = Math::Lerp(X, target.X, time);
+            TScalar y = Math::Lerp(Y, target.Y, time);
+            TScalar z = Math::Lerp(Z, target.Z, time);
+            return Vector3{x, y, z};
         }
     };
 }
