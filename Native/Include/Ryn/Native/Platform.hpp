@@ -20,6 +20,8 @@ namespace Ryn::Platform
     }
 
     u64 GetTime();
+
+    bool Write(const char* value, usize length);
 }
 
 #endif

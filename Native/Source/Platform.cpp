@@ -6,6 +6,7 @@
 
 #elif RYN_PLATFORM_MACOS || RYN_PLATFORM_LINUX
 
+#include <unistd.h>
 #include <dlfcn.h>
 #include <sys/time.h>
 
@@ -31,6 +32,11 @@ namespace Ryn::Platform
         struct timeval tv;
         gettimeofday(&tv, nullptr);
         return As<u64>(tv.tv_sec * 1'000'000 + tv.tv_usec);
+    }
+
+    bool Write(const char* value, usize length)
+    {
+        return write(STDOUT_FILENO, value, length) == length;
     }
 }
 
