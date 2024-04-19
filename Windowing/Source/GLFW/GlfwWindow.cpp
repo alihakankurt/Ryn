@@ -6,8 +6,6 @@ namespace Ryn
 {
     GlfwWindow::GlfwWindow(const WindowConfig& config)
     {
-        GLFW::Initialize();
-        
         GLFW::WindowHint(GLFW::WindowHints::ClientAPI, +GLFW::ClientAPI::OpenGL);
         GLFW::WindowHint(GLFW::WindowHints::ContextVersionMajor, 4);
         GLFW::WindowHint(GLFW::WindowHints::ContextVersionMinor, 1);
@@ -19,7 +17,6 @@ namespace Ryn
     GlfwWindow::~GlfwWindow()
     {
         GLFW::DestroyWindow(_handle);
-        GLFW::Terminate();
     }
 
     void GlfwWindow::Update()
