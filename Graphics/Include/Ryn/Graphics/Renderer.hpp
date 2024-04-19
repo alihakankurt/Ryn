@@ -1,8 +1,8 @@
-#ifndef __RYN_RENDERING_RENDERER_HPP__
-#define __RYN_RENDERING_RENDERER_HPP__
+#ifndef __RYN_GRAPHICS_RENDERER_HPP__
+#define __RYN_GRAPHICS_RENDERER_HPP__
 
 #include <Ryn/Core.hpp>
-#include <Ryn/Rendering/Color.hpp>
+#include <Ryn/Graphics/Color.hpp>
 
 namespace Ryn
 {

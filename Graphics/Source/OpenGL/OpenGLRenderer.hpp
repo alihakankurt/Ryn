@@ -1,7 +1,7 @@
-#ifndef RYN_RENDERING_OPENGL_OPENGL_RENDERER
-#define RYN_RENDERING_OPENGL_OPENGL_RENDERER
+#ifndef __RYN_GRAPHICS_OPENGL_OPENGL_RENDERER_HPP__
+#define __RYN_GRAPHICS_OPENGL_OPENGL_RENDERER_HPP__
 
-#include <Ryn/Rendering/Renderer.hpp>
+#include <Ryn/Graphics/Renderer.hpp>
 
 namespace Ryn
 {

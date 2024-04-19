@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 project(Ryn.Native VERSION 0.1.0 LANGUAGES CXX)
 
 set(Sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform.Unix.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform.Windows.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/GLFW.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/OpenGL.cpp
 )

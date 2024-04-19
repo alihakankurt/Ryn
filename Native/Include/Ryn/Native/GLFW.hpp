@@ -118,16 +118,14 @@ namespace Ryn::GLFW
     using TerminateFunction = void (*)();
     extern TerminateFunction Terminate;
 
-#ifdef RYN_DEBUG
-    using ErrorCallback = void (*)(ErrorCode error, const char* description);
+    using ErrorCallback = void (*)(ErrorCode error, cstring description);
     using SetErrorCallbackFunction = ErrorCallback (*)(ErrorCallback callback);
     extern SetErrorCallbackFunction SetErrorCallback;
-#endif
 
     using WindowHintFunction = void (*)(WindowHints hint, i32 value);
     extern WindowHintFunction WindowHint;
 
-    using CreateWindowFunction = Window (*)(i32 width, i32 height, const char* title, void* monitor, void* share);
+    using CreateWindowFunction = Window (*)(i32 width, i32 height, cstring title, void* monitor, void* share);
     extern CreateWindowFunction CreateWindow;
 
     using DestroyWindowFunction = void (*)(Window window);

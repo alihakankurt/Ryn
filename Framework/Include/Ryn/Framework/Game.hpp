@@ -3,7 +3,7 @@
 
 #include <Ryn/Core.hpp>
 #include <Ryn/Windowing/Window.hpp>
-#include <Ryn/Rendering/Renderer.hpp>
+#include <Ryn/Graphics/Renderer.hpp>
 
 namespace Ryn
 {
@@ -20,7 +20,8 @@ namespace Ryn
         void Run();
 
       protected:
-        virtual void Initialize(WindowConfig& windowConfig) = 0;
+        virtual void Configure(WindowConfig& windowConfig) = 0;
+        virtual void Initialize() = 0;
         virtual void Update() = 0;
         virtual void Render() = 0;
         virtual void Finalize() = 0;

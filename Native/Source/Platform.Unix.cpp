@@ -1,10 +1,6 @@
+#if RYN_PLATFORM_MACOS || RYN_PLATFORM_LINUX
+
 #include <Ryn/Native/Platform.hpp>
-
-#if RYN_PLATFORM_WINDOWS
-
-#error "Windows platform is not supported yet."
-
-#elif RYN_PLATFORM_MACOS || RYN_PLATFORM_LINUX
 
 #include <unistd.h>
 #include <dlfcn.h>

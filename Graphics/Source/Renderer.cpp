@@ -1,4 +1,4 @@
-#include <Ryn/Rendering/Renderer.hpp>
+#include <Ryn/Graphics/Renderer.hpp>
 
 #include "OpenGL/OpenGLRenderer.hpp"
 

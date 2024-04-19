@@ -5,12 +5,11 @@ namespace Ryn
     void Game::Run()
     {
         WindowConfig windowConfig = {};
-        Initialize(windowConfig);
+        Configure(windowConfig);
 
         Window = Window::Create(windowConfig);
         Renderer = Renderer::Create();
-
-        Window->IsActive();
+        Initialize();
 
         while (Window->IsActive())
         {
@@ -21,7 +20,6 @@ namespace Ryn
 
         delete Renderer;
         delete Window;
-
         Finalize();
     }
 }
