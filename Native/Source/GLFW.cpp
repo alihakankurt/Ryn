@@ -15,6 +15,7 @@ namespace Ryn::GLFW
     TerminateFunction Terminate;
     SetErrorCallbackFunction SetErrorCallback;
     SetKeyCallbackFunction SetKeyCallback;
+    SetMouseButtonCallbackFunction SetMouseButtonCallback;
     WindowHintFunction WindowHint;
     CreateWindowFunction CreateWindow;
     DestroyWindowFunction DestroyWindow;
@@ -38,6 +39,7 @@ namespace Ryn::GLFW
         Terminate = Platform::LoadFunction<TerminateFunction>(Handle, "glfwTerminate");
         SetErrorCallback = Platform::LoadFunction<SetErrorCallbackFunction>(Handle, "glfwSetErrorCallback");
         SetKeyCallback = Platform::LoadFunction<SetKeyCallbackFunction>(Handle, "glfwSetKeyCallback");
+        SetMouseButtonCallback = Platform::LoadFunction<SetMouseButtonCallbackFunction>(Handle, "glfwSetMouseButtonCallback");
         WindowHint = Platform::LoadFunction<WindowHintFunction>(Handle, "glfwWindowHint");
         CreateWindow = Platform::LoadFunction<CreateWindowFunction>(Handle, "glfwCreateWindow");
         DestroyWindow = Platform::LoadFunction<DestroyWindowFunction>(Handle, "glfwDestroyWindow");

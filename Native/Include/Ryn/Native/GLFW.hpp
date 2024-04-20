@@ -19,7 +19,7 @@ namespace Ryn::GLFW
         NoWindowContext = 0x0001'000A,
     };
 
-    enum struct Keys : i32
+    enum struct Key : i32
     {
         Unknown = -1,
         Space = 32,
@@ -142,14 +142,25 @@ namespace Ryn::GLFW
         Menu = 348,
     };
 
-    enum struct KeyAction : i32
+    enum struct MouseButton : i32
+    {
+        Left = 0,
+        Right = 1,
+        Middle = 2,
+        Button4 = 3,
+        Button5 = 4,
+        Button6 = 5,
+        Button7 = 6,
+        Button8 = 7,
+    };
+
+    enum struct InputAction : i32
     {
         Release = 0,
         Press = 1,
-        Repeat = 2,
     };
 
-    enum struct KeyModifiers : i32
+    enum struct InputModifiers : i32
     {
         Shift = 0x0001,
         Control = 0x0002,
@@ -262,9 +273,13 @@ namespace Ryn::GLFW
     using SetErrorCallbackFunction = ErrorCallback (*)(ErrorCallback callback);
     extern SetErrorCallbackFunction SetErrorCallback;
 
-    using KeyCallback = void (*)(Window window, Keys key, i32 scancode, KeyAction action, KeyModifiers modifiers);
+    using KeyCallback = void (*)(Window window, Key key, i32 scancode, InputAction action, InputModifiers modifiers);
     using SetKeyCallbackFunction = KeyCallback (*)(Window window, KeyCallback callback);
     extern SetKeyCallbackFunction SetKeyCallback;
+
+    using MouseButtonCallback = void (*)(Window window, MouseButton button, InputAction action, InputModifiers modifiers);
+    using SetMouseButtonCallbackFunction = MouseButtonCallback (*)(Window window, MouseButtonCallback callback);
+    extern SetMouseButtonCallbackFunction SetMouseButtonCallback;
 
     using WindowHintFunction = void (*)(WindowHints hint, i32 value);
     extern WindowHintFunction WindowHint;

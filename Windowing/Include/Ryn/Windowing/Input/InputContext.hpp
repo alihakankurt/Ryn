@@ -2,6 +2,7 @@
 #define __RYN_WINDOWING_INPUT_INPUT_CONTEXT_HPP__
 
 #include <Ryn/Windowing/Input/Key.hpp>
+#include <Ryn/Windowing/Input/MouseButton.hpp>
 
 namespace Ryn
 {
@@ -14,6 +15,11 @@ namespace Ryn
         virtual bool IsKeyDown(Key key) const = 0;
         virtual bool IsKeyPressed(Key key) const = 0;
         virtual bool IsKeyReleased(Key key) const = 0;
+
+        virtual bool IsMouseButtonUp(MouseButton mouseButton) const = 0;
+        virtual bool IsMouseButtonDown(MouseButton mouseButton) const = 0;
+        virtual bool IsMouseButtonPressed(MouseButton mouseButton) const = 0;
+        virtual bool IsMouseButtonReleased(MouseButton mouseButton) const = 0;
     };
 }
 
