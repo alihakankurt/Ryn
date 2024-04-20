@@ -7,6 +7,8 @@ namespace Ryn
         GLFW::SetWindowUserPointer(window, this);
         GLFW::SetKeyCallback(window, OnKeyEvent);
         GLFW::SetMouseButtonCallback(window, OnMouseButtonEvent);
+        GLFW::SetMousePositionCallback(window, OnMousePositionEvent);
+        GLFW::GetMousePosition(window, &_mousePosition.X, &_mousePosition.Y);
     }
 
     void GlfwInputContext::Update()
@@ -70,6 +72,11 @@ namespace Ryn
         return state == InputState::Released;
     }
 
+    Vector2<f64> GlfwInputContext::GetMousePosition() const
+    {
+        return _mousePosition;
+    }
+
     void GlfwInputContext::UpdateState(InputState& state)
     {
         if (state == InputState::Pressed)
@@ -81,7 +88,7 @@ namespace Ryn
     void GlfwInputContext::OnKeyEvent(GLFW::Window window, GLFW::Key glfwKey, i32 scancode, GLFW::InputAction action, GLFW::InputModifiers modifiers)
     {
         GlfwInputContext* input = As<GlfwInputContext*>(GLFW::GetWindowUserPointer(window));
-        if (!input)
+        if (input == nullptr)
             return;
 
         Key key = As<Key>(glfwKey);
@@ -104,7 +111,7 @@ namespace Ryn
     void GlfwInputContext::OnMouseButtonEvent(GLFW::Window window, GLFW::MouseButton glfwMouseButton, GLFW::InputAction action, GLFW::InputModifiers modifiers)
     {
         GlfwInputContext* input = As<GlfwInputContext*>(GLFW::GetWindowUserPointer(window));
-        if (!input)
+        if (input == nullptr)
             return;
 
         MouseButton mouseButton = As<MouseButton>(glfwMouseButton);
@@ -119,5 +126,14 @@ namespace Ryn
                 input->_mouseButtonUpdates.Add(mouseButton);
                 break;
         }
+    }
+
+    void GlfwInputContext::OnMousePositionEvent(GLFW::Window window, f64 x, f64 y)
+    {
+        GlfwInputContext* input = As<GlfwInputContext*>(GLFW::GetWindowUserPointer(window));
+        if (input == nullptr)
+            return;
+
+        input->_mousePosition = Vector2<f64>{x, y};
     }
 }

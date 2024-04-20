@@ -14,18 +14,26 @@ namespace Ryn::GLFW
     InitializeFunction Initialize;
     TerminateFunction Terminate;
     SetErrorCallbackFunction SetErrorCallback;
-    SetKeyCallbackFunction SetKeyCallback;
-    SetMouseButtonCallbackFunction SetMouseButtonCallback;
+
     WindowHintFunction WindowHint;
     CreateWindowFunction CreateWindow;
     DestroyWindowFunction DestroyWindow;
+
     SetWindowUserPointerFunction SetWindowUserPointer;
     GetWindowUserPointerFunction GetWindowUserPointer;
+
     MakeContextCurrentFunction MakeContextCurrent;
-    PollEventsFunction PollEvents;
-    SwapBuffersFunction SwapBuffers;
+
     WindowShouldCloseFunction WindowShouldClose;
     SetWindowShouldCloseFunction SetWindowShouldClose;
+
+    PollEventsFunction PollEvents;
+    SwapBuffersFunction SwapBuffers;
+
+    SetKeyCallbackFunction SetKeyCallback;
+    SetMouseButtonCallbackFunction SetMouseButtonCallback;
+    SetMousePositionCallbackFunction SetMousePositionCallback;
+    GetMousePositionFunction GetMousePosition;
 
     Platform::Module Handle;
 
@@ -38,18 +46,27 @@ namespace Ryn::GLFW
         Initialize = Platform::LoadFunction<InitializeFunction>(Handle, "glfwInit");
         Terminate = Platform::LoadFunction<TerminateFunction>(Handle, "glfwTerminate");
         SetErrorCallback = Platform::LoadFunction<SetErrorCallbackFunction>(Handle, "glfwSetErrorCallback");
-        SetKeyCallback = Platform::LoadFunction<SetKeyCallbackFunction>(Handle, "glfwSetKeyCallback");
-        SetMouseButtonCallback = Platform::LoadFunction<SetMouseButtonCallbackFunction>(Handle, "glfwSetMouseButtonCallback");
+
         WindowHint = Platform::LoadFunction<WindowHintFunction>(Handle, "glfwWindowHint");
         CreateWindow = Platform::LoadFunction<CreateWindowFunction>(Handle, "glfwCreateWindow");
         DestroyWindow = Platform::LoadFunction<DestroyWindowFunction>(Handle, "glfwDestroyWindow");
+
         SetWindowUserPointer = Platform::LoadFunction<SetWindowUserPointerFunction>(Handle, "glfwSetWindowUserPointer");
         GetWindowUserPointer = Platform::LoadFunction<GetWindowUserPointerFunction>(Handle, "glfwGetWindowUserPointer");
+
         MakeContextCurrent = Platform::LoadFunction<MakeContextCurrentFunction>(Handle, "glfwMakeContextCurrent");
-        PollEvents = Platform::LoadFunction<PollEventsFunction>(Handle, "glfwPollEvents");
-        SwapBuffers = Platform::LoadFunction<SwapBuffersFunction>(Handle, "glfwSwapBuffers");
+
         WindowShouldClose = Platform::LoadFunction<WindowShouldCloseFunction>(Handle, "glfwWindowShouldClose");
         SetWindowShouldClose = Platform::LoadFunction<SetWindowShouldCloseFunction>(Handle, "glfwSetWindowShouldClose");
+
+        PollEvents = Platform::LoadFunction<PollEventsFunction>(Handle, "glfwPollEvents");
+        SwapBuffers = Platform::LoadFunction<SwapBuffersFunction>(Handle, "glfwSwapBuffers");
+
+        SetKeyCallback = Platform::LoadFunction<SetKeyCallbackFunction>(Handle, "glfwSetKeyCallback");
+        SetMouseButtonCallback = Platform::LoadFunction<SetMouseButtonCallbackFunction>(Handle, "glfwSetMouseButtonCallback");
+        SetMousePositionCallback = Platform::LoadFunction<SetMousePositionCallbackFunction>(Handle, "glfwSetCursorPosCallback");
+        GetMousePosition = Platform::LoadFunction<GetMousePositionFunction>(Handle, "glfwGetCursorPos");
+
 
         return true;
     }

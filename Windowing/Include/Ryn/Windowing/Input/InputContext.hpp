@@ -3,6 +3,7 @@
 
 #include <Ryn/Windowing/Input/Key.hpp>
 #include <Ryn/Windowing/Input/MouseButton.hpp>
+#include <Ryn/Mathematics/Vector2.hpp>
 
 namespace Ryn
 {
@@ -20,6 +21,8 @@ namespace Ryn
         virtual bool IsMouseButtonDown(MouseButton mouseButton) const = 0;
         virtual bool IsMouseButtonPressed(MouseButton mouseButton) const = 0;
         virtual bool IsMouseButtonReleased(MouseButton mouseButton) const = 0;
+
+        virtual Vector2<f64> GetMousePosition() const = 0;
     };
 }
 

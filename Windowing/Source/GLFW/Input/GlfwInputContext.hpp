@@ -17,6 +17,8 @@ namespace Ryn
         InputState _mouseButtonStates[+MouseButton::Count] = {InputState::Up};
         List<MouseButton> _mouseButtonUpdates;
 
+        Vector2<f64> _mousePosition;
+
       public:
         GlfwInputContext(GLFW::Window window);
         ~GlfwInputContext() override = default;
@@ -33,11 +35,14 @@ namespace Ryn
         bool IsMouseButtonPressed(MouseButton mouseButton) const override;
         bool IsMouseButtonReleased(MouseButton mouseButton) const override;
 
+        inline Vector2<f64> GetMousePosition() const override;
+
       private:
         static inline void UpdateState(InputState& state);
 
         static void OnKeyEvent(GLFW::Window window, GLFW::Key glfwKey, i32 scancode, GLFW::InputAction action, GLFW::InputModifiers modifiers);
         static void OnMouseButtonEvent(GLFW::Window window, GLFW::MouseButton glfwMouseButton, GLFW::InputAction action, GLFW::InputModifiers modifiers);
+        static void OnMousePositionEvent(GLFW::Window window, f64 x, f64 y);
     };
 }
 
