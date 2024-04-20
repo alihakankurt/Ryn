@@ -14,35 +14,35 @@ namespace Ryn
     namespace Math
     {
         template <Number TNumber>
-        static constexpr inline TNumber Zero = As<TNumber>(0);
+        static inline constexpr TNumber Zero = As<TNumber>(0);
 
         template <Number TNumber>
-        static constexpr inline TNumber One = As<TNumber>(1);
+        static inline constexpr TNumber One = As<TNumber>(1);
 
         template <Number TNumber>
-        static constexpr inline TNumber Epsilon = As<TNumber>(0.00001);
+        static inline constexpr TNumber Epsilon = As<TNumber>(0.00001);
 
         template <Number TNumber>
-        static constexpr inline TNumber E = As<TNumber>(2.71828182845904523536);
+        static inline constexpr TNumber E = As<TNumber>(2.71828182845904523536);
 
         template <Number TNumber>
-        static constexpr inline TNumber Pi = As<TNumber>(3.14159265358979323846);
+        static inline constexpr TNumber Pi = As<TNumber>(3.14159265358979323846);
 
         template <Number TNumber>
-        static constexpr inline TNumber HalfPi = As<TNumber>(1.57079632679489661923);
+        static inline constexpr TNumber HalfPi = As<TNumber>(1.57079632679489661923);
 
         template <Number TNumber>
-        static constexpr inline TNumber Tau = As<TNumber>(6.28318530717958647692);
+        static inline constexpr TNumber Tau = As<TNumber>(6.28318530717958647692);
 
         template <Number TNumber>
-        static constexpr inline bool ApproximatelyEqual(TNumber value1, TNumber value2)
+        static inline constexpr bool ApproximatelyEqual(TNumber value1, TNumber value2)
         {
             TNumber difference = Subtract(value1, value2);
             return Abs(difference) < Epsilon<TNumber>;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Negate(TNumber value)
+        static inline constexpr TNumber Negate(TNumber value)
         {
             if constexpr (SignedNumber<TNumber>)
                 return -value;
@@ -51,67 +51,67 @@ namespace Ryn
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Add(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Add(TNumber value1, TNumber value2)
         {
             return value1 + value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Subtract(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Subtract(TNumber value1, TNumber value2)
         {
             return value1 - value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Multiply(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Multiply(TNumber value1, TNumber value2)
         {
             return value1 * value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Divide(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Divide(TNumber value1, TNumber value2)
         {
             return value1 / value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Modulo(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Modulo(TNumber value1, TNumber value2)
         {
             return value1 % value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Abs(TNumber value)
+        static inline constexpr TNumber Abs(TNumber value)
         {
             return (value < Zero<TNumber>) ? -value : value;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Min(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Min(TNumber value1, TNumber value2)
         {
             return (value1 < value2) ? value1 : value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Max(TNumber value1, TNumber value2)
+        static inline constexpr TNumber Max(TNumber value1, TNumber value2)
         {
             return (value1 > value2) ? value1 : value2;
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Clamp(TNumber value, TNumber min, TNumber max)
+        static inline constexpr TNumber Clamp(TNumber value, TNumber min, TNumber max)
         {
             return Min(Max(value, min), max);
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Lerp(TNumber source, TNumber target, TNumber time)
+        static inline constexpr TNumber Lerp(TNumber source, TNumber target, TNumber time)
         {
             return (source * (One<TNumber> - time)) + (target * time);
         }
 
         template <Number TNumber>
-        static constexpr inline TNumber Sqrt(TNumber value)
+        static inline constexpr TNumber Sqrt(TNumber value)
         {
             if constexpr (Is<TNumber, f64>)
                 return Internal::Sqrt(value);
