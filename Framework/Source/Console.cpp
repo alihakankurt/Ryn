@@ -3,6 +3,45 @@
 
 namespace Ryn
 {
+    static constexpr usize BufferSize = 64;
+    static char Buffer[BufferSize];
+
+    static constexpr usize WriteInteger(u64 value, usize index, isize padding = 0)
+    {
+        if (value == 0 && padding <= 1)
+        {
+            Buffer[index] = '0';
+            return index - 1;
+        }
+
+        while (value > 0)
+        {
+            Buffer[index] = '0' + As<char>(value % 10);
+            index -= 1;
+            value /= 10;
+            padding -= 1;
+        }
+    
+        while (padding > 0)
+        {
+            Buffer[index] = '0';
+            index -= 1;
+            padding -= 1;
+        }
+
+        return index;
+    }
+
+    static constexpr usize WriteSign(bool negative, usize index)
+    {
+        if (negative)
+        {
+            Buffer[index] = '-';
+            index -= 1;
+        }
+        return index;
+    }
+
     bool Console::Write(char value)
     {
         return Platform::Write(&value, 1);
@@ -35,25 +74,12 @@ namespace Ryn
 
     bool Console::Write(i64 value)
     {
-        static constexpr usize bufferSize = 32;
-        static char buffer[bufferSize];
-
+        usize index = BufferSize - 1;
         bool negative = value < 0;
-        usize index = bufferSize - 1;
-        while (value != 0)
-        {
-            buffer[index] = '0' + As<char>(value % 10);
-            index -= 1;
-            value /= 10;
-        }
-
-        if (negative)
-        {
-            buffer[index] = '-';
-            index -= 1;
-        }
-
-        return Platform::Write(buffer + index + 1, bufferSize - index - 1);
+        value = negative ? -value : value;
+        index = WriteInteger(As<u64>(value), index);
+        index = WriteSign(negative, index);
+        return Platform::Write(Buffer + index + 1, BufferSize - index - 1);
     }
 
     bool Console::Write(u8 value)
@@ -73,18 +99,9 @@ namespace Ryn
 
     bool Console::Write(u64 value)
     {
-        static constexpr usize bufferSize = 32;
-        static char buffer[bufferSize];
-
-        usize index = bufferSize - 1;
-        while (value != 0)
-        {
-            buffer[index] = '0' + As<char>(value % 10);
-            index -= 1;
-            value /= 10;
-        }
-
-        return Platform::Write(buffer + index + 1, bufferSize - index - 1);
+        usize index = BufferSize - 1;
+        index = WriteInteger(value, index);
+        return Platform::Write(Buffer + index + 1, BufferSize - index - 1);
     }
 
     bool Console::Write(f32 value)
@@ -94,38 +111,21 @@ namespace Ryn
 
     bool Console::Write(f64 value)
     {
-        static constexpr usize bufferSize = 64;
-        static char buffer[bufferSize];
-
+        usize index = BufferSize - 1;
         bool negative = value < 0;
-        usize index = bufferSize - 1;
 
         i64 integer = As<i64>(value);
-        f64 fraction = value - As<f64>(integer);
+        u64 fraction = As<u64>(((value - As<f64>(integer)) * 1e7 + 0.5) / 1e1);
 
-        while (fraction > 0.0)
-        {
-            fraction *= 10.0;
-            buffer[index] = '0' + As<char>(fraction);
-            index -= 1;
-            fraction -= As<f64>(As<u64>(fraction));
-        }
+        index = WriteInteger(fraction, index, 6);
 
-        buffer[index] = '.';
+        Buffer[index] = '.';
+        index -= 1;
 
-        while (integer != 0)
-        {
-            buffer[index] = '0' + (integer % 10);
-            index -= 1;
-            integer /= 10;
-        }
+        integer = negative ? -integer : integer;
+        index = WriteInteger(As<u64>(integer), index);
+        index = WriteSign(negative, index);
 
-        if (negative)
-        {
-            buffer[index] = '-';
-            index -= 1;
-        }
-
-        return Platform::Write(buffer + index + 1, bufferSize - index - 1);
+        return Platform::Write(Buffer + index + 1, BufferSize - index - 1);
     }
 }
