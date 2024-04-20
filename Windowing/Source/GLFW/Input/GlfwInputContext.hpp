@@ -11,8 +11,8 @@ namespace Ryn
     class GlfwInputContext : public InputContext
     {
       private:
-        InputState _keyStates[+Keys::Count] = { InputState::Up };
-        List<Keys> _keyUpdates;
+        InputState _keyStates[+Key::Count] = { InputState::Up };
+        List<Key> _keyUpdates;
 
       public:
         GlfwInputContext(GLFW::Window window);
@@ -20,10 +20,10 @@ namespace Ryn
 
         void Update();
 
-        bool IsKeyUp(Keys key) const override;
-        bool IsKeyDown(Keys key) const override;
-        bool IsKeyPressed(Keys key) const override;
-        bool IsKeyReleased(Keys key) const override;
+        bool IsKeyUp(Key key) const override;
+        bool IsKeyDown(Key key) const override;
+        bool IsKeyPressed(Key key) const override;
+        bool IsKeyReleased(Key key) const override;
 
       private:
         static void OnKeyEvent(GLFW::Window window, GLFW::Keys key, i32 scancode, GLFW::KeyAction action, GLFW::KeyModifiers modifiers);

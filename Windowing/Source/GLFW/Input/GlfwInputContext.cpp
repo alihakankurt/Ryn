@@ -10,7 +10,7 @@ namespace Ryn
 
     void GlfwInputContext::Update()
     {
-        for (Keys key : _keyUpdates)
+        for (Key key : _keyUpdates)
         {
             InputState& state = _keyStates[+key];
             if (state == InputState::Pressed)
@@ -22,25 +22,25 @@ namespace Ryn
         _keyUpdates.Clear();
     }
 
-    bool GlfwInputContext::IsKeyUp(Keys key) const
+    bool GlfwInputContext::IsKeyUp(Key key) const
     {
         InputState state = _keyStates[+key];
         return state == InputState::Up || state == InputState::Released;
     }
 
-    bool GlfwInputContext::IsKeyDown(Keys key) const
+    bool GlfwInputContext::IsKeyDown(Key key) const
     {
         InputState state = _keyStates[+key];
         return state == InputState::Down || state == InputState::Pressed;
     }
 
-    bool GlfwInputContext::IsKeyPressed(Keys key) const
+    bool GlfwInputContext::IsKeyPressed(Key key) const
     {
         InputState state = _keyStates[+key];
         return state == InputState::Pressed;
     }
 
-    bool GlfwInputContext::IsKeyReleased(Keys key) const
+    bool GlfwInputContext::IsKeyReleased(Key key) const
     {
         InputState state = _keyStates[+key];
         return state == InputState::Released;
@@ -52,8 +52,8 @@ namespace Ryn
         if (!input)
             return;
 
-        Keys key = As<Keys>(glfwKey);
-        if (key == Keys::Unknown)
+        Key key = As<Key>(glfwKey);
+        if (key == Key::Unknown)
             return;
 
         switch (action)

@@ -1,9 +1,9 @@
-#ifndef __RYN_WINDOWING_INPUT_KEYS_HPP__
-#define __RYN_WINDOWING_INPUT_KEYS_HPP__
+#ifndef __RYN_WINDOWING_INPUT_KEY_HPP__
+#define __RYN_WINDOWING_INPUT_KEY_HPP__
 
 namespace Ryn
 {
-    enum struct Keys
+    enum struct Key
     {
         Unknown = -1,
         Space = 32,
