@@ -18,6 +18,7 @@ namespace Ryn
         virtual ~Window() = default;
 
         virtual void Update() = 0;
+        virtual void Present() = 0;
         virtual bool IsActive() const = 0;
 
         static Window* Create(const WindowConfig& config);

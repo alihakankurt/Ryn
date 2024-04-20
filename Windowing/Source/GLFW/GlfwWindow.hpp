@@ -16,6 +16,7 @@ namespace Ryn
         ~GlfwWindow();
 
         void Update() override;
+        void Present() override;
         bool IsActive() const override;
     };
 }

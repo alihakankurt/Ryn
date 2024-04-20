@@ -21,8 +21,12 @@ namespace Ryn
 
     void GlfwWindow::Update()
     {
-        GLFW::SwapBuffers(_handle);
         GLFW::PollEvents();
+    }
+
+    void GlfwWindow::Present()
+    {
+        GLFW::SwapBuffers(_handle);
     }
 
     bool GlfwWindow::IsActive() const
