@@ -8,7 +8,7 @@ set(Sources
 )
 
 add_library(${PROJECT_NAME} SHARED ${Sources})
-target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core Ryn.Mathematics Ryn.Native PRIVATE CompileOptions)
+target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core Ryn.Mathematics Ryn.Collections PRIVATE Ryn.Native CompileOptions)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

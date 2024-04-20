@@ -4,6 +4,7 @@
 #include <Ryn/Native/GLFW.hpp>
 #include <Ryn/Windowing/Input/InputState.hpp>
 #include <Ryn/Windowing/Input/InputContext.hpp>
+#include <Ryn/Collections.hpp>
 
 namespace Ryn
 {
@@ -11,6 +12,7 @@ namespace Ryn
     {
       private:
         InputState _keyStates[+Keys::Count] = { InputState::Up };
+        List<Keys> _keyUpdates;
 
       public:
         GlfwInputContext(GLFW::Window window);

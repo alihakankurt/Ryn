@@ -10,48 +10,61 @@ namespace Ryn
 
     void GlfwInputContext::Update()
     {
-        for (auto& keyState : _keyStates)
+        for (Keys key : _keyUpdates)
         {
-            if (keyState == InputState::Pressed)
-                keyState = InputState::Down;
-            else if (keyState == InputState::Released)
-                keyState = InputState::Up;
+            InputState& state = _keyStates[+key];
+            if (state == InputState::Pressed)
+                state = InputState::Down;
+            else if (state == InputState::Released)
+                state = InputState::Up;
         }
+
+        _keyUpdates.Clear();
     }
 
     bool GlfwInputContext::IsKeyUp(Keys key) const
     {
-        return _keyStates[+key] == InputState::Up;
+        InputState state = _keyStates[+key];
+        return state == InputState::Up || state == InputState::Released;
     }
 
     bool GlfwInputContext::IsKeyDown(Keys key) const
     {
-        return _keyStates[+key] == InputState::Down;
+        InputState state = _keyStates[+key];
+        return state == InputState::Down || state == InputState::Pressed;
     }
 
     bool GlfwInputContext::IsKeyPressed(Keys key) const
     {
-        return _keyStates[+key] == InputState::Pressed;
+        InputState state = _keyStates[+key];
+        return state == InputState::Pressed;
     }
 
     bool GlfwInputContext::IsKeyReleased(Keys key) const
     {
-        return _keyStates[+key] == InputState::Released;
+        InputState state = _keyStates[+key];
+        return state == InputState::Released;
     }
 
-    void GlfwInputContext::OnKeyEvent(GLFW::Window window, GLFW::Keys key, i32 scancode, GLFW::KeyAction action, GLFW::KeyModifiers modifiers)
+    void GlfwInputContext::OnKeyEvent(GLFW::Window window, GLFW::Keys glfwKey, i32 scancode, GLFW::KeyAction action, GLFW::KeyModifiers modifiers)
     {
         GlfwInputContext* input = As<GlfwInputContext*>(GLFW::GetWindowUserPointer(window));
         if (!input)
+            return;
+
+        Keys key = As<Keys>(glfwKey);
+        if (key == Keys::Unknown)
             return;
 
         switch (action)
         {
             case GLFW::KeyAction::Release:
                 input->_keyStates[+key] = InputState::Released;
+                input->_keyUpdates.Add(key);
                 break;
             case GLFW::KeyAction::Press:
                 input->_keyStates[+key] = InputState::Pressed;
+                input->_keyUpdates.Add(key);
                 break;
             case GLFW::KeyAction::Repeat:
                 break;

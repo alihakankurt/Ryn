@@ -17,7 +17,7 @@ namespace Ryn
         usize _capacity;
 
       public:
-        List(usize capacity = 0)
+        inline constexpr List(usize capacity = 0)
         {
             _data = (capacity > 0) ? new TItem[capacity] : nullptr;
             _count = 0;
@@ -81,19 +81,48 @@ namespace Ryn
             return *this;
         }
 
-        TItem& operator[](usize index)
+        inline TItem& operator[](usize index)
         {
             return _data[index];
         }
 
-        const TItem& operator[](usize index) const
+        inline const TItem& operator[](usize index) const
         {
             return _data[index];
         }
 
-        usize Count() const
+        inline TItem* Begin()
+        {
+            return (_count > 0) ? _data : nullptr;
+        }
+
+        inline const TItem* Begin() const
+        {
+            return (_count > 0) ? _data : nullptr;
+        }
+
+        inline TItem* End()
+        {
+            return (_count > 0) ? _data + _count : nullptr;
+        }
+
+        inline const TItem* End() const
+        {
+            return (_count > 0) ? _data + _count : nullptr;
+        }
+
+        inline usize Count() const
         {
             return _count;
+        }
+
+        void Add(const TItem& item)
+        {
+            if (_count >= _capacity)
+                Resize(_capacity << 1);
+
+            _data[_count] = item;
+            _count += 1;
         }
 
         void Add(TItem&& item)
@@ -102,6 +131,19 @@ namespace Ryn
                 Resize(_capacity << 1);
 
             _data[_count] = item;
+            _count += 1;
+        }
+
+        void Insert(usize index, const TItem& item)
+        {
+            if (index > _count)
+                return;
+
+            if (_count >= _capacity)
+                Resize(_capacity << 1);
+
+            Memory::Shift(_data + index, _count - index, 1);
+            _data[index] = item;
             _count += 1;
         }
 
