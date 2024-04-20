@@ -12,15 +12,19 @@ namespace Ryn
 
         _handle = GLFW::CreateWindow(As<i32>(config.Width), As<i32>(config.Height), config.Title, nullptr, nullptr);
         GLFW::MakeContextCurrent(_handle);
+
+        _inputContext = new GlfwInputContext(_handle);
     }
 
     GlfwWindow::~GlfwWindow()
     {
+        delete _inputContext;
         GLFW::DestroyWindow(_handle);
     }
 
     void GlfwWindow::Update()
     {
+        _inputContext->Update();
         GLFW::PollEvents();
     }
 
@@ -32,5 +36,10 @@ namespace Ryn
     bool GlfwWindow::IsActive() const
     {
         return !GLFW::WindowShouldClose(_handle);
+    }
+
+    InputContext* GlfwWindow::GetInputContext()
+    {
+        return _inputContext;
     }
 }
