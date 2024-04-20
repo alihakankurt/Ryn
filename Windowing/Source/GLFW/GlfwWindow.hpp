@@ -18,6 +18,7 @@ namespace Ryn
         GlfwWindow(const WindowConfig& config);
         ~GlfwWindow();
 
+        void Close() override;
         void Update() override;
         void Present() override;
         bool IsActive() const override;

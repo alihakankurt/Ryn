@@ -24,6 +24,7 @@ namespace Ryn::GLFW
     PollEventsFunction PollEvents;
     SwapBuffersFunction SwapBuffers;
     WindowShouldCloseFunction WindowShouldClose;
+    SetWindowShouldCloseFunction SetWindowShouldClose;
 
     Platform::Module Handle;
 
@@ -46,6 +47,7 @@ namespace Ryn::GLFW
         PollEvents = Platform::LoadFunction<PollEventsFunction>(Handle, "glfwPollEvents");
         SwapBuffers = Platform::LoadFunction<SwapBuffersFunction>(Handle, "glfwSwapBuffers");
         WindowShouldClose = Platform::LoadFunction<WindowShouldCloseFunction>(Handle, "glfwWindowShouldClose");
+        SetWindowShouldClose = Platform::LoadFunction<SetWindowShouldCloseFunction>(Handle, "glfwSetWindowShouldClose");
 
         return true;
     }

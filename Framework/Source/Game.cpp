@@ -8,6 +8,7 @@ namespace Ryn
         Configure(windowConfig);
 
         Window = Window::Create(windowConfig);
+        Input = Window->GetInputContext();
         Renderer = Renderer::Create();
         Initialize();
 

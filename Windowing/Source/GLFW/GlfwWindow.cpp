@@ -1,5 +1,3 @@
-#include <Ryn/Native/GLFW.hpp>
-
 #include "GLFW/GlfwWindow.hpp"
 
 namespace Ryn
@@ -20,6 +18,11 @@ namespace Ryn
     {
         delete _inputContext;
         GLFW::DestroyWindow(_handle);
+    }
+
+    void GlfwWindow::Close()
+    {
+        GLFW::SetWindowShouldClose(_handle, true);
     }
 
     void GlfwWindow::Update()

@@ -11,6 +11,7 @@ namespace Ryn
     {
       protected:
         Window* Window;
+        InputContext* Input;
         Renderer* Renderer;
 
       public:

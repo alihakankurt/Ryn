@@ -18,6 +18,7 @@ namespace Ryn
       public:
         virtual ~Window() = default;
 
+        virtual void Close() = 0;
         virtual void Update() = 0;
         virtual void Present() = 0;
         virtual bool IsActive() const = 0;

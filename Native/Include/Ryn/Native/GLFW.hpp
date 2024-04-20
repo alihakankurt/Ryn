@@ -293,6 +293,9 @@ namespace Ryn::GLFW
     using WindowShouldCloseFunction = bool (*)(Window window);
     extern WindowShouldCloseFunction WindowShouldClose;
 
+    using SetWindowShouldCloseFunction = void (*)(Window window, bool value);
+    extern SetWindowShouldCloseFunction SetWindowShouldClose;
+
     bool Load();
     void Unload();
 }
