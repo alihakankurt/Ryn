@@ -7,9 +7,32 @@ namespace Ryn
 {
     class OpenGLRenderer : public Renderer
     {
+      private:
+        static constexpr isize VertexSize = sizeof(f32) * 6;
+        static constexpr isize VertexPerQuad = 4;
+        static constexpr isize IndexPerQuad = 6;
+        static constexpr isize QuadCount = 64;
+        static constexpr isize VertexCount = VertexPerQuad * QuadCount;
+        static constexpr isize IndexCount = IndexPerQuad * QuadCount;
+
+      private:
+        u32 _vao;
+        u32 _vbo;
+        u32 _ebo;
+        u32 _shader;
+        isize _vertexCount;
+
       public:
+        OpenGLRenderer();
+        virtual ~OpenGLRenderer() override;
+
         virtual void Clear() override;
         virtual void SetClearColor(const Color& color) override;
+
+        virtual void BeginFrame() override;
+        virtual void EndFrame() override;
+
+        virtual void DrawQuad(const Vector2<f32>& position, const Vector2<f32>& size, const Color& color) override;
     };
 }
 

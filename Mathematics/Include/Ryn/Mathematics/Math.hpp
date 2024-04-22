@@ -34,12 +34,6 @@ namespace Ryn
         template <Number TNumber>
         static inline constexpr TNumber Tau = As<TNumber>(6.28318530717958647692);
 
-        template <Number TNumber>
-        static inline constexpr bool ApproximatelyEqual(TNumber value1, TNumber value2)
-        {
-            TNumber difference = Subtract(value1, value2);
-            return Abs(difference) < Epsilon<TNumber>;
-        }
 
         template <Number TNumber>
         static inline constexpr TNumber Negate(TNumber value)
@@ -102,6 +96,13 @@ namespace Ryn
         static inline constexpr TNumber Clamp(TNumber value, TNumber min, TNumber max)
         {
             return Min(Max(value, min), max);
+        }
+
+        template <Number TNumber>
+        static inline constexpr bool ApproximatelyEqual(TNumber value1, TNumber value2)
+        {
+            TNumber difference = Subtract(value1, value2);
+            return Abs(difference) < Epsilon<TNumber>;
         }
 
         template <Number TNumber>

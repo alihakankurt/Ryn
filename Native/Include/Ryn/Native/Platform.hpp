@@ -22,6 +22,8 @@ namespace Ryn::Platform
     u64 GetTime();
 
     bool Write(cstring value, usize length);
+
+    usize ReadFile(cstring path, char*& buffer);
 }
 
 #endif

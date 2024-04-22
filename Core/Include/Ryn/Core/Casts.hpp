@@ -9,7 +9,10 @@ namespace Ryn
     static inline constexpr TOther As(const TSelf& value)
     {
         static_assert(!Is<TSelf, TOther>, "Cannot cast between the same types");
-        return static_cast<TOther>(value);
+        if constexpr (Pointer<TSelf> != Pointer<TOther>)
+            return reinterpret_cast<TOther>(value);
+        else
+            return static_cast<TOther>(value);
     }
 
     template <Pointer TOther, Pointer TSelf>
