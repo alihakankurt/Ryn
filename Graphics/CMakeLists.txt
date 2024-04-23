@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(Ryn.Graphics VERSION 0.1.0 LANGUAGES CXX)
+project(Ryn.Graphics VERSION 0.2.0 LANGUAGES CXX)
 
 set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Renderer.cpp
@@ -7,8 +7,8 @@ set(Sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/OpenGL/OpenGLRenderer.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED ${Sources})
-target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core Ryn.Mathematics Ryn.Collections PRIVATE Ryn.Native CompileOptions)
+add_library(${PROJECT_NAME} STATIC ${Sources})
+target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core Ryn.Mathematics Ryn.Collections Ryn.IO PRIVATE Ryn.Native CompileOptions)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

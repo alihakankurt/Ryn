@@ -23,31 +23,31 @@ namespace Ryn
     }
 
     template <typename TSelf>
-    static inline constexpr TSelf&& Move(TSelf&& value) noexcept
+    static inline constexpr RemoveReference<TSelf>&& Move(TSelf&& value)
     {
-        return As<RemoveReference<TSelf>&&>(value);
+        return static_cast<RemoveReference<TSelf>&&>(value);
     }
 
     template <typename TSelf>
-    static inline constexpr TSelf&& Forward(RemoveReference<TSelf>& value) noexcept
+    static inline constexpr TSelf&& Forward(RemoveReference<TSelf>& value)
     {
-        return As<TSelf&&>(value);
+        return static_cast<TSelf&&>(value);
     }
 
     template <typename TSelf>
-    static inline constexpr TSelf&& Forward(RemoveReference<TSelf>&& value) noexcept
+    static inline constexpr TSelf&& Forward(RemoveReference<TSelf>&& value)
     {
-        return As<TSelf&&>(value);
+        return static_cast<TSelf&&>(value);
     }
 
     template <Enum TEnum>
-    static inline constexpr UnderlyingType<TEnum> operator+(TEnum self) noexcept
+    static inline constexpr UnderlyingType<TEnum> operator+(TEnum self)
     {
         return As<UnderlyingType<TEnum>>(self);
     }
 
     template <Enum TEnum>
-    static inline constexpr TEnum operator|(TEnum self, TEnum other) noexcept
+    static inline constexpr TEnum operator|(TEnum self, TEnum other)
     {
         return As<TEnum>(+self | +other);
     }

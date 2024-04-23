@@ -4,41 +4,45 @@
 
 namespace Ryn
 {
-    string::string()
+    String::String(const char* str)
     {
-        _length = 0;
-        _data = nullptr;
-    }
+        _length = String::Length(str);
+        _data = new char[_length + 1];
 
-    string::string(cstring str)
-    {
-        _length = string::Length(str);
-
-        _data = new char[_length];
         Memory::Copy(_data, str, _length);
+        _data[_length] = '\0';
     }
 
-    string::string(const string& other)
+    String::String(char* str, usize length)
+    {
+        _length = length;
+        _data = str;
+    }
+
+    String::String(const String& other)
     {
         _length = other._length;
-        _data = new char[_length];
+        _data = new char[_length + 1];
+
         Memory::Copy(_data, other._data, _length);
+        _data[_length] = '\0';
     }
 
-    string::string(string&& other) noexcept
+    String::String(String&& other)
     {
         _length = other._length;
         _data = other._data;
+
         other._length = 0;
         other._data = nullptr;
     }
 
-    string::~string()
+    String::~String()
     {
         delete[] _data;
     }
 
-    string& string::operator=(const string& other)
+    String& String::operator=(const String& other)
     {
         if (this == &other)
             return *this;
@@ -46,13 +50,15 @@ namespace Ryn
         delete[] _data;
 
         _length = other._length;
-        _data = new char[_length];
+        _data = new char[_length + 1];
+
         Memory::Copy(_data, other._data, _length);
+        _data[_length] = '\0';
 
         return *this;
     }
 
-    string& string::operator=(string&& other) noexcept
+    String& String::operator=(String&& other)
     {
         if (this == &other)
             return *this;
@@ -61,96 +67,150 @@ namespace Ryn
 
         _length = other._length;
         _data = other._data;
+
         other._length = 0;
         other._data = nullptr;
 
         return *this;
     }
 
-    bool string::operator==(const string& other) const
+    char String::operator[](usize index) const
     {
-        if (_length != other._length)
-            return false;
-
-        usize length = _length;
-        usize* selfData = As<usize*>(_data);
-        usize* otherData = As<usize*>(other._data);
-
-        while (length >= sizeof(usize))
-        {
-            if (*selfData != *otherData)
-                return false;
-
-            selfData += 1;
-            otherData += 1;
-            length -= sizeof(usize);
-        }
-
-        char* selfCharData = As<char*>(selfData);
-        char* otherCharData = As<char*>(otherData);
-
-        while (length > 0)
-        {
-            if (*selfCharData != *otherCharData)
-                return false;
-
-            selfCharData += 1;
-            otherCharData += 1;
-            length -= 1;
-        }
-
-        return true;
+        return (0 <= index && index < _length) ? _data[index] : '\0';
     }
 
-    bool string::operator!=(const string& other) const
-    {
-        return !(*this == other);
-    }
-
-    char string::operator[](usize index) const
-    {
-        return _data[index];
-    }
-
-    string string::operator+(const string& other) const
-    {
-        string result = *this;
-        result += other;
-        return result;
-    }
-
-    string& string::operator+=(const string& other)
-    {
-        usize newLength = _length + other._length;
-        char* newData = new char[newLength];
-
-        Memory::Copy(newData, _data, _length);
-        Memory::Copy(newData + _length, other._data, other._length);
-
-        delete[] _data;
-
-        _length = newLength;
-        _data = newData;
-
-        return *this;
-    }
-
-    usize string::Length() const
+    usize String::Length() const
     {
         return _length;
     }
 
-    cstring string::Data() const
+    const char* String::Data() const
     {
         return _data;
     }
 
-    usize string::Length(cstring str)
+    const char* String::Begin() const
+    {
+        return _data;
+    }
+
+    const char* String::End() const
+    {
+        return _data + _length;
+    }
+
+    bool String::operator==(const char* other) const
+    {
+        usize length = String::Length(other);
+        return _length == length == String::Compare(_data, other, length);
+    }
+
+    bool String::operator==(const String& other) const
+    {
+        return _length == other._length == String::Compare(_data, other._data, other._length);
+    }
+
+    bool String::operator!=(const char* other) const
+    {
+        return !(*this == other);
+    }
+
+    bool String::operator!=(const String& other) const
+    {
+        return !(*this == other);
+    }
+
+    String String::operator+(const char c) const
+    {
+        String result = *this;
+        result += c;
+        return result;
+    }
+
+    String String::operator+(const char* other) const
+    {
+        String result = *this;
+        result += other;
+        return result;
+    }
+
+    String String::operator+(const String& other) const
+    {
+        String result = *this;
+        result += other;
+        return result;
+    }
+
+    String& String::operator+=(const char c)
+    {
+        _length = String::Extend(_data, _length, &c, 1);
+        return *this;
+    }
+
+    String& String::operator+=(const char* other)
+    {
+        _length = String::Extend(_data, _length, other, String::Length(other));
+        return *this;
+    }
+
+    String& String::operator+=(const String& other)
+    {
+        _length = String::Extend(_data, _length, other._data, other._length);
+        return *this;
+    }
+
+    usize String::Length(const char* str)
     {
         usize length = 0;
         while (str[length] != '\0')
             length++;
 
         return length;
+    }
+
+    bool String::Compare(const char* str1, const char* str2, usize length)
+    {
+        auto data1 = As<const usize*>(str1);
+        auto data2 = As<const usize*>(str2);
+
+        while (length >= sizeof(usize))
+        {
+            if (*data1 != *data2)
+                return false;
+
+            data1 += 1;
+            data2 += 1;
+            length -= sizeof(usize);
+        }
+
+        auto charData1 = As<const char*>(data1);
+        auto charData2 = As<const char*>(data2);
+
+        while (length > 0)
+        {
+            if (*charData1 != *charData2)
+                return false;
+
+            charData1 += 1;
+            charData2 += 1;
+            length -= 1;
+        }
+
+        return true;
+    }
+
+    usize String::Extend(char*& self, usize length, const char* other, usize otherLength)
+    {
+        usize totalLength = length + otherLength;
+        auto data = new char[totalLength + 1];
+
+        Memory::Copy(data, self, length);
+        Memory::Copy(data + length, other, otherLength);
+        data[totalLength] = '\0';
+
+        delete[] self;
+        self = data;
+
+        return totalLength;
     }
 }

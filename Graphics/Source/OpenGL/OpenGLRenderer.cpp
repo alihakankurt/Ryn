@@ -1,9 +1,7 @@
 #include <Ryn/Native/OpenGL.hpp>
-#include <Ryn/Native/Platform.hpp>
+#include <Ryn/IO/File.hpp>
 
 #include "OpenGL/OpenGLRenderer.hpp"
-
-#include <iostream>
 
 namespace Ryn
 {
@@ -18,7 +16,7 @@ namespace Ryn
         OpenGL::BufferData(OpenGL::BufferTarget::Array, VertexSize * VertexCount, nullptr, OpenGL::BufferUsage::DynamicDraw);
 
         u32 indices[IndexCount];
-        for (isize i = 0, j = 0; i < IndexCount; i += IndexPerQuad, j += VertexPerQuad)
+        for (u32 i = 0, j = 0; i < IndexCount; i += IndexPerQuad, j += VertexPerQuad)
         {
             indices[i + 0] = j + 0;
             indices[i + 1] = j + 1;
@@ -36,16 +34,18 @@ namespace Ryn
         OpenGL::EnableVertexAttribArray(1);
         OpenGL::VertexAttribPointer(1, 4, OpenGL::DataType::Float, false, VertexSize, As<void*>(sizeof(f32) * 2));
 
-        char *vertexShaderSource = nullptr, *fragmentShaderSource = nullptr;
-        Platform::ReadFile("./Lib/Shaders/Color.vert", vertexShaderSource);
-        Platform::ReadFile("./Lib/Shaders/Color.frag", fragmentShaderSource);
+        string vertexShaderSource = File::Read("./Shaders/Color.vert");
+        string fragmentShaderSource = File::Read("./Shaders/Color.frag");
+
+        char* vertexShaderData = const_cast<char*>(vertexShaderSource.Data());
+        char* fragmentShaderData = const_cast<char*>(fragmentShaderSource.Data());
 
         u32 vertexShader = OpenGL::CreateShader(OpenGL::ShaderType::Vertex);
-        OpenGL::ShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+        OpenGL::ShaderSource(vertexShader, 1, &vertexShaderData, nullptr);
         OpenGL::CompileShader(vertexShader);
 
         u32 fragmentShader = OpenGL::CreateShader(OpenGL::ShaderType::Fragment);
-        OpenGL::ShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+        OpenGL::ShaderSource(fragmentShader, 1, &fragmentShaderData, nullptr);
         OpenGL::CompileShader(fragmentShader);
 
         _shader = OpenGL::CreateProgram();
@@ -55,9 +55,6 @@ namespace Ryn
 
         OpenGL::DeleteShader(vertexShader);
         OpenGL::DeleteShader(fragmentShader);
-
-        delete[] vertexShaderSource;
-        delete[] fragmentShaderSource;
     }
 
     OpenGLRenderer::~OpenGLRenderer()

@@ -6,13 +6,13 @@
 namespace Ryn::Memory
 {
     template <typename TItem>
-    static inline constexpr void Clear(TItem* destination, usize count) noexcept
+    static inline constexpr void Clear(TItem* destination, usize count)
     {
         Set(destination, TItem{}, count);
     }
 
     template <typename TItem>
-    static inline constexpr void Set(TItem* destination, const TItem& value, usize count) noexcept
+    static inline constexpr void Set(TItem* destination, const TItem& value, usize count)
     {
         for (usize index = 0; index < count; index += 1)
         {
@@ -21,7 +21,7 @@ namespace Ryn::Memory
     }
 
     template <typename TItem>
-    static inline constexpr void Copy(TItem* destination, const TItem* source, usize count) noexcept
+    static inline constexpr void Copy(TItem* destination, const TItem* source, usize count)
     {
         for (usize index = 0; index < count; index += 1)
         {
@@ -30,7 +30,7 @@ namespace Ryn::Memory
     }
 
     template <typename TItem>
-    static inline constexpr void Shift(TItem* source, usize count, isize offset) noexcept
+    static inline constexpr void Shift(TItem* source, usize count, isize offset)
     {
         source = (offset < 0) ? source : source + count - 1;
         isize direction = (offset < 0) ? 1 : -1;

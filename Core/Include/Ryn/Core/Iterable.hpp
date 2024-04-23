@@ -1,7 +1,7 @@
-#ifndef __RYN_COLLECTIONS_ITERABLE_HPP__
-#define __RYN_COLLECTIONS_ITERABLE_HPP__
+#ifndef __RYN_CORE_ITERABLE_HPP__
+#define __RYN_CORE_ITERABLE_HPP__
 
-#include <Ryn/Core.hpp>
+#include <Ryn/Core/Concepts.hpp>
 
 namespace Ryn
 {
@@ -13,13 +13,13 @@ namespace Ryn
     };
 
     template <Iterable TSelf>
-    static inline constexpr auto begin(TSelf self)
+    static inline constexpr decltype(auto) begin(const TSelf& self)
     {
         return self.Begin();
     }
 
     template <Iterable TSelf>
-    static inline constexpr auto end(TSelf self)
+    static inline constexpr decltype(auto) end(const TSelf& self)
     {
         return self.End();
     }

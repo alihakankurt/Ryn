@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
-project(Ryn.Framework VERSION 0.1.0 LANGUAGES CXX)
+project(Ryn.Framework VERSION 0.2.0 LANGUAGES CXX)
 
 set(Sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Console.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Game.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Ryn.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/EntryPoint.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED ${Sources})
-target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core Ryn.Mathematics Ryn.Collections Ryn.Graphics Ryn.Windowing PRIVATE Ryn.Native CompileOptions)
+add_library(${PROJECT_NAME} STATIC ${Sources})
+target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core Ryn.Mathematics Ryn.Collections Ryn.IO Ryn.Graphics Ryn.Windowing PRIVATE Ryn.Native CompileOptions)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

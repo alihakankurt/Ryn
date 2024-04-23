@@ -10,7 +10,7 @@ namespace Ryn
     {
         usize Width;
         usize Height;
-        cstring Title;
+        String Title;
     };
 
     class Window

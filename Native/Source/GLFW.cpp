@@ -1,5 +1,4 @@
 #include <Ryn/Native/GLFW.hpp>
-#include <Ryn/Native/Platform.hpp>
 
 #if RYN_PLATFORM_WINDOWS
 #define GLFW_PATH "glfw3.dll"
@@ -9,36 +8,39 @@
 #define GLFW_PATH "libglfw.3.dylib"
 #endif
 
-namespace Ryn::GLFW
+namespace Ryn
 {
-    InitializeFunction Initialize;
-    TerminateFunction Terminate;
-    SetErrorCallbackFunction SetErrorCallback;
+    GLFW::InitializeFunction GLFW::Initialize;
+    GLFW::TerminateFunction GLFW::Terminate;
+    GLFW::SetErrorCallbackFunction GLFW::SetErrorCallback;
 
-    WindowHintFunction WindowHint;
-    CreateWindowFunction CreateWindow;
-    DestroyWindowFunction DestroyWindow;
+    GLFW::WindowHintFunction GLFW::WindowHint;
+    GLFW::CreateWindowFunction GLFW::CreateWindow;
+    GLFW::DestroyWindowFunction GLFW::DestroyWindow;
 
-    SetWindowUserPointerFunction SetWindowUserPointer;
-    GetWindowUserPointerFunction GetWindowUserPointer;
+    GLFW::SetWindowUserPointerFunction GLFW::SetWindowUserPointer;
+    GLFW::GetWindowUserPointerFunction GLFW::GetWindowUserPointer;
 
-    MakeContextCurrentFunction MakeContextCurrent;
+    GLFW::MakeContextCurrentFunction GLFW::MakeContextCurrent;
 
-    WindowShouldCloseFunction WindowShouldClose;
-    SetWindowShouldCloseFunction SetWindowShouldClose;
+    GLFW::WindowShouldCloseFunction GLFW::WindowShouldClose;
+    GLFW::SetWindowShouldCloseFunction GLFW::SetWindowShouldClose;
 
-    PollEventsFunction PollEvents;
-    SwapBuffersFunction SwapBuffers;
+    GLFW::PollEventsFunction GLFW::PollEvents;
+    GLFW::SwapBuffersFunction GLFW::SwapBuffers;
 
-    SetKeyCallbackFunction SetKeyCallback;
-    SetMouseButtonCallbackFunction SetMouseButtonCallback;
-    SetMousePositionCallbackFunction SetMousePositionCallback;
-    GetMousePositionFunction GetMousePosition;
+    GLFW::SetKeyCallbackFunction GLFW::SetKeyCallback;
+    GLFW::SetMouseButtonCallbackFunction GLFW::SetMouseButtonCallback;
+    GLFW::SetMousePositionCallbackFunction GLFW::SetMousePositionCallback;
+    GLFW::GetMousePositionFunction GLFW::GetMousePosition;
 
-    Platform::Module Handle;
+    Platform::Module GLFW::Handle;
 
-    bool Load()
+    bool GLFW::Load()
     {
+        if (Handle)
+            return true;
+
         Handle = Platform::LoadModule(GLFW_PATH);
         if (!Handle)
             return false;
@@ -67,11 +69,10 @@ namespace Ryn::GLFW
         SetMousePositionCallback = Platform::LoadFunction<SetMousePositionCallbackFunction>(Handle, "glfwSetCursorPosCallback");
         GetMousePosition = Platform::LoadFunction<GetMousePositionFunction>(Handle, "glfwGetCursorPos");
 
-
         return true;
     }
 
-    void Unload()
+    void GLFW::Unload()
     {
         if (!Handle)
             return;

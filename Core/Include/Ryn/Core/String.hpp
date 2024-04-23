@@ -5,35 +5,51 @@
 
 namespace Ryn
 {
-    class string
+    class String
     {
       private:
         usize _length;
         char* _data;
 
       public:
-        string();
-        string(cstring str);
-        string(const string& other);
-        string(string&& other) noexcept;
-        ~string();
+        inline constexpr String() = default;
+        String(const char* str);
+        String(char* str, usize length);
+        String(const String& other);
+        String(String&& other);
+        ~String();
 
-        string& operator=(const string& other);
-        string& operator=(string&& other) noexcept;
-
-        bool operator==(const string& other) const;
-        bool operator!=(const string& other) const;
+        String& operator=(const String& other);
+        String& operator=(String&& other);
 
         char operator[](usize index) const;
-
-        string operator+(const string& other) const;
-        string& operator+=(const string& other);
-
         usize Length() const;
-        cstring Data() const;
+        const char* Data() const;
 
-        static usize Length(cstring str);
+        const char* Begin() const;
+        const char* End() const;
+
+        bool operator==(const char* other) const;
+        bool operator==(const String& other) const;
+
+        bool operator!=(const char* other) const;
+        bool operator!=(const String& other) const;
+
+        String operator+(const char c) const;
+        String operator+(const char* str) const;
+        String operator+(const String& other) const;
+
+        String& operator+=(const char c);
+        String& operator+=(const char* str);
+        String& operator+=(const String& other);
+
+      public:
+        static usize Length(const char* str);
+        static bool Compare(const char* str1, const char* str2, usize length);
+        static usize Extend(char*& self, usize length, const char* other, usize otherLength);
     };
+
+    using string = String;
 }
 
 #endif

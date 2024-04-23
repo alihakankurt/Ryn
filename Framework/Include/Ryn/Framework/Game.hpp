@@ -1,5 +1,5 @@
-#ifndef RYN_FRAMEWORK_GAME
-#define RYN_FRAMEWORK_GAME
+#ifndef __RYN_FRAMEWORK_GAME_HPP__
+#define __RYN_FRAMEWORK_GAME_HPP__
 
 #include <Ryn/Core.hpp>
 #include <Ryn/Windowing/Window.hpp>
@@ -26,6 +26,9 @@ namespace Ryn
         virtual void Update() = 0;
         virtual void Render() = 0;
         virtual void Finalize() = 0;
+
+      public:
+        static Game* Create();
     };
 }
 

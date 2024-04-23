@@ -41,6 +41,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"
         -Werror=missing-field-initializers # Error on missing field initializers
         -Werror=pessimizing-move # Error on pessimizing move operations
 
+        -nostdlib # Do not search the standard system libraries
+        -nostdinc++ # Do not search the standard C++ include directories
+        -nostdlib++ # Do not search the standard C++ library directories
+        -fno-exceptions # Disable exceptions
+        -fno-rtti # Disable RTTI
+
         ## Optimization
         $<$<CONFIG:Debug>:-O0 -g3 -ggdb3>
         $<$<CONFIG:Release>:-O3 -march=native>
@@ -57,6 +63,11 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         /W4 # Enable all warnings
         /wd4201 # Disable warnings for nonstandard extension used: nameless struct/union
         /utf-8 # Set source and execution character set to UTF-8
+
+        /NODEFAULTLIB # Do not use the default libraries
+        /X # Ignore standard include paths
+        /EHs-c- # Disable C++ exceptions
+        /GR- # Disable RTTI
 
         ## Optimization
         $<$<CONFIG:Debug>:/Od>

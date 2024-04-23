@@ -1,60 +1,23 @@
-#include <Ryn/Framework/Console.hpp>
+#include <Ryn/IO/Console.hpp>
 #include <Ryn/Native/Platform.hpp>
 
 namespace Ryn
 {
-    static constexpr usize BufferSize = 64;
-    static char Buffer[BufferSize];
-
-    static constexpr usize WriteInteger(u64 value, usize index, isize padding = 0)
-    {
-        if (value == 0 && padding <= 1)
-        {
-            Buffer[index] = '0';
-            return index - 1;
-        }
-
-        while (value > 0)
-        {
-            Buffer[index] = '0' + As<char>(value % 10);
-            index -= 1;
-            value /= 10;
-            padding -= 1;
-        }
-    
-        while (padding > 0)
-        {
-            Buffer[index] = '0';
-            index -= 1;
-            padding -= 1;
-        }
-
-        return index;
-    }
-
-    static constexpr usize WriteSign(bool negative, usize index)
-    {
-        if (negative)
-        {
-            Buffer[index] = '-';
-            index -= 1;
-        }
-        return index;
-    }
+    char Console::Buffer[BufferSize];
 
     bool Console::Write(char value)
     {
-        return Platform::Write(&value, 1);
+        return Platform::WriteConsole(&value, 1);
     }
 
-    bool Console::Write(cstring value)
+    bool Console::Write(const char* value)
     {
-        return Platform::Write(value, string::Length(value));
+        return Platform::WriteConsole(value, String::Length(value));
     }
 
-    bool Console::Write(const string& value)
+    bool Console::Write(const String& value)
     {
-        return Platform::Write(value.Data(), value.Length());
+        return Platform::WriteConsole(value.Data(), value.Length());
     }
 
     bool Console::Write(i8 value)
@@ -79,7 +42,7 @@ namespace Ryn
         value = negative ? -value : value;
         index = WriteInteger(As<u64>(value), index);
         index = WriteSign(negative, index);
-        return Platform::Write(Buffer + index + 1, BufferSize - index - 1);
+        return Platform::WriteConsole(Buffer + index + 1, BufferSize - index - 1);
     }
 
     bool Console::Write(u8 value)
@@ -101,7 +64,7 @@ namespace Ryn
     {
         usize index = BufferSize - 1;
         index = WriteInteger(value, index);
-        return Platform::Write(Buffer + index + 1, BufferSize - index - 1);
+        return Platform::WriteConsole(Buffer + index + 1, BufferSize - index - 1);
     }
 
     bool Console::Write(f32 value)
@@ -126,6 +89,42 @@ namespace Ryn
         index = WriteInteger(As<u64>(integer), index);
         index = WriteSign(negative, index);
 
-        return Platform::Write(Buffer + index + 1, BufferSize - index - 1);
+        return Platform::WriteConsole(Buffer + index + 1, BufferSize - index - 1);
+    }
+
+    usize Console::WriteInteger(u64 value, usize index, isize padding)
+    {
+        if (value == 0 && padding <= 1)
+        {
+            Buffer[index] = '0';
+            return index - 1;
+        }
+
+        while (value > 0)
+        {
+            Buffer[index] = '0' + As<char>(value % 10);
+            index -= 1;
+            value /= 10;
+            padding -= 1;
+        }
+
+        while (padding > 0)
+        {
+            Buffer[index] = '0';
+            index -= 1;
+            padding -= 1;
+        }
+
+        return index;
+    }
+
+    usize Console::WriteSign(bool negative, usize index)
+    {
+        if (negative)
+        {
+            Buffer[index] = '-';
+            index -= 1;
+        }
+        return index;
     }
 }

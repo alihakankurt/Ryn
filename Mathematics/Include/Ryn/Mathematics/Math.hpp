@@ -5,8 +5,8 @@
 
 namespace Ryn::Math::Internal
 {
-    f32 Sqrt(f32 value) noexcept;
-    f64 Sqrt(f64 value) noexcept;
+    f32 Sqrt(f32 value);
+    f64 Sqrt(f64 value);
 }
 
 namespace Ryn

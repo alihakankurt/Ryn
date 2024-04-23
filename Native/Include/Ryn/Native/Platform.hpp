@@ -3,27 +3,36 @@
 
 #include <Ryn/Core.hpp>
 
-namespace Ryn::Platform
+namespace Ryn
 {
-    using Module = void*;
-
-    Module LoadModule(cstring path);
-
-    void FreeModule(Module handle);
-
-    void* LoadFunction(Module handle, cstring name);
-
-    template <typename TFunction>
-    inline TFunction LoadFunction(Module handle, cstring name)
+    class Platform
     {
-        return As<TFunction>(LoadFunction(handle, name));
-    }
+      public:
+        using Module = void*;
 
-    u64 GetTime();
+      public:
+        static Module LoadModule(const char* path);
 
-    bool Write(cstring value, usize length);
+        static void FreeModule(Module handle);
 
-    usize ReadFile(cstring path, char*& buffer);
+        template <typename TFunction>
+        static inline constexpr TFunction LoadFunction(Module handle, const char* name)
+        {
+            return As<TFunction>(LoadFunction(handle, name));
+        }
+
+      private:
+        static void* LoadFunction(Module handle, const char* name);
+
+      public:
+        static u64 GetTime();
+
+      public:
+        static bool WriteConsole(const char* value, usize length);
+
+        static usize ReadFile(const char* path, char*& out);
+        static bool WriteFile(const char* path, const char* in, usize length);
+    };
 }
 
 #endif

@@ -1,5 +1,4 @@
 #include <Ryn/Native/OpenGL.hpp>
-#include <Ryn/Native/Platform.hpp>
 
 #if RYN_PLATFORM_WINDOWS
 #define OPENGL_PATH "opengl32.dll"
@@ -9,41 +8,44 @@
 #define OPENGL_PATH "/System/Library/Frameworks/OpenGL.framework/OpenGL"
 #endif
 
-namespace Ryn::OpenGL
+namespace Ryn
 {
-    ClearFunction Clear;
-    ClearColorFunction ClearColor;
+    OpenGL::ClearFunction OpenGL::Clear;
+    OpenGL::ClearColorFunction OpenGL::ClearColor;
 
-    CreateVertexArrayFunction CreateVertexArray;
-    DeleteVertexArrayFunction DeleteVertexArray;
-    BindVertexArrayFunction BindVertexArray;
+    OpenGL::CreateVertexArrayFunction OpenGL::CreateVertexArray;
+    OpenGL::DeleteVertexArrayFunction OpenGL::DeleteVertexArray;
+    OpenGL::BindVertexArrayFunction OpenGL::BindVertexArray;
 
-    CreateBufferFunction CreateBuffer;
-    DeleteBufferFunction DeleteBuffer;
-    BindBufferFunction BindBuffer;
-    BufferDataFunction BufferData;
-    BufferSubDataFunction BufferSubData;
+    OpenGL::CreateBufferFunction OpenGL::CreateBuffer;
+    OpenGL::DeleteBufferFunction OpenGL::DeleteBuffer;
+    OpenGL::BindBufferFunction OpenGL::BindBuffer;
+    OpenGL::BufferDataFunction OpenGL::BufferData;
+    OpenGL::BufferSubDataFunction OpenGL::BufferSubData;
 
-    EnableVertexAttribArrayFunction EnableVertexAttribArray;
-    VertexAttribPointerFunction VertexAttribPointer;
+    OpenGL::EnableVertexAttribArrayFunction OpenGL::EnableVertexAttribArray;
+    OpenGL::VertexAttribPointerFunction OpenGL::VertexAttribPointer;
 
-    CreateProgramFunction CreateProgram;
-    DeleteProgramFunction DeleteProgram;
-    LinkProgramFunction LinkProgram;
-    UseProgramFunction UseProgram;
+    OpenGL::CreateProgramFunction OpenGL::CreateProgram;
+    OpenGL::DeleteProgramFunction OpenGL::DeleteProgram;
+    OpenGL::LinkProgramFunction OpenGL::LinkProgram;
+    OpenGL::UseProgramFunction OpenGL::UseProgram;
 
-    CreateShaderFunction CreateShader;
-    DeleteShaderFunction DeleteShader;
-    AttachShaderFunction AttachShader;
-    CompileShaderFunction CompileShader;
-    ShaderSourceFunction ShaderSource;
+    OpenGL::CreateShaderFunction OpenGL::CreateShader;
+    OpenGL::DeleteShaderFunction OpenGL::DeleteShader;
+    OpenGL::AttachShaderFunction OpenGL::AttachShader;
+    OpenGL::CompileShaderFunction OpenGL::CompileShader;
+    OpenGL::ShaderSourceFunction OpenGL::ShaderSource;
 
-    DrawElementsFunction DrawElements;
+    OpenGL::DrawElementsFunction OpenGL::DrawElements;
 
-    Platform::Module Handle;
+    Platform::Module OpenGL::Handle;
 
-    bool Load()
+    bool OpenGL::Load()
     {
+        if (Handle)
+            return true;
+
         Handle = Platform::LoadModule(OPENGL_PATH);
         if (!Handle)
             return false;
@@ -54,7 +56,7 @@ namespace Ryn::OpenGL
         CreateVertexArray = Platform::LoadFunction<CreateVertexArrayFunction>(Handle, "glGenVertexArrays");
         DeleteVertexArray = Platform::LoadFunction<DeleteVertexArrayFunction>(Handle, "glDeleteVertexArrays");
         BindVertexArray = Platform::LoadFunction<BindVertexArrayFunction>(Handle, "glBindVertexArray");
-        
+
         CreateBuffer = Platform::LoadFunction<CreateBufferFunction>(Handle, "glGenBuffers");
         DeleteBuffer = Platform::LoadFunction<DeleteBufferFunction>(Handle, "glDeleteBuffers");
         BindBuffer = Platform::LoadFunction<BindBufferFunction>(Handle, "glBindBuffer");
@@ -80,7 +82,7 @@ namespace Ryn::OpenGL
         return true;
     }
 
-    void Unload()
+    void OpenGL::Unload()
     {
         if (!Handle)
             return;

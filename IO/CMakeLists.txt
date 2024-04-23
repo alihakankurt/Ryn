@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
-project(Ryn.Core VERSION 0.2.0 LANGUAGES CXX)
+project(Ryn.IO VERSION 0.2.0 LANGUAGES CXX)
 
 set(Sources
-    Source/String.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/File.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Console.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${Sources})
-
-target_link_libraries(${PROJECT_NAME} PRIVATE CompileOptions)
+target_link_libraries(${PROJECT_NAME} PUBLIC Ryn.Core PRIVATE Ryn.Native CompileOptions)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
