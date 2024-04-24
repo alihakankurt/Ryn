@@ -20,7 +20,6 @@ namespace Ryn
 
         void Close() override;
         void Update() override;
-        void Present() override;
         bool IsActive() const override;
 
         InputContext* GetInputContext() override;

@@ -14,8 +14,13 @@ int main(int argc, const char* argv[])
 
     OpenGL::Load();
     GLFW::Load();
-    if (GLFW::Initialize == nullptr)
-        Console::Write("GLFW::Initialize is null\n");
+
+#ifdef RYN_DEBUG
+    GLFW::SetErrorCallback([](GLFW::ErrorCode error, const char* description)
+    {
+        Console::Write("[DEBUG] GLFW Error (", +error, "): ", description);
+    });
+#endif
 
     GLFW::Initialize();
 

@@ -4,6 +4,7 @@ namespace Ryn
 {
     GlfwWindow::GlfwWindow(const WindowConfig& config)
     {
+        GLFW::WindowHint(GLFW::WindowHints::DoubleBuffer, false);
         GLFW::WindowHint(GLFW::WindowHints::ClientAPI, +GLFW::ClientAPI::OpenGL);
         GLFW::WindowHint(GLFW::WindowHints::ContextVersionMajor, 4);
         GLFW::WindowHint(GLFW::WindowHints::ContextVersionMinor, 1);
@@ -29,11 +30,6 @@ namespace Ryn
     {
         _inputContext->Update();
         GLFW::PollEvents();
-    }
-
-    void GlfwWindow::Present()
-    {
-        GLFW::SwapBuffers(_handle);
     }
 
     bool GlfwWindow::IsActive() const

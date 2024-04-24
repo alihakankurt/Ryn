@@ -39,6 +39,8 @@ namespace Ryn
 
     OpenGL::DrawElementsFunction OpenGL::DrawElements;
 
+    OpenGL::FinishFunction OpenGL::Finish;
+
     Platform::Module OpenGL::Handle;
 
     bool OpenGL::Load()
@@ -78,6 +80,8 @@ namespace Ryn
         ShaderSource = Platform::LoadFunction<ShaderSourceFunction>(Handle, "glShaderSource");
 
         DrawElements = Platform::LoadFunction<DrawElementsFunction>(Handle, "glDrawElements");
+
+        Finish = Platform::LoadFunction<FinishFunction>(Handle, "glFinish");
 
         return true;
     }

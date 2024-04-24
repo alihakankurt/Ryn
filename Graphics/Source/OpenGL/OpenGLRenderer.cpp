@@ -67,6 +67,11 @@ namespace Ryn
         OpenGL::DeleteProgram(_shader);
     }
 
+    void OpenGLRenderer::Present()
+    {
+        OpenGL::Finish();
+    }
+
     void OpenGLRenderer::Clear()
     {
         OpenGL::Clear(OpenGL::ClearMask::Color | OpenGL::ClearMask::Depth);

@@ -26,6 +26,8 @@ namespace Ryn
         OpenGLRenderer();
         virtual ~OpenGLRenderer() override;
 
+        virtual void Present() override;
+
         virtual void Clear() override;
         virtual void SetClearColor(const Color& color) override;
 

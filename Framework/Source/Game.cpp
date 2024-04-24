@@ -17,7 +17,6 @@ namespace Ryn
             Window->Update();
             Update();
             Render();
-            Window->Present();
         }
 
         delete Renderer;

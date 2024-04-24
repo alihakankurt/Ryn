@@ -152,6 +152,9 @@ namespace Ryn
         using DrawElementsFunction = void (*)(DrawMode mode, isize count, DataType type, const void* indices);
         static DrawElementsFunction DrawElements;
 
+        using FinishFunction = void (*)();
+        static FinishFunction Finish;
+
       private:
         static Platform::Module Handle;
 
