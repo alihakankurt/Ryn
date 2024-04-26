@@ -3,14 +3,14 @@
 
 namespace Ryn
 {
-    String File::Read(const String& path)
+    string File::Read(const string& path)
     {
         char* out = nullptr;
         usize length = Platform::ReadFile(path.Data(), out);
-        return String(out, length);
+        return string(out, length);
     }
 
-    bool File::Write(const String& path, const String& content)
+    bool File::Write(const string& path, const string& content)
     {
         return Platform::WriteFile(path.Data(), content.Data(), content.Length());
     }

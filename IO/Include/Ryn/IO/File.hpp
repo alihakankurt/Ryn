@@ -8,8 +8,8 @@ namespace Ryn
     class File
     {
       public:
-        static String Read(const String& path);
-        static bool Write(const String& path, const String& content);
+        static string Read(const string& path);
+        static bool Write(const string& path, const string& content);
     };
 }
 

@@ -8,7 +8,10 @@ namespace Ryn::Memory
     template <typename TItem>
     static inline constexpr void Clear(TItem* destination, usize count)
     {
-        Set(destination, TItem{}, count);
+        for (usize index = 0; index < count; index += 1)
+        {
+            destination[index] = TItem{};
+        }
     }
 
     template <typename TItem>

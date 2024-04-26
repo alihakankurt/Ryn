@@ -5,132 +5,142 @@
 
 namespace Ryn
 {
-    template <Number TNumber>
+    template <Number TScalar>
     struct Vector2
     {
-        TNumber X;
-        TNumber Y;
+        TScalar X;
+        TScalar Y;
 
-        Vector2()
+        inline constexpr Vector2()
         {
-            X = Math::Zero<TNumber>;
-            Y = Math::Zero<TNumber>;
+            X = Math::Zero<TScalar>;
+            Y = Math::Zero<TScalar>;
         }
 
-        Vector2(TNumber x, TNumber y)
+        inline constexpr Vector2(TScalar x, TScalar y)
         {
             X = x;
             Y = y;
         }
 
-        Vector2 operator-() const
+        inline constexpr Vector2 operator-() const
         {
-            TNumber x = Math::Negate(X);
-            TNumber y = Math::Negate(Y);
-            return Vector2{x, y};
-        }
+            Vector2 result;
 
-        Vector2 operator+(const Vector2& other) const
-        {
-            Vector2 result = *this;
-            result += other;
+            result.X = Math::Negate(X);
+            result.Y = Math::Negate(Y);
+
             return result;
         }
 
-        Vector2& operator+=(const Vector2& other)
+        inline constexpr Vector2 operator+(const Vector2& other) const
         {
-            X = Math::Add(X, other.X);
-            Y = Math::Add(Y, other.Y);
-            return *this;
-        }
+            Vector2 result;
 
-        Vector2 operator-(const Vector2& other) const
-        {
-            Vector2 result = *this;
-            result -= other;
+            result.X = Math::Add(X, other.X);
+            result.Y = Math::Add(Y, other.Y);
+
             return result;
         }
 
-        Vector2& operator-=(const Vector2& other)
+        inline constexpr Vector2& operator+=(const Vector2& other)
         {
-            X = Math::Subtract(X, other.X);
-            Y = Math::Subtract(Y, other.Y);
-            return *this;
+            return *this = *this + other;
         }
 
-        Vector2 operator*(TNumber scalar) const
+        inline constexpr Vector2 operator-(const Vector2& other) const
         {
-            Vector2 result = *this;
-            result *= scalar;
+            Vector2 result;
+
+            result.X = Math::Subtract(X, other.X);
+            result.Y = Math::Subtract(Y, other.Y);
+
             return result;
         }
 
-        Vector2& operator*=(TNumber scalar)
+        inline constexpr Vector2& operator-=(const Vector2& other)
         {
-            X = Math::Multiply(X, scalar);
-            Y = Math::Multiply(Y, scalar);
-            return *this;
+            return *this = *this - other;
         }
 
-        Vector2 operator/(TNumber scalar) const
+        inline constexpr Vector2 operator*(TScalar scalar) const
         {
-            Vector2 result = *this;
-            result /= scalar;
+            Vector2 result;
+
+            result.X = Math::Multiply(X, scalar);
+            result.Y = Math::Multiply(Y, scalar);
+
             return result;
         }
 
-        Vector2& operator/=(TNumber scalar)
+        inline constexpr Vector2& operator*=(TScalar scalar)
         {
-            if (Math::ApproximatelyEqual(scalar, Math::Zero<TNumber>))
+            return *this = *this * scalar;
+        }
+
+        inline constexpr Vector2 operator/(TScalar scalar) const
+        {
+            if (scalar == Math::Zero<TScalar>)
                 return *this;
 
-            X = Math::Divide(X, scalar);
-            Y = Math::Divide(Y, scalar);
-            return *this;
+            Vector2 result;
+
+            result.X = Math::Divide(X, scalar);
+            result.Y = Math::Divide(Y, scalar);
+
+            return result;
         }
 
-        bool operator==(const Vector2& other) const
+        inline constexpr Vector2& operator/=(TScalar scalar)
+        {
+            return *this = *this / scalar;
+        }
+
+        inline constexpr bool operator==(const Vector2& other) const
         {
             return Math::ApproximatelyEqual(X, other.X)
                 && Math::ApproximatelyEqual(Y, other.Y);
         }
 
-        bool operator!=(const Vector2& other) const
+        inline constexpr bool operator!=(const Vector2& other) const
         {
             return !(*this == other);
         }
 
-        TNumber Dot(const Vector2& other) const
+        inline constexpr TScalar Dot(const Vector2& other) const
         {
-            TNumber x = Math::Multiply(X, other.X);
-            TNumber y = Math::Multiply(Y, other.Y);
+            TScalar x = Math::Multiply(X, other.X);
+            TScalar y = Math::Multiply(Y, other.Y);
             return Math::Add(x, y);
         }
 
-        TNumber LengthSquared() const
+        inline constexpr TScalar LengthSquared() const
         {
             return Dot(*this);
         }
 
-        TNumber Length() const
+        inline constexpr TScalar Length() const
         {
             return Math::Sqrt(LengthSquared());
         }
 
-        Vector2 Normalize() const
+        inline constexpr Vector2 Normalize() const
         {
-            TNumber length = Length();
-            if (Math::ApproximatelyEqual(length, Math::Zero<TNumber>))
+            TScalar length = Length();
+            if (length == Math::Zero<TScalar>)
                 return *this;
 
             return *this / length;
         }
 
-        Vector2 Lerp(const Vector2& target, TNumber time) const
+        inline constexpr Vector2 Lerp(const Vector2& target, TScalar time) const
         {
-            TNumber x = Math::Lerp(X, target.X, time);
-            TNumber y = Math::Lerp(Y, target.Y, time);
-            return Vector2{x, y};
+            Vector2 result;
+
+            result.X = Math::Lerp(X, target.X, time);
+            result.Y = Math::Lerp(Y, target.Y, time);
+
+            return result;
         }
     };
 }

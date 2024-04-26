@@ -14,7 +14,9 @@ namespace Ryn
       public:
         static bool Write(char value);
         static bool Write(const char* value);
-        static bool Write(const String& value);
+        static bool Write(const string& value);
+
+        static bool Write(bool value);
 
         static bool Write(i8 value);
         static bool Write(i16 value);

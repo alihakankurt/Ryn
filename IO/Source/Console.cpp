@@ -15,9 +15,14 @@ namespace Ryn
         return Platform::WriteConsole(value, String::Length(value));
     }
 
-    bool Console::Write(const String& value)
+    bool Console::Write(const string& value)
     {
         return Platform::WriteConsole(value.Data(), value.Length());
+    }
+
+    bool Console::Write(bool value)
+    {
+        return Platform::WriteConsole(value ? "true" : "false", value ? 4 : 5);
     }
 
     bool Console::Write(i8 value)
