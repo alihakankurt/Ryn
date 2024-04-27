@@ -4,8 +4,8 @@
 
 namespace Ryn
 {
-    Renderer* Renderer::Create()
+    Ref<Renderer> Renderer::Create()
     {
-        return new OpenGLRenderer();
+        return Ref<Renderer>(new OpenGLRenderer());
     }
 }

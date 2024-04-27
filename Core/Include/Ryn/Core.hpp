@@ -9,5 +9,6 @@
 #include <Ryn/Core/Casts.hpp>
 #include <Ryn/Core/Memory.hpp>
 #include <Ryn/Core/String.hpp>
+#include <Ryn/Core/Ref.hpp>
 
 #endif

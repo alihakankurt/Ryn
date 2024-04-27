@@ -17,7 +17,7 @@ namespace Ryn
 
     GlfwWindow::~GlfwWindow()
     {
-        delete _inputContext;
+        _inputContext.Release();
         GLFW::DestroyWindow(_handle);
     }
 
@@ -37,8 +37,8 @@ namespace Ryn
         return !GLFW::WindowShouldClose(_handle);
     }
 
-    InputContext* GlfwWindow::GetInputContext()
+    Ref<InputContext> GlfwWindow::GetInputContext()
     {
-        return _inputContext;
+        return _inputContext.As<InputContext>();
     }
 }

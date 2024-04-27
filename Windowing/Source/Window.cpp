@@ -4,8 +4,8 @@
 
 namespace Ryn
 {
-    Window* Window::Create(const WindowConfig& config)
+    Ref<Window> Window::Create(const WindowConfig& config)
     {
-        return new GlfwWindow(config);
+        return Ref<Window>(new GlfwWindow(config));
     }
 }

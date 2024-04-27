@@ -10,9 +10,9 @@ namespace Ryn
     class Game
     {
       protected:
-        Window* Window;
-        InputContext* Input;
-        Renderer* Renderer;
+        Ref<Window> Window;
+        Ref<InputContext> Input;
+        Ref<Renderer> Renderer;
 
       public:
         virtual ~Game() = default;

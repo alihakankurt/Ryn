@@ -22,9 +22,9 @@ namespace Ryn
         virtual void Update() = 0;
         virtual bool IsActive() const = 0;
 
-        virtual InputContext* GetInputContext() = 0;
+        virtual Ref<InputContext> GetInputContext() = 0;
 
-        static Window* Create(const WindowConfig& config);
+        static Ref<Window> Create(const WindowConfig& config);
     };
 }
 

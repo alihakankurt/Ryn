@@ -23,7 +23,7 @@ namespace Ryn
         virtual void DrawQuad(const Vector2<f32>& position, const Vector2<f32>& size, const Color& color) = 0;
 
       public:
-        static Renderer* Create();
+        static Ref<Renderer> Create();
     };
 }
 

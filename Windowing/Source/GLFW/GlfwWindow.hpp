@@ -12,7 +12,7 @@ namespace Ryn
     {
       private:
         GLFW::Window _handle;
-        GlfwInputContext* _inputContext;
+        Ref<GlfwInputContext> _inputContext;
 
       public:
         GlfwWindow(const WindowConfig& config);
@@ -22,7 +22,7 @@ namespace Ryn
         void Update() override;
         bool IsActive() const override;
 
-        InputContext* GetInputContext() override;
+        Ref<InputContext> GetInputContext() override;
     };
 }
 
