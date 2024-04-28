@@ -1,7 +1,9 @@
-#ifndef __RYN_GRAPHICS_OPENGL_OPENGL_RENDERER_HPP__
-#define __RYN_GRAPHICS_OPENGL_OPENGL_RENDERER_HPP__
+#ifndef __RYN_GRAPHICS_OPENGL_RENDERER_HPP__
+#define __RYN_GRAPHICS_OPENGL_RENDERER_HPP__
 
 #include <Ryn/Graphics/Renderer.hpp>
+#include <Ryn/Graphics/Buffer.hpp>
+#include <Ryn/Graphics/Shader.hpp>
 
 namespace Ryn
 {
@@ -17,9 +19,9 @@ namespace Ryn
 
       private:
         u32 _vao;
-        u32 _vbo;
-        u32 _ebo;
-        u32 _shader;
+        Ref<Buffer> _indexBuffer;
+        Ref<Buffer> _vertexBuffer;
+        Ref<Shader> _colorShader;
         isize _vertexCount;
 
       public:

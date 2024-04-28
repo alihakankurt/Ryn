@@ -19,9 +19,9 @@ namespace Ryn
             Render();
         }
 
+        Finalize();
         Renderer.Release();
         Input.Release();
         Window.Release();
-        Finalize();
     }
 }

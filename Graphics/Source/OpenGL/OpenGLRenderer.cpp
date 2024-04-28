@@ -2,19 +2,17 @@
 #include <Ryn/IO/File.hpp>
 
 #include "OpenGL/OpenGLRenderer.hpp"
+#include "OpenGL/OpenGLBuffer.hpp"
 
 namespace Ryn
 {
     OpenGLRenderer::OpenGLRenderer()
     {
+        // Create VertexArrayObject
         OpenGL::CreateVertexArray(1, &_vao);
-        OpenGL::CreateBuffer(1, &_vbo);
-        OpenGL::CreateBuffer(1, &_ebo);
-
         OpenGL::BindVertexArray(_vao);
-        OpenGL::BindBuffer(OpenGL::BufferTarget::Array, _vbo);
-        OpenGL::BufferData(OpenGL::BufferTarget::Array, VertexSize * VertexCount, nullptr, OpenGL::BufferUsage::DynamicDraw);
 
+        // Setup index buffer data
         u32 indices[IndexCount];
         for (u32 i = 0, j = 0; i < IndexCount; i += IndexPerQuad, j += VertexPerQuad)
         {
@@ -26,45 +24,46 @@ namespace Ryn
             indices[i + 5] = j + 3;
         }
 
-        OpenGL::BindBuffer(OpenGL::BufferTarget::ElementArray, _ebo);
-        OpenGL::BufferData(OpenGL::BufferTarget::ElementArray, sizeof(indices), indices, OpenGL::BufferUsage::StaticDraw);
+        // Create index buffer
+        BufferLayout indexBufferLayout;
+        indexBufferLayout.AddAttribute({BufferLayout::DataKind::UInt32, 1});
 
-        OpenGL::EnableVertexAttribArray(0);
-        OpenGL::VertexAttribPointer(0, 2, OpenGL::DataType::Float, false, VertexSize, nullptr);
-        OpenGL::EnableVertexAttribArray(1);
-        OpenGL::VertexAttribPointer(1, 4, OpenGL::DataType::Float, false, VertexSize, As<void*>(sizeof(f32) * 2));
+        _indexBuffer = Buffer::Create(BufferKind::Index, indexBufferLayout);
+        _indexBuffer->SetData(indices, sizeof(indices));
 
+        // Create vertex buffer
+        BufferLayout vertexBufferLayout;
+        vertexBufferLayout.AddAttribute({BufferLayout::DataKind::Float32, 2});
+        vertexBufferLayout.AddAttribute({BufferLayout::DataKind::Float32, 4});
+
+        _vertexBuffer = Buffer::Create(BufferKind::Vertex, vertexBufferLayout);
+        _vertexBuffer->SetData(nullptr, VertexSize * VertexCount);
+
+        // Setup vertex buffer layout
+        u32 attributeIndex = 0;
+        usize vertexSize = vertexBufferLayout.Size();
+        usize vertexOffset = 0;
+        for (const auto& attribute : vertexBufferLayout.Attributes())
+        {
+            usize currentSize = attribute.Size();
+            OpenGL::EnableVertexAttribArray(attributeIndex);
+            OpenGL::VertexAttribPointer(attributeIndex, As<i32>(attribute.Count), ToOpenGL(attribute.Kind), false, As<isize>(vertexSize), As<void*>(vertexOffset));
+            vertexOffset += currentSize;
+            attributeIndex++;
+        }
+
+        // Create color shader
         string vertexShaderSource = File::Read("./Shaders/Color.vert");
         string fragmentShaderSource = File::Read("./Shaders/Color.frag");
-
-        char* vertexShaderData = const_cast<char*>(vertexShaderSource.Data());
-        char* fragmentShaderData = const_cast<char*>(fragmentShaderSource.Data());
-
-        u32 vertexShader = OpenGL::CreateShader(OpenGL::ShaderType::Vertex);
-        OpenGL::ShaderSource(vertexShader, 1, &vertexShaderData, nullptr);
-        OpenGL::CompileShader(vertexShader);
-
-        u32 fragmentShader = OpenGL::CreateShader(OpenGL::ShaderType::Fragment);
-        OpenGL::ShaderSource(fragmentShader, 1, &fragmentShaderData, nullptr);
-        OpenGL::CompileShader(fragmentShader);
-
-        _shader = OpenGL::CreateProgram();
-        OpenGL::AttachShader(_shader, vertexShader);
-        OpenGL::AttachShader(_shader, fragmentShader);
-        OpenGL::LinkProgram(_shader);
-
-        OpenGL::DeleteShader(vertexShader);
-        OpenGL::DeleteShader(fragmentShader);
+        _colorShader = Shader::Create(vertexShaderSource, fragmentShaderSource);
     }
 
     OpenGLRenderer::~OpenGLRenderer()
     {
-        OpenGL::BindBuffer(OpenGL::BufferTarget::Array, 0);
-        OpenGL::BindBuffer(OpenGL::BufferTarget::ElementArray, 0);
-        OpenGL::DeleteBuffer(1, &_ebo);
-        OpenGL::DeleteBuffer(1, &_vbo);
+        _colorShader->Unbind();
+        _indexBuffer->Unbind();
+        _vertexBuffer->Unbind();
         OpenGL::DeleteVertexArray(1, &_vao);
-        OpenGL::DeleteProgram(_shader);
     }
 
     void OpenGLRenderer::Present()
@@ -92,10 +91,12 @@ namespace Ryn
         if (_vertexCount > 0)
         {
             OpenGL::BindVertexArray(_vao);
-            OpenGL::BindBuffer(OpenGL::BufferTarget::Array, _vbo);
-            OpenGL::BindBuffer(OpenGL::BufferTarget::ElementArray, _ebo);
-            OpenGL::UseProgram(_shader);
-            OpenGL::DrawElements(OpenGL::DrawMode::Triangles, (_vertexCount >> 1) + _vertexCount, OpenGL::DataType::UnsignedInt, nullptr);
+            _indexBuffer->Bind();
+            _vertexBuffer->Bind();
+            _colorShader->Bind();
+
+            OpenGL::DataType dataType = ToOpenGL(_indexBuffer->Layout().Attributes().Begin()->Kind);
+            OpenGL::DrawElements(OpenGL::DrawMode::Triangles, (_vertexCount >> 1) + _vertexCount, dataType, nullptr);
         }
     }
 
@@ -120,8 +121,8 @@ namespace Ryn
         // clang-format on
 
         OpenGL::BindVertexArray(_vao);
-        OpenGL::BindBuffer(OpenGL::BufferTarget::Array, _vbo);
-        OpenGL::BufferSubData(OpenGL::BufferTarget::Array, VertexSize * _vertexCount, VertexSize * VertexPerQuad, vertices);
+        _vertexBuffer->Bind();
+        _vertexBuffer->UpdateData(vertices, VertexSize * VertexPerQuad, VertexSize * _vertexCount);
 
         _vertexCount += VertexPerQuad;
     }
