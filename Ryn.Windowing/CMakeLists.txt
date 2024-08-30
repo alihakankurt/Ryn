@@ -1,0 +1,26 @@
+project(RynWindowing)
+
+add_library(${PROJECT_NAME} INTERFACE)
+add_library(Ryn::Windowing ALIAS ${PROJECT_NAME})
+
+target_include_directories(${PROJECT_NAME} INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+    $<INSTALL_INTERFACE:Include>
+)
+
+target_sources(${PROJECT_NAME} INTERFACE
+    
+)
+
+if (RYN_PLATFORM_MACOS)
+    target_link_libraries(${PROJECT_NAME} INTERFACE
+        "-framework Cocoa"
+    )
+    target_sources(${PROJECT_NAME} INTERFACE
+        Source/MacOS/CocoaWindow.mm
+    )
+endif()
+
+target_link_libraries(${PROJECT_NAME} INTERFACE
+    Ryn::Core
+)
