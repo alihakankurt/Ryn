@@ -20,8 +20,11 @@ namespace Ryn::IO
 
     File::~File()
     {
-        Close();
-        delete _info;
+        if (_info && !_info->std)
+        {
+            Close();
+            delete _info;
+        }
     }
 
     File::File(File&& other) noexcept
@@ -152,16 +155,19 @@ namespace Ryn::IO
 
     File File::StandardInput()
     {
-        return File(new FileInfo{STDIN_FILENO, true, true});
+        static FileInfo info{STDIN_FILENO, true, true};
+        return File(&info);
     }
 
     File File::StandardOutput()
     {
-        return File(new FileInfo{STDOUT_FILENO, true, true});
+        static FileInfo info{STDOUT_FILENO, true, true};
+        return File(&info);
     }
 
     File File::StandardError()
     {
-        return File(new FileInfo{STDERR_FILENO, true, true});
+        static FileInfo info{STDERR_FILENO, true, true};
+        return File(&info);
     }
 }
