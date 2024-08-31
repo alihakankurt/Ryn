@@ -7,14 +7,14 @@ namespace Ryn::Core
     class Clock
     {
       private:
-        f32 _start;
+        f64 _start;
 
       public:
         Clock();
 
-        f32 Restart();
+        f64 Restart();
 
       public:
-        static f32 Current();
+        static f64 Current();
     };
 }

@@ -3,14 +3,16 @@
 
 namespace Ryn::Core
 {
-    f32 Clock::Current()
+    f64 Clock::Current()
     {
-        static mach_timebase_info_data_t timebase;
-        if (timebase.denom == 0)
+        static f64 SecondsPerTick = 0.0;
+        if (SecondsPerTick == 0.0)
         {
+            mach_timebase_info_data_t timebase;
             mach_timebase_info(&timebase);
+            SecondsPerTick = static_cast<f64>(timebase.numer) / timebase.denom * 1e-9;
         }
 
-        return static_cast<f32>(mach_absolute_time() * timebase.numer / timebase.denom) * 1e-9f;
+        return mach_absolute_time() * SecondsPerTick;
     }
 }
