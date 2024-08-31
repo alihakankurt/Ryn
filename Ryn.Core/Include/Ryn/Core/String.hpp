@@ -34,9 +34,9 @@ namespace Ryn::Core
         String& operator+=(const char* str);
         String& operator+=(const String& other);
 
-        String operator+(const char c);
-        String operator+(const char* str);
-        String operator+(const String& other);
+        String operator+(const char c) const;
+        String operator+(const char* str) const;
+        String operator+(const String& other) const;
 
         void Insert(usz to, const char c);
         void Insert(usz to, const char* str);

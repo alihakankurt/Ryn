@@ -111,21 +111,21 @@ namespace Ryn::Core
         return *this;
     }
 
-    String String::operator+(const char c)
+    String String::operator+(const char c) const
     {
         String result = *this;
         result += c;
         return result;
     }
 
-    String String::operator+(const char* str)
+    String String::operator+(const char* str) const
     {
         String result = *this;
         result += str;
         return result;
     }
 
-    String String::operator+(const String& other)
+    String String::operator+(const String& other) const
     {
         String result = *this;
         result += other;
