@@ -17,11 +17,7 @@ if (RYN_PLATFORM_MACOS)
         "-framework Cocoa"
     )
     target_sources(${PROJECT_NAME} INTERFACE
-        Source/Input/InputContext.cpp
-        Source/MacOS/CocoaWindow.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Input/InputContext.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/MacOS/CocoaWindow.mm
     )
 endif()
-
-target_link_libraries(${PROJECT_NAME} INTERFACE
-    Ryn::Core
-)
