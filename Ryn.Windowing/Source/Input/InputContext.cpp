@@ -36,36 +36,36 @@ namespace Ryn::Windowing::Input
         _keys[static_cast<Core::usz>(key)] = state;
     }
 
-    bool InputContext::IsMouseButtonUp(MouseButton button) const
+    bool InputContext::IsButtonUp(MouseButton button) const
     {
-        MouseButtonState state = GetMouseButtonState(button);
+        MouseButtonState state = GetButtonState(button);
         return state == MouseButtonState::Up || state == MouseButtonState::Released;
     }
 
-    bool InputContext::IsMouseButtonDown(MouseButton button) const
+    bool InputContext::IsButtonDown(MouseButton button) const
     {
-        MouseButtonState state = GetMouseButtonState(button);
+        MouseButtonState state = GetButtonState(button);
         return state == MouseButtonState::Down || state == MouseButtonState::Pressed;
     }
 
-    bool InputContext::IsMouseButtonPressed(MouseButton button) const
+    bool InputContext::IsButtonPressed(MouseButton button) const
     {
-        MouseButtonState state = GetMouseButtonState(button);
+        MouseButtonState state = GetButtonState(button);
         return state == MouseButtonState::Pressed;
     }
 
-    bool InputContext::IsMouseButtonReleased(MouseButton button) const
+    bool InputContext::IsButtonReleased(MouseButton button) const
     {
-        MouseButtonState state = GetMouseButtonState(button);
+        MouseButtonState state = GetButtonState(button);
         return state == MouseButtonState::Released;
     }
 
-    MouseButtonState InputContext::GetMouseButtonState(MouseButton button) const
+    MouseButtonState InputContext::GetButtonState(MouseButton button) const
     {
         return _mouseButtons[static_cast<Core::usz>(button)];
     }
 
-    void InputContext::SetMouseButtonState(MouseButton button, MouseButtonState state)
+    void InputContext::SetButtonState(MouseButton button, MouseButtonState state)
     {
         _mouseButtons[static_cast<Core::usz>(button)] = state;
     }

@@ -74,32 +74,32 @@
 
 - (void)mouseDown:(NSEvent*)event
 {
-    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Pressed);
+    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Pressed);
 }
 
 - (void)mouseUp:(NSEvent*)event
 {
-    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Released);
+    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Released);
 }
 
 - (void)rightMouseDown:(NSEvent*)event
 {
-    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Pressed);
+    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Pressed);
 }
 
 - (void)rightMouseUp:(NSEvent*)event
 {
-    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Released);
+    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Released);
 }
 
 - (void)otherMouseDown:(NSEvent*)event
 {
-    _window->Input->SetMouseButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Pressed);
+    _window->Input->SetButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Pressed);
 }
 
 - (void)otherMouseUp:(NSEvent*)event
 {
-    _window->Input->SetMouseButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Released);
+    _window->Input->SetButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Released);
 }
 
 @end
