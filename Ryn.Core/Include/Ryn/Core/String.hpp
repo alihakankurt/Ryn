@@ -21,6 +21,8 @@ namespace Ryn::Core
         String& operator=(String&& other) noexcept;
 
         usz Length() const;
+        const char* Data() const;
+
         char operator[](usz index) const;
         char& operator[](usz index);
 

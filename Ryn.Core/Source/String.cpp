@@ -63,6 +63,11 @@ namespace Ryn::Core
         return _length;
     }
 
+    const char* String::Data() const
+    {
+        return _data;
+    }
+
     char String::operator[](usz index) const
     {
         return _data[index];
