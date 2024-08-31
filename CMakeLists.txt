@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.29)
-project(Ryn VERSION 0.1.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.30)
+project(Ryn VERSION 0.1.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,14 +17,14 @@ add_subdirectory(Ryn.IO)
 add_subdirectory(Ryn.Windowing)
 add_subdirectory(Ryn.Framework)
 
-add_library(${PROJECT_NAME} STATIC)
+add_library(${PROJECT_NAME} INTERFACE)
+add_library(Ryn::Ryn ALIAS ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
+    INTERFACE
         Ryn::Core
         Ryn::IO
         Ryn::Windowing
         Ryn::Framework
-    PRIVATE
-        RynCompilerOptions
+        Ryn::CompilerOptions
 )

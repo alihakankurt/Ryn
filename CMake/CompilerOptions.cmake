@@ -1,4 +1,5 @@
 add_library(RynCompilerOptions INTERFACE)
+add_library(Ryn::CompilerOptions ALIAS RynCompilerOptions)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(RynCompilerOptions INTERFACE

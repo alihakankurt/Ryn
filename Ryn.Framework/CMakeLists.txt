@@ -1,13 +1,23 @@
-project(RynFramework)
-
-add_library(${PROJECT_NAME} INTERFACE)
-add_library(Ryn::Framework ALIAS ${PROJECT_NAME})
-
-target_include_directories(${PROJECT_NAME} INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
-    $<INSTALL_INTERFACE:Include>
+set(RYN_FRAMEWORK_SOURCE_FILES
+    Source/Game.cpp
 )
 
-target_sources(${PROJECT_NAME} INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Game.cpp
+add_library(RynFramework ${RYN_FRAMEWORK_SOURCE_FILES})
+add_library(Ryn::Framework ALIAS RynFramework)
+
+target_include_directories(RynFramework
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+        $<INSTALL_INTERFACE:Include>
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
+)
+
+target_link_libraries(RynFramework
+    PUBLIC
+        Ryn::Core
+        Ryn::IO
+        Ryn::Windowing
+    PRIVATE
+        Ryn::CompilerOptions
 )
