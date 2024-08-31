@@ -13,6 +13,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CompilerOptions.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/PlatformDefinitions.cmake)
 
 add_subdirectory(Ryn.Core)
+add_subdirectory(Ryn.IO)
 add_subdirectory(Ryn.Windowing)
 add_subdirectory(Ryn.Framework)
 
@@ -21,6 +22,7 @@ add_library(${PROJECT_NAME} STATIC)
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         Ryn::Core
+        Ryn::IO
         Ryn::Windowing
         Ryn::Framework
     PRIVATE
