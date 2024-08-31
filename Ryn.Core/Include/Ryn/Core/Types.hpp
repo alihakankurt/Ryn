@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-namespace Ryn
+namespace Ryn::Core
 {
     using i8 = uint8_t;
     using i16 = uint16_t;

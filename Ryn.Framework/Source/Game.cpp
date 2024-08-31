@@ -1,6 +1,6 @@
 #include <Ryn/Framework/Game.hpp>
 
-namespace Ryn
+namespace Ryn::Framework
 {
     void Game::Run()
     {

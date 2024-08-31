@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ryn
+namespace Ryn::Framework
 {
     class Game
     {
