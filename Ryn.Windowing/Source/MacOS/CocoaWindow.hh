@@ -2,6 +2,7 @@
 
 #include <Ryn/Windowing/Window.hpp>
 #include <Ryn/Windowing/Input/Key.hpp>
+#include <Ryn/Windowing/Input/MouseButton.hpp>
 
 #import <Cocoa/Cocoa.h>
 
@@ -45,3 +46,4 @@ namespace Ryn::Windowing
 @end
 
 static Ryn::Windowing::Input::Key MapCocoaKeyToRynKey(UInt16 keycode);
+static Ryn::Windowing::Input::MouseButton MapCocoaMouseButtonToRynMouseButton(NSInteger button);

@@ -72,6 +72,36 @@
     _window->Input->SetKeyState(MapCocoaKeyToRynKey([event keyCode]), Ryn::Windowing::Input::KeyState::Released);
 }
 
+- (void)mouseDown:(NSEvent*)event
+{
+    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Pressed);
+}
+
+- (void)mouseUp:(NSEvent*)event
+{
+    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Released);
+}
+
+- (void)rightMouseDown:(NSEvent*)event
+{
+    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Pressed);
+}
+
+- (void)rightMouseUp:(NSEvent*)event
+{
+    _window->Input->SetMouseButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Released);
+}
+
+- (void)otherMouseDown:(NSEvent*)event
+{
+    _window->Input->SetMouseButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Pressed);
+}
+
+- (void)otherMouseUp:(NSEvent*)event
+{
+    _window->Input->SetMouseButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Released);
+}
+
 @end
 
 Ryn::Windowing::Input::Key MapCocoaKeyToRynKey(UInt16 keycode)
@@ -150,6 +180,24 @@ Ryn::Windowing::Input::Key MapCocoaKeyToRynKey(UInt16 keycode)
         default:
             NSLog(@"[Cocoa] Unknown key code: %u", keycode);
             return Ryn::Windowing::Input::Key::Unknown;
+    }
+}
+
+Ryn::Windowing::Input::MouseButton MapCocoaMouseButtonToRynMouseButton(NSInteger button)
+{
+    switch (button)
+    {
+        case 0:     return Ryn::Windowing::Input::MouseButton::Button1;
+        case 1:     return Ryn::Windowing::Input::MouseButton::Button2;
+        case 2:     return Ryn::Windowing::Input::MouseButton::Button3;
+        case 3:     return Ryn::Windowing::Input::MouseButton::Button4;
+        case 4:     return Ryn::Windowing::Input::MouseButton::Button5;
+        case 5:     return Ryn::Windowing::Input::MouseButton::Button6;
+        case 6:     return Ryn::Windowing::Input::MouseButton::Button7;
+        case 7:     return Ryn::Windowing::Input::MouseButton::Button8;
+        default:
+            NSLog(@"[Cocoa] Unknown button code: %ld", button);
+            return Ryn::Windowing::Input::MouseButton::Unknown;
     }
 }
 
