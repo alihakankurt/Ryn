@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Ryn/Windowing/Window.hpp>
+#include <Ryn/Windowing/Input/Key.hpp>
 
 #import <Cocoa/Cocoa.h>
 
@@ -33,3 +34,14 @@ namespace Ryn::Windowing
 - (instancetype)initWithWindow:(Ryn::Windowing::CocoaWindow*)window;
 
 @end
+
+@interface CocoaView : NSView
+{
+    Ryn::Windowing::CocoaWindow* _window;
+}
+
+- (instancetype)initWithWindow:(Ryn::Windowing::CocoaWindow*)window;
+
+@end
+
+static Ryn::Windowing::Input::Key MapCocoaKeyToRynKey(UInt16 keycode);

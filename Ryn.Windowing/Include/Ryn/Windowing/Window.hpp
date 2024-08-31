@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Ryn/Core.hpp>
+#include <Ryn/Windowing/Input/InputContext.hpp>
 
 namespace Ryn::Windowing
 {
@@ -13,11 +14,14 @@ namespace Ryn::Windowing
 
     class Window
     {
+      public:
+        Input::InputContext* Input;
+
       protected:
-        Window() {}
+        Window() { Input = new Input::InputContext(); }
 
       public:
-        virtual ~Window() {}
+        virtual ~Window() { delete Input; }
 
         virtual bool IsRunning() const = 0;
 
