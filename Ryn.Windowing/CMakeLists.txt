@@ -17,6 +17,7 @@ if (RYN_PLATFORM_MACOS)
         "-framework Cocoa"
     )
     target_sources(${PROJECT_NAME} INTERFACE
+        Source/Input/InputContext.cpp
         Source/MacOS/CocoaWindow.mm
     )
 endif()
