@@ -6,167 +6,89 @@
 
 namespace Ryn::IO
 {
-    struct FileInfo
+    Core::String File::Read(const Core::Span<const char> path)
     {
-        int fd;
-        bool open;
-        bool std;
-    };
-
-    File::File(FileInfo* info)
-    {
-        _info = info;
-    }
-
-    File::~File()
-    {
-        if (_info && !_info->std)
+        int file = open(path.Raw(), O_RDONLY);
+        if (file == -1)
         {
-            Close();
-            delete _info;
-        }
-    }
-
-    File::File(File&& other) noexcept
-    {
-        _info = other._info;
-        other._info = nullptr;
-    }
-
-    File& File::operator=(File&& other) noexcept
-    {
-        if (this != &other)
-        {
-            delete _info;
-            _info = other._info;
-            other._info = nullptr;
+            return Core::String{};
         }
 
-        return *this;
-    }
-
-    File File::Open(const Core::String& path, FileMode mode)
-    {
-        struct UnixFileMode
+        struct stat fileStat;
+        if (fstat(file, &fileStat) == -1)
         {
-            static constexpr int Get(FileMode mode)
+            close(file);
+            return Core::String{};
+        }
+
+        Core::usz fileSize = static_cast<Core::usz>(fileStat.st_size);
+        char* buffer = new char[fileSize];
+
+        Core::usz bytesReadTotal = 0;
+        while (bytesReadTotal < fileSize)
+        {
+            ssize_t bytesRead = read(file, buffer + bytesReadTotal, fileSize - bytesReadTotal);
+            if (bytesRead == -1)
             {
-                switch (mode)
-                {
-                    case FileMode::Read:      return O_RDONLY;
-                    case FileMode::Write:     return O_WRONLY | O_CREAT | O_TRUNC;
-                    case FileMode::Append:    return O_WRONLY | O_CREAT | O_APPEND;
-                    case FileMode::ReadWrite: return O_RDWR | O_CREAT;
-                }
+                delete[] buffer;
+                return Core::String{};
             }
-        };
 
-        int fd = open(path.Raw(), UnixFileMode::Get(mode), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-        if (fd == -1)
-        {
-            return File(nullptr);
+            bytesReadTotal += static_cast<Core::usz>(bytesRead);
         }
 
-        auto info = new FileInfo{fd, true, false};
-        return File(info);
+        close(file);
+        return Core::String{buffer, fileSize};
     }
 
-    bool File::Exists(const Core::String& path)
+    static bool WriteToFile(int file, const Core::Span<const char> content)
     {
-        struct stat buffer;
-        return stat(path.Raw(), &buffer) == 0;
-    }
-
-    bool File::Delete(const Core::String& path)
-    {
-        return unlink(path.Raw()) == 0;
-    }
-
-    bool File::Close()
-    {
-        if (_info && _info->open && !_info->std)
+        Core::usz bytesWrittenTotal = 0;
+        while (bytesWrittenTotal < content.Length())
         {
-            close(_info->fd);
-            _info->open = false;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool File::Read(Core::String& content)
-    {
-        if (_info)
-        {
-            off_t offset = lseek(_info->fd, 0, SEEK_END);
-            if (offset == -1)
-            {
+            ssize_t bytesWritten = write(file, content.Raw() + bytesWrittenTotal, content.Length() - bytesWrittenTotal);
+            if (bytesWritten == -1)
                 return false;
-            }
 
-            lseek(_info->fd, 0, SEEK_SET);
-
-            Core::usz size = static_cast<Core::usz>(offset);
-            char* buffer = new char[size + 1];
-            read(_info->fd, buffer, size);
-            buffer[size] = '\0';
-
-            content = Core::String(buffer, size);
-            return true;
+            bytesWrittenTotal += static_cast<Core::usz>(bytesWritten);
         }
 
-        return false;
+        return true;
     }
 
-    bool File::Write(const Core::String& content)
+    bool File::Write(const Core::Span<const char> path, const Core::Span<const char> content)
     {
-        if (_info)
+        int file = open(path.Raw(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        if (file == -1)
         {
-            write(_info->fd, content.Raw(), content.Length());
-            return true;
+            return false;
         }
 
-        return false;
+        bool result = WriteToFile(file, content);
+        close(file);
+        return result;
     }
 
-    bool File::Seek(Core::isz offset, SeekOrigin origin)
+    bool File::Append(const Core::Span<const char> path, const Core::Span<const char> content)
     {
-        if (_info)
+        int file = open(path.Raw(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        if (file == -1)
         {
-            struct UnixSeekOrigin
-            {
-                static constexpr int Get(SeekOrigin origin)
-                {
-                    switch (origin)
-                    {
-                        case SeekOrigin::Begin:   return SEEK_SET;
-                        case SeekOrigin::Current: return SEEK_CUR;
-                        case SeekOrigin::End:     return SEEK_END;
-                    }
-                }
-            };
-
-            return lseek(_info->fd, offset, UnixSeekOrigin::Get(origin)) != -1;
+            return false;
         }
 
-        return false;
+        bool result = WriteToFile(file, content);
+        close(file);
+        return result;
     }
 
-    File File::StandardInput()
+    bool File::Exists(const Core::Span<const char> path)
     {
-        static FileInfo info{STDIN_FILENO, true, true};
-        return File(&info);
+        return access(path.Raw(), F_OK) != -1;
     }
 
-    File File::StandardOutput()
+    bool File::Delete(const Core::Span<const char> path)
     {
-        static FileInfo info{STDOUT_FILENO, true, true};
-        return File(&info);
-    }
-
-    File File::StandardError()
-    {
-        static FileInfo info{STDERR_FILENO, true, true};
-        return File(&info);
+        return unlink(path.Raw()) != -1;
     }
 }
