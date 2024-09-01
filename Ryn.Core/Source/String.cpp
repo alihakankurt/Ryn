@@ -1,21 +1,14 @@
 #include <Ryn/Core/String.hpp>
+#include <Ryn/Core/Memory.hpp>
 
 namespace Ryn::Core
 {
-    String::String()
+    String::String(const Slice<char>& slice)
     {
-        _length = 0;
-        _data = nullptr;
+        Construct(slice.Raw(), slice.Length());
     }
 
-    String::String(const char* str) :
-        String()
-    {
-        Construct(str, String::Length(str));
-    }
-
-    String::String(const String& other) :
-        String()
+    String::String(const String& other)
     {
         Construct(other._data, other._length);
     }
@@ -58,24 +51,15 @@ namespace Ryn::Core
         return *this;
     }
 
-    usz String::Length() const
+    void String::Construct(const char* data, usz length)
     {
-        return _length;
-    }
+        delete[] _data;
 
-    const char* String::Data() const
-    {
-        return _data;
-    }
+        _length = length;
+        _data = new char[_length + 1];
 
-    char String::operator[](usz index) const
-    {
-        return _data[index];
-    }
-
-    char& String::operator[](usz index)
-    {
-        return _data[index];
+        Memory::Copy(&_data[0], &data[0], _length);
+        _data[_length] = '\0';
     }
 
     void String::Append(const char c)
@@ -91,6 +75,21 @@ namespace Ryn::Core
     void String::Append(const String& other)
     {
         Append(other._data, other._length);
+    }
+
+    void String::Append(const char* data, usz length)
+    {
+        usz newLength = _length + length;
+        char* newData = new char[newLength + 1];
+
+        Memory::Copy(&newData[0], &_data[0], _length);
+        Memory::Copy(&newData[_length], &data[0], length);
+        newData[newLength] = '\0';
+
+        delete[] _data;
+
+        _length = newLength;
+        _data = newData;
     }
 
     String& String::operator+=(const char c)
@@ -147,86 +146,6 @@ namespace Ryn::Core
         Insert(to, other._data, other._length);
     }
 
-    void String::Remove(usz at)
-    {
-        Remove(at, at);
-    }
-
-    void String::Remove(usz from, usz to)
-    {
-        if (from >= _length)
-        {
-            return;
-        }
-
-        if (to >= _length)
-        {
-            to = _length - 1;
-        }
-
-        if (from > to)
-        {
-            return;
-        }
-
-        usz newLength = _length - (to - from + 1);
-        char* newData = new char[newLength + 1];
-
-        for (usz index = 0; index < from; index += 1)
-        {
-            newData[index] = _data[index];
-        }
-
-        for (usz index = to + 1; index < _length; index += 1)
-        {
-            newData[index - (to - from + 1)] = _data[index];
-        }
-
-        newData[newLength] = '\0';
-
-        delete[] _data;
-
-        _length = newLength;
-        _data = newData;
-    }
-
-    void String::Construct(const char* data, usz length)
-    {
-        delete[] _data;
-
-        _length = length;
-        _data = new char[_length + 1];
-        for (usz index = 0; index < _length; index += 1)
-        {
-            _data[index] = data[index];
-        }
-
-        _data[_length] = '\0';
-    }
-
-    void String::Append(const char* data, usz length)
-    {
-        usz newLength = _length + length;
-        char* newData = new char[newLength + 1];
-
-        for (usz index = 0; index < _length; index += 1)
-        {
-            newData[index] = _data[index];
-        }
-
-        for (usz index = 0; index < length; index += 1)
-        {
-            newData[_length + index] = data[index];
-        }
-
-        newData[newLength] = '\0';
-
-        delete[] _data;
-
-        _length = newLength;
-        _data = newData;
-    }
-
     void String::Insert(usz to, const char* data, usz length)
     {
         if (to >= _length)
@@ -238,27 +157,87 @@ namespace Ryn::Core
         usz newLength = _length + length;
         char* newData = new char[newLength + 1];
 
-        for (usz index = 0; index < to; index += 1)
-        {
-            newData[index] = _data[index];
-        }
-
-        for (usz index = 0; index < length; index += 1)
-        {
-            newData[index + to] = data[index];
-        }
-
-        for (usz index = to; index < _length; index += 1)
-        {
-            newData[index + length] = _data[index];
-        }
-
+        Memory::Copy(&newData[0], &_data[0], to);
+        Memory::Copy(&newData[to], &data[0], length);
+        Memory::Copy(&newData[to + length], &_data[to], _length - to);
         newData[newLength] = '\0';
 
         delete[] _data;
 
         _length = newLength;
         _data = newData;
+    }
+
+    void String::Remove(usz at)
+    {
+        Remove(at, at);
+    }
+
+    void String::Remove(usz from, usz to)
+    {
+        if (from >= _length || to >= _length || from > to)
+            return;
+
+        usz newLength = _length - (to - from + 1);
+        char* newData = new char[newLength + 1];
+
+        Memory::Copy(&newData[0], &_data[0], from);
+        Memory::Copy(&newData[from], &_data[to + 1], _length - to - 1);
+        newData[newLength] = '\0';
+
+        delete[] _data;
+
+        _length = newLength;
+        _data = newData;
+    }
+
+    bool String::operator==(const String& other) const
+    {
+        return _length == other._length && Memory::Compare(_data, other._data, _length) == 0;
+    }
+
+    bool String::operator!=(const String& other) const
+    {
+        return !(*this == other);
+    }
+
+    bool String::operator<(const String& other) const
+    {
+        const usz length = (_length < other._length) ? _length : other._length;
+        const isz comparison = Memory::Compare(_data, other._data, length);
+        return (comparison == 0) ? _length < other._length : comparison < 0;
+    }
+
+    bool String::operator>(const String& other) const
+    {
+        const usz length = (_length < other._length) ? _length : other._length;
+        const isz comparison = Memory::Compare(_data, other._data, length);
+        return (comparison == 0) ? _length > other._length : comparison > 0;
+    }
+
+    bool String::operator<=(const String& other) const
+    {
+        return !(*this > other);
+    }
+
+    bool String::operator>=(const String& other) const
+    {
+        return !(*this < other);
+    }
+
+    Slice<char> String::MakeSlice() const
+    {
+        return Slice<char>(_data, _length);
+    }
+
+    Slice<char> String::MakeSlice(usz start) const
+    {
+        return MakeSlice().Cut(start);
+    }
+
+    Slice<char> String::MakeSlice(usz start, usz length) const
+    {
+        return MakeSlice().Cut(start, length);
     }
 
     usz String::Length(const char* str)

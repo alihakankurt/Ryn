@@ -1,4 +1,5 @@
 set(RYN_CORE_SOURCE_FILES
+    Source/Memory.cpp
     Source/String.cpp
     Source/Clock.cpp
 )

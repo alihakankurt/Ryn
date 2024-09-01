@@ -49,7 +49,7 @@ namespace Ryn::IO
     {
         struct UnixFileMode
         {
-            static inline constexpr int Get(FileMode mode)
+            static constexpr int Get(FileMode mode)
             {
                 switch (mode)
                 {
@@ -61,7 +61,7 @@ namespace Ryn::IO
             }
         };
 
-        int fd = open(path.Data(), UnixFileMode::Get(mode), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        int fd = open(path.Raw(), UnixFileMode::Get(mode), S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if (fd == -1)
         {
             return File(nullptr);
@@ -74,12 +74,12 @@ namespace Ryn::IO
     bool File::Exists(const Core::String& path)
     {
         struct stat buffer;
-        return stat(path.Data(), &buffer) == 0;
+        return stat(path.Raw(), &buffer) == 0;
     }
 
     bool File::Delete(const Core::String& path)
     {
-        return unlink(path.Data()) == 0;
+        return unlink(path.Raw()) == 0;
     }
 
     bool File::Close()
@@ -111,8 +111,7 @@ namespace Ryn::IO
             read(_info->fd, buffer, size);
             buffer[size] = '\0';
 
-            content = buffer;
-            delete[] buffer;
+            content = Core::String(buffer, size);
             return true;
         }
 
@@ -123,7 +122,7 @@ namespace Ryn::IO
     {
         if (_info)
         {
-            write(_info->fd, content.Data(), content.Length());
+            write(_info->fd, content.Raw(), content.Length());
             return true;
         }
 
@@ -136,7 +135,7 @@ namespace Ryn::IO
         {
             struct UnixSeekOrigin
             {
-                static inline constexpr int Get(SeekOrigin origin)
+                static constexpr int Get(SeekOrigin origin)
                 {
                     switch (origin)
                     {

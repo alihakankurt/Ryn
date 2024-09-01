@@ -1,18 +1,31 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
+#include <Ryn/Core/Slice.hpp>
 
 namespace Ryn::Core
 {
     class String
     {
       private:
-        usz _length;
-        char* _data;
+        usz _length{};
+        char* _data{};
 
       public:
-        String();
-        String(const char* str);
+        consteval String() {};
+
+        constexpr String(char* str, usz length) :
+            _length(length),
+            _data(str) {}
+
+        template <usz N>
+        constexpr String(const char (&str)[N]) :
+            _length(N - 1)
+        {
+            Construct(str, N - 1);
+        }
+
+        String(const Slice<char>& slice);
         String(const String& other);
         String(String&& other) noexcept;
         ~String();
@@ -20,16 +33,24 @@ namespace Ryn::Core
         String& operator=(const String& other);
         String& operator=(String&& other) noexcept;
 
-        usz Length() const;
-        const char* Data() const;
+      private:
+        void Construct(const char* data, usz length);
 
-        char operator[](usz index) const;
-        char& operator[](usz index);
+      public:
+        constexpr usz Length() const { return _length; }
+        constexpr const char* Raw() const { return _data; }
+
+        constexpr const char& operator[](usz index) const { return _data[index]; }
+        constexpr char& operator[](usz index) { return _data[index]; }
 
         void Append(const char c);
         void Append(const char* str);
         void Append(const String& other);
 
+      private:
+        void Append(const char* data, usz length);
+
+      public:
         String& operator+=(const char c);
         String& operator+=(const char* str);
         String& operator+=(const String& other);
@@ -42,13 +63,23 @@ namespace Ryn::Core
         void Insert(usz to, const char* str);
         void Insert(usz to, const String& other);
 
+      private:
+        void Insert(usz to, const char* data, usz length);
+
+      public:
         void Remove(usz at);
         void Remove(usz from, usz to);
 
-      private:
-        void Construct(const char* data, usz length);
-        void Append(const char* data, usz length);
-        void Insert(usz to, const char* data, usz length);
+        bool operator==(const String& other) const;
+        bool operator!=(const String& other) const;
+        bool operator<(const String& other) const;
+        bool operator>(const String& other) const;
+        bool operator<=(const String& other) const;
+        bool operator>=(const String& other) const;
+
+        Slice<char> MakeSlice() const;
+        Slice<char> MakeSlice(usz start) const;
+        Slice<char> MakeSlice(usz start, usz length) const;
 
       public:
         static usz Length(const char* str);
