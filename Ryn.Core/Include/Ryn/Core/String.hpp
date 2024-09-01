@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
-#include <Ryn/Core/Slice.hpp>
+#include <Ryn/Core/Span.hpp>
 
 namespace Ryn::Core
 {
@@ -25,7 +25,7 @@ namespace Ryn::Core
             Construct(str, N - 1);
         }
 
-        String(const Slice<char>& slice);
+        String(const Span<char>& span);
         String(const String& other);
         String(String&& other) noexcept;
         ~String();
@@ -77,9 +77,13 @@ namespace Ryn::Core
         bool operator<=(const String& other) const;
         bool operator>=(const String& other) const;
 
-        Slice<char> MakeSlice() const;
-        Slice<char> MakeSlice(usz start) const;
-        Slice<char> MakeSlice(usz start, usz length) const;
+      public:
+        Span<char> ToSpan() const;
+        Span<char> ToSpan(usz start) const;
+        Span<char> ToSpan(usz start, usz length) const;
+
+        constexpr operator Span<char>() const { return ToSpan(); }
+        constexpr operator Span<const char>() const { return ToSpan(); }
 
       public:
         static usz Length(const char* str);

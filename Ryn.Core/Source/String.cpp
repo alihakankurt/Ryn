@@ -3,9 +3,9 @@
 
 namespace Ryn::Core
 {
-    String::String(const Slice<char>& slice)
+    String::String(const Span<char>& span)
     {
-        Construct(slice.Raw(), slice.Length());
+        Construct(span.Raw(), span.Length());
     }
 
     String::String(const String& other)
@@ -225,19 +225,19 @@ namespace Ryn::Core
         return !(*this < other);
     }
 
-    Slice<char> String::MakeSlice() const
+    Span<char> String::ToSpan() const
     {
-        return Slice<char>(_data, _length);
+        return Span<char>(_data, _length);
     }
 
-    Slice<char> String::MakeSlice(usz start) const
+    Span<char> String::ToSpan(usz start) const
     {
-        return MakeSlice().Cut(start);
+        return ToSpan().Cut(start);
     }
 
-    Slice<char> String::MakeSlice(usz start, usz length) const
+    Span<char> String::ToSpan(usz start, usz length) const
     {
-        return MakeSlice().Cut(start, length);
+        return ToSpan().Cut(start, length);
     }
 
     usz String::Length(const char* str)
