@@ -22,7 +22,7 @@ namespace Ryn::Core
         template <usz N>
         constexpr Span(TValue (&&data)[N]) :
             _data(data),
-            _length(N - 1) {}
+            _length(N) {}
 
         Span(const Span<TValue>& other) :
             _data(other._data),
