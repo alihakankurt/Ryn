@@ -1,34 +1,18 @@
-set(RYN_CORE_SOURCE_FILES
-    Source/Memory.cpp
-    Source/String.cpp
-    Source/Clock.cpp
-)
-
-if (RYN_PLATFORM_WINDOWS)
-    list(APPEND RYN_CORE_SOURCE_FILES
-    )
-elseif (RYN_PLATFORM_LINUX)
-    list(APPEND RYN_CORE_SOURCE_FILES
-    )
-elseif (RYN_PLATFORM_MACOS)
-    list(APPEND RYN_CORE_SOURCE_FILES
-        Source/MacOS/Clock.cpp
-    )
-endif()
-
-add_library(RynCore ${RYN_CORE_SOURCE_FILES})
+add_library(RynCore INTERFACE)
 add_library(Ryn::Core ALIAS RynCore)
 
-target_include_directories(RynCore
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
-        $<INSTALL_INTERFACE:Include>
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
+target_include_directories(RynCore INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+    $<INSTALL_INTERFACE:Include>
 )
 
-target_link_libraries(RynCore
-    PUBLIC
-    PRIVATE
-        Ryn::CompilerOptions
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include/Ryn DESTINATION ${CMAKE_INSTALL_PREFIX}/Include)
+
+target_sources(RynCore INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Memory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/String.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Clock.cpp
+    $<$<PLATFORM_ID:Darwin>:
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/MacOS/Clock.cpp
+    >
 )

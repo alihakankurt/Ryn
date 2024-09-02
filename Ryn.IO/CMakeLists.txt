@@ -1,29 +1,15 @@
-set(RYN_IO_SOURCE_FILES
-)
-
-if (RYN_PLATFORM_WINDOWS)
-    list(APPEND RYN_IO_SOURCE_FILES
-    )
-elseif (RYN_PLATFORM_LINUX OR RYN_PLATFORM_MACOS)
-    list(APPEND RYN_IO_SOURCE_FILES
-        Source/Unix/File.cpp
-    )
-endif()
-
-add_library(RynIO ${RYN_IO_SOURCE_FILES})
+add_library(RynIO INTERFACE)
 add_library(Ryn::IO ALIAS RynIO)
 
-target_include_directories(RynIO
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
-        $<INSTALL_INTERFACE:Include>
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
+target_include_directories(RynIO INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+    $<INSTALL_INTERFACE:Include>
 )
 
-target_link_libraries(RynIO
-    PUBLIC
-        Ryn::Core
-    PRIVATE
-        Ryn::CompilerOptions
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include/Ryn DESTINATION ${CMAKE_INSTALL_PREFIX}/Include)
+
+target_sources(RynIO INTERFACE
+    $<$<PLATFORM_ID:Darwin>:
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/Unix/File.cpp
+    >
 )

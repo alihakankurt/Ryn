@@ -10,7 +10,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CompilerOptions.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/PlatformDefinitions.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BuildDefinitions.cmake)
 
 add_subdirectory(Ryn.Core)
 add_subdirectory(Ryn.Collections)
@@ -18,15 +18,19 @@ add_subdirectory(Ryn.IO)
 add_subdirectory(Ryn.Windowing)
 add_subdirectory(Ryn.Framework)
 
-add_library(${PROJECT_NAME} INTERFACE)
+add_library(${PROJECT_NAME})
 add_library(Ryn::Ryn ALIAS ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
-    INTERFACE
+    PUBLIC
         Ryn::Core
         Ryn::Collections
         Ryn::IO
         Ryn::Windowing
         Ryn::Framework
+    PRIVATE
         Ryn::CompilerOptions
+        $<$<PLATFORM_ID:Darwin>:
+            "-framework Cocoa"
+        >
 )

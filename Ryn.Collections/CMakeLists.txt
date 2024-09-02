@@ -1,21 +1,9 @@
-set(RYN_COLLECTIONS_SOURCE_FILES
-    Source/Dummy.cpp
-)
-
-add_library(RynCollections ${RYN_COLLECTIONS_SOURCE_FILES})
+add_library(RynCollections INTERFACE)
 add_library(Ryn::Collections ALIAS RynCollections)
 
-target_include_directories(RynCollections
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
-        $<INSTALL_INTERFACE:Include>
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
+target_include_directories(RynCollections INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+    $<INSTALL_INTERFACE:Include>
 )
 
-target_link_libraries(RynCollections
-    PUBLIC
-        Ryn::Core
-    PRIVATE
-        Ryn::CompilerOptions
-)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include/Ryn DESTINATION ${CMAKE_INSTALL_PREFIX}/Include)
