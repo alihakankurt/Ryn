@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Ryn/Core.hpp>
+#include <Ryn/Core/Types.hpp>
+#include <Ryn/Core/Utility.hpp>
+#include <Ryn/Core/Span.hpp>
 
 namespace Ryn::Collections
 {
@@ -26,5 +28,7 @@ namespace Ryn::Collections
 
         constexpr TValue& operator[](Core::usz index) { return _data[index]; }
         constexpr const TValue& operator[](Core::usz index) const { return _data[index]; }
+
+        constexpr operator Core::Span<const TValue>() const { return Core::Span<const TValue>(_data, TLength); }
     };
 }

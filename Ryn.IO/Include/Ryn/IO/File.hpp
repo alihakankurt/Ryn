@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Ryn/Core.hpp>
+#include <Ryn/Core/Span.hpp>
+#include <Ryn/Core/String.hpp>
 
 namespace Ryn::IO
 {

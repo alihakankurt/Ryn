@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Ryn/Core.hpp>
+#include <Ryn/Core/Types.hpp>
 #include <Ryn/Windowing/Input/InputContext.hpp>
 
 namespace Ryn::Windowing
