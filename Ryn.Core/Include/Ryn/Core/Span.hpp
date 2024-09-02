@@ -86,7 +86,7 @@ namespace Ryn::Core
 
         bool operator==(const Span<TValue>& other) const
         {
-            return _length == other._length && Memory::Compare(_data, other._data, _length * sizeof(char)) == 0;
+            return _length == other._length && Memory::Compare(_data, other._data, _length) == 0;
         }
 
         bool operator!=(const Span<TValue>& other) const
@@ -97,14 +97,14 @@ namespace Ryn::Core
         bool operator<(const Span<TValue>& other) const
         {
             const usz length = (_length < other._length) ? _length : other._length;
-            const isz comparison = Memory::Compare(_data, other._data, length * sizeof(char));
+            const isz comparison = Memory::Compare(_data, other._data, length);
             return (comparison == 0) ? _length < other._length : comparison < 0;
         }
 
         bool operator>(const Span<TValue>& other) const
         {
             const usz length = (_length < other._length) ? _length : other._length;
-            const isz comparison = Memory::Compare(_data, other._data, length * sizeof(char));
+            const isz comparison = Memory::Compare(_data, other._data, length);
             return (comparison == 0) ? _length > other._length : comparison > 0;
         }
 

@@ -58,7 +58,7 @@ namespace Ryn::Core
         _length = length;
         _data = new char[_length + 1];
 
-        Memory::Copy(&_data[0], &data[0], _length * sizeof(char));
+        Memory::Copy(&_data[0], &data[0], _length);
         _data[_length] = '\0';
     }
 
@@ -82,8 +82,8 @@ namespace Ryn::Core
         usz newLength = _length + length;
         char* newData = new char[newLength + 1];
 
-        Memory::Copy(&newData[0], &_data[0], _length * sizeof(char));
-        Memory::Copy(&newData[_length], &data[0], length * sizeof(char));
+        Memory::Copy(&newData[0], &_data[0], _length);
+        Memory::Copy(&newData[_length], &data[0], length);
         newData[newLength] = '\0';
 
         delete[] _data;
@@ -157,9 +157,9 @@ namespace Ryn::Core
         usz newLength = _length + length;
         char* newData = new char[newLength + 1];
 
-        Memory::Copy(&newData[0], &_data[0], to * sizeof(char));
-        Memory::Copy(&newData[to], &data[0], length * sizeof(char));
-        Memory::Copy(&newData[to + length], &_data[to], (_length - to) * sizeof(char));
+        Memory::Copy(&newData[0], &_data[0], to);
+        Memory::Copy(&newData[to], &data[0], length);
+        Memory::Copy(&newData[to + length], &_data[to], _length - to);
         newData[newLength] = '\0';
 
         delete[] _data;
@@ -181,8 +181,8 @@ namespace Ryn::Core
         usz newLength = _length - (to - from + 1);
         char* newData = new char[newLength + 1];
 
-        Memory::Copy(&newData[0], &_data[0], from * sizeof(char));
-        Memory::Copy(&newData[from], &_data[to + 1], (_length - to - 1) * sizeof(char));
+        Memory::Copy(&newData[0], &_data[0], from);
+        Memory::Copy(&newData[from], &_data[to + 1], _length - to - 1);
         newData[newLength] = '\0';
 
         delete[] _data;
@@ -193,7 +193,7 @@ namespace Ryn::Core
 
     bool String::operator==(const String& other) const
     {
-        return _length == other._length && Memory::Compare(_data, other._data, _length * sizeof(char)) == 0;
+        return _length == other._length && Memory::Compare(_data, other._data, _length) == 0;
     }
 
     bool String::operator!=(const String& other) const
@@ -204,14 +204,14 @@ namespace Ryn::Core
     bool String::operator<(const String& other) const
     {
         const usz length = (_length < other._length) ? _length : other._length;
-        const isz comparison = Memory::Compare(_data, other._data, length * sizeof(char));
+        const isz comparison = Memory::Compare(_data, other._data, length);
         return (comparison == 0) ? _length < other._length : comparison < 0;
     }
 
     bool String::operator>(const String& other) const
     {
         const usz length = (_length < other._length) ? _length : other._length;
-        const isz comparison = Memory::Compare(_data, other._data, length * sizeof(char));
+        const isz comparison = Memory::Compare(_data, other._data, length);
         return (comparison == 0) ? _length > other._length : comparison > 0;
     }
 

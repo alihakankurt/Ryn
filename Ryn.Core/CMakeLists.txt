@@ -9,7 +9,6 @@ target_include_directories(RynCore INTERFACE
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include/Ryn DESTINATION ${CMAKE_INSTALL_PREFIX}/Include)
 
 target_sources(RynCore INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Memory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/String.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Clock.cpp
     $<$<PLATFORM_ID:Darwin>:
