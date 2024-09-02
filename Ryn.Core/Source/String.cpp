@@ -13,7 +13,7 @@ namespace Ryn::Core
         Construct(other._data, other._length);
     }
 
-    String::String(String&& other) noexcept
+    String::String(String&& other)
     {
         _length = other._length;
         _data = other._data;
@@ -37,7 +37,7 @@ namespace Ryn::Core
         return *this;
     }
 
-    String& String::operator=(String&& other) noexcept
+    String& String::operator=(String&& other)
     {
         if (this != &other)
         {

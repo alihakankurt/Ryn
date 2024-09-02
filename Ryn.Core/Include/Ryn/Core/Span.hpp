@@ -28,7 +28,7 @@ namespace Ryn::Core
             _data(other._data),
             _length(other._length) {}
 
-        Span(Span<TValue>&& other) noexcept :
+        Span(Span<TValue>&& other) :
             _data(other._data),
             _length(other._length)
         {
@@ -47,7 +47,7 @@ namespace Ryn::Core
             return *this;
         }
 
-        Span<TValue>& operator=(Span<TValue>&& other) noexcept
+        Span<TValue>& operator=(Span<TValue>&& other)
         {
             if (this != &other)
             {

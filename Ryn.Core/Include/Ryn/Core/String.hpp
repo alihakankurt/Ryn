@@ -27,11 +27,11 @@ namespace Ryn::Core
 
         String(const Span<char>& span);
         String(const String& other);
-        String(String&& other) noexcept;
+        String(String&& other);
         ~String();
 
         String& operator=(const String& other);
-        String& operator=(String&& other) noexcept;
+        String& operator=(String&& other);
 
       private:
         void Construct(const char* data, usz length);
