@@ -4,23 +4,23 @@
 
 namespace Ryn::Core
 {
-    isz Memory::Compare(const void* source1, const void* source2, usz length)
+    isz Memory::Compare(const void* source1, const void* source2, usz size)
     {
-        return memcmp(source1, source2, length);
+        return memcmp(source1, source2, size);
     }
 
-    void Memory::Copy(void* destination, const void* source, usz length)
+    void Memory::Copy(void* destination, const void* source, usz size)
     {
-        memcpy(destination, source, length);
+        memcpy(destination, source, size);
     }
 
-    void Memory::Move(void* destination, const void* source, usz length)
+    void Memory::Move(void* destination, const void* source, usz size)
     {
-        memmove(destination, source, length);
+        memmove(destination, source, size);
     }
 
-    void Memory::Set(void* memory, u8 value, usz length)
+    void Memory::Set(void* memory, u8 value, usz size)
     {
-        memset(memory, value, length);
+        memset(memory, value, size);
     }
 }

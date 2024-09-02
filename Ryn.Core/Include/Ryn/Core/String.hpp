@@ -19,9 +19,9 @@ namespace Ryn::Core
             _data(str) {}
 
         template <usz N>
-        constexpr String(const char (&str)[N]) :
-            _length(N - 1)
+        constexpr String(const char (&str)[N])
         {
+            _length = N - 1;
             Construct(str, N - 1);
         }
 
@@ -38,7 +38,6 @@ namespace Ryn::Core
 
       public:
         constexpr usz Length() const { return _length; }
-        constexpr const char* Raw() const { return _data; }
 
         constexpr const char& operator[](usz index) const { return _data[index]; }
         constexpr char& operator[](usz index) { return _data[index]; }
