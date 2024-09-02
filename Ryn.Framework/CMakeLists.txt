@@ -16,6 +16,7 @@ target_include_directories(RynFramework
 target_link_libraries(RynFramework
     PUBLIC
         Ryn::Core
+        Ryn::Collections
         Ryn::IO
         Ryn::Windowing
     PRIVATE
