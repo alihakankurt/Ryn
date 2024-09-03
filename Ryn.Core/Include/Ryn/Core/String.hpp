@@ -19,9 +19,9 @@ namespace Ryn::Core
             _data(str) {}
 
         template <usz N>
-        constexpr String(const char (&str)[N])
+        constexpr String(const char (&str)[N]) :
+            _length(N - 1)
         {
-            _length = N - 1;
             Construct(str, N - 1);
         }
 
@@ -39,8 +39,8 @@ namespace Ryn::Core
       public:
         constexpr usz Length() const { return _length; }
 
-        constexpr const char& operator[](usz index) const { return _data[index]; }
         constexpr char& operator[](usz index) { return _data[index]; }
+        constexpr const char& operator[](usz index) const { return _data[index]; }
 
         void Append(const char c);
         void Append(const char* str);
@@ -77,9 +77,9 @@ namespace Ryn::Core
         bool operator>=(const String& other) const;
 
       public:
-        Span<char> ToSpan() const;
-        Span<char> ToSpan(usz start) const;
-        Span<char> ToSpan(usz start, usz length) const;
+        constexpr Span<char> ToSpan() const { return Span<char>(_data, _length); }
+        constexpr Span<char> ToSpan(usz start) const { return ToSpan().Slice(start); }
+        constexpr Span<char> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
 
         constexpr operator Span<char>() const { return ToSpan(); }
         constexpr operator Span<const char>() const { return ToSpan(); }

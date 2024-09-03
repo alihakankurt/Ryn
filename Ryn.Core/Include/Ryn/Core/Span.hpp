@@ -24,11 +24,11 @@ namespace Ryn::Core
             _data(data),
             _length(N) {}
 
-        Span(const Span<TValue>& other) :
+        constexpr Span(const Span<TValue>& other) :
             _data(other._data),
             _length(other._length) {}
 
-        Span(Span<TValue>&& other) :
+        constexpr Span(Span<TValue>&& other) :
             _data(other._data),
             _length(other._length)
         {
@@ -36,7 +36,7 @@ namespace Ryn::Core
             other._length = 0;
         }
 
-        Span<TValue>& operator=(const Span<TValue>& other)
+        constexpr Span<TValue>& operator=(const Span<TValue>& other)
         {
             if (this != &other)
             {
@@ -47,7 +47,7 @@ namespace Ryn::Core
             return *this;
         }
 
-        Span<TValue>& operator=(Span<TValue>&& other)
+        constexpr Span<TValue>& operator=(Span<TValue>&& other)
         {
             if (this != &other)
             {
@@ -68,7 +68,7 @@ namespace Ryn::Core
 
         constexpr operator Span<const TValue>() const { return Span<const TValue>(_data, _length); }
 
-        Span<TValue> Cut(usz start) const
+        constexpr Span<TValue> Slice(usz start) const
         {
             if (_data == nullptr || start >= _length)
                 return Span<TValue>{};
@@ -76,44 +76,47 @@ namespace Ryn::Core
             return Span<TValue>(_data + start, _length - start);
         }
 
-        Span<TValue> Cut(usz start, usz length) const
+        constexpr Span<TValue> Slice(usz start, usz length) const
         {
-            if (_data == nullptr || start >= _length || start + length > _length || length == 0)
+            if (_data == nullptr || start >= _length)
+                return Span<TValue>{};
+
+            if (start + length > _length || length == 0)
                 return Span<TValue>{};
 
             return Span<TValue>(_data + start, length);
         }
 
-        bool operator==(const Span<TValue>& other) const
+        constexpr bool operator==(const Span<TValue>& other) const
         {
             return _length == other._length && Memory::Compare(_data, other._data, _length) == 0;
         }
 
-        bool operator!=(const Span<TValue>& other) const
+        constexpr bool operator!=(const Span<TValue>& other) const
         {
             return !(*this == other);
         }
 
-        bool operator<(const Span<TValue>& other) const
+        constexpr bool operator<(const Span<TValue>& other) const
         {
             const usz length = (_length < other._length) ? _length : other._length;
             const isz comparison = Memory::Compare(_data, other._data, length);
             return (comparison == 0) ? _length < other._length : comparison < 0;
         }
 
-        bool operator>(const Span<TValue>& other) const
+        constexpr bool operator>(const Span<TValue>& other) const
         {
             const usz length = (_length < other._length) ? _length : other._length;
             const isz comparison = Memory::Compare(_data, other._data, length);
             return (comparison == 0) ? _length > other._length : comparison > 0;
         }
 
-        bool operator<=(const Span<TValue>& other) const
+        constexpr bool operator<=(const Span<TValue>& other) const
         {
             return !(*this > other);
         }
 
-        bool operator>=(const Span<TValue>& other) const
+        constexpr bool operator>=(const Span<TValue>& other) const
         {
             return !(*this < other);
         }

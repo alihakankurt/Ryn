@@ -13,10 +13,10 @@ namespace Ryn::Core
         Construct(other._data, other._length);
     }
 
-    String::String(String&& other)
+    String::String(String&& other) :
+        _length(other._length),
+        _data(other._data)
     {
-        _length = other._length;
-        _data = other._data;
         other._length = 0;
         other._data = nullptr;
     }
@@ -223,21 +223,6 @@ namespace Ryn::Core
     bool String::operator>=(const String& other) const
     {
         return !(*this < other);
-    }
-
-    Span<char> String::ToSpan() const
-    {
-        return Span<char>(_data, _length);
-    }
-
-    Span<char> String::ToSpan(usz start) const
-    {
-        return ToSpan().Cut(start);
-    }
-
-    Span<char> String::ToSpan(usz start, usz length) const
-    {
-        return ToSpan().Cut(start, length);
     }
 
     usz String::Length(const char* str)
