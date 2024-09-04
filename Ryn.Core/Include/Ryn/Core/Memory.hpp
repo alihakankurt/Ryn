@@ -91,4 +91,20 @@ namespace Ryn::Core::Memory
             }
         }
     }
+
+    template <typename TValue>
+    static constexpr void Reverse(TValue* source, usz count)
+    {
+        if (count == 0)
+            return;
+
+        while (count > 1)
+        {
+            TValue temp = source[0];
+            source[0] = source[count - 1];
+            source[count - 1] = temp;
+            source += 1;
+            count -= 2;
+        }
+    }
 }

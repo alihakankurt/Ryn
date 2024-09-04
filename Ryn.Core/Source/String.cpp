@@ -127,4 +127,45 @@ namespace Ryn::Core
 
         return length;
     }
+
+    Span<const char> String::Format(Span<char> buffer, i64 value)
+    {
+        if (value < 0)
+        {
+            buffer[0] = '-';
+            value = -value;
+        }
+
+        Span<const char> result = String::Format(buffer.Slice(1), static_cast<u64>(value));
+        return Span<const char>(&buffer[0], result.Length() + 1);
+    }
+
+    Span<const char> String::Format(Span<char> buffer, u64 value)
+    {
+        usz index = 0;
+        do
+        {
+            buffer[index] = static_cast<char>('0' + (value % 10));
+            index += 1;
+            value /= 10;
+        }
+        while (value != 0 && index < buffer.Length());
+
+        Memory::Reverse(&buffer[0], index);
+        return Span<const char>(&buffer[0], index);
+    }
+
+    Span<const char> String::Format(Span<char> buffer, f64 value, u64 precision)
+    {
+        i64 integer = static_cast<i64>(value);
+        f64 fraction = value - integer;
+        fraction = (fraction < 0) ? -fraction : fraction;
+        fraction *= precision;
+
+        Span<const char> integerPart = String::Format(buffer, integer);
+        buffer[integerPart.Length()] = '.';
+        Span<const char> fractionPart = String::Format(buffer.Slice(integerPart.Length() + 1), static_cast<u64>(fraction));
+
+        return Span<const char>(&buffer[0], integerPart.Length() + 1 + fractionPart.Length());
+    }
 }
