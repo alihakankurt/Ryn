@@ -3,11 +3,6 @@
 
 namespace Ryn::Core
 {
-    String::String(const Span<char>& span)
-    {
-        Construct(&span[0], span.Length());
-    }
-
     String::String(const String& other)
     {
         Construct(other._data, other._length);
@@ -62,22 +57,7 @@ namespace Ryn::Core
         _data[_length] = '\0';
     }
 
-    void String::Append(const char c)
-    {
-        Append(&c, 1);
-    }
-
-    void String::Append(const char* str)
-    {
-        Append(str, String::Length(str));
-    }
-
-    void String::Append(const String& other)
-    {
-        Append(other._data, other._length);
-    }
-
-    void String::Append(const char* data, usz length)
+    String& String::Append(const char* data, usz length)
     {
         usz newLength = _length + length;
         char* newData = new char[newLength + 1];
@@ -90,68 +70,15 @@ namespace Ryn::Core
 
         _length = newLength;
         _data = newData;
-    }
 
-    String& String::operator+=(const char c)
-    {
-        Append(c);
         return *this;
     }
 
-    String& String::operator+=(const char* str)
-    {
-        Append(str);
-        return *this;
-    }
-
-    String& String::operator+=(const String& other)
-    {
-        Append(other);
-        return *this;
-    }
-
-    String String::operator+(const char c) const
-    {
-        String result = *this;
-        result += c;
-        return result;
-    }
-
-    String String::operator+(const char* str) const
-    {
-        String result = *this;
-        result += str;
-        return result;
-    }
-
-    String String::operator+(const String& other) const
-    {
-        String result = *this;
-        result += other;
-        return result;
-    }
-
-    void String::Insert(usz to, const char c)
-    {
-        Insert(to, &c, 1);
-    }
-
-    void String::Insert(usz to, const char* str)
-    {
-        Insert(to, str, String::Length(str));
-    }
-
-    void String::Insert(usz to, const String& other)
-    {
-        Insert(to, other._data, other._length);
-    }
-
-    void String::Insert(usz to, const char* data, usz length)
+    String& String::Insert(usz to, const char* data, usz length)
     {
         if (to >= _length)
         {
-            Append(data, length);
-            return;
+            return Append(data, length);
         }
 
         usz newLength = _length + length;
@@ -166,17 +93,14 @@ namespace Ryn::Core
 
         _length = newLength;
         _data = newData;
+
+        return *this;
     }
 
-    void String::Remove(usz at)
-    {
-        Remove(at, at);
-    }
-
-    void String::Remove(usz from, usz to)
+    String& String::Remove(usz from, usz to)
     {
         if (from >= _length || to >= _length || from > to)
-            return;
+            return *this;
 
         usz newLength = _length - (to - from + 1);
         char* newData = new char[newLength + 1];
@@ -189,40 +113,8 @@ namespace Ryn::Core
 
         _length = newLength;
         _data = newData;
-    }
 
-    bool String::operator==(const String& other) const
-    {
-        return _length == other._length && Memory::Compare(_data, other._data, _length) == 0;
-    }
-
-    bool String::operator!=(const String& other) const
-    {
-        return !(*this == other);
-    }
-
-    bool String::operator<(const String& other) const
-    {
-        const usz length = (_length < other._length) ? _length : other._length;
-        const isz comparison = Memory::Compare(_data, other._data, length);
-        return (comparison == 0) ? _length < other._length : comparison < 0;
-    }
-
-    bool String::operator>(const String& other) const
-    {
-        const usz length = (_length < other._length) ? _length : other._length;
-        const isz comparison = Memory::Compare(_data, other._data, length);
-        return (comparison == 0) ? _length > other._length : comparison > 0;
-    }
-
-    bool String::operator<=(const String& other) const
-    {
-        return !(*this > other);
-    }
-
-    bool String::operator>=(const String& other) const
-    {
-        return !(*this < other);
+        return *this;
     }
 
     usz String::Length(const char* str)

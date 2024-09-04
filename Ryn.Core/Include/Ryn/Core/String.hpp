@@ -25,7 +25,8 @@ namespace Ryn::Core
             Construct(str, N - 1);
         }
 
-        String(const Span<char>& span);
+        explicit String(Span<const char> span) { Construct(&span[0], span.Length()); }
+
         String(const String& other);
         String(String&& other);
         ~String();
@@ -42,39 +43,39 @@ namespace Ryn::Core
         constexpr char& operator[](usz index) { return _data[index]; }
         constexpr const char& operator[](usz index) const { return _data[index]; }
 
-        void Append(const char c);
-        void Append(const char* str);
-        void Append(const String& other);
+        String& Append(const char c) { return Append(&c, 1); }
+        String& Append(const char* str) { return Append(&str[0], String::Length(str)); }
+        String& Append(const String& other) { return Append(&other[0], other.Length()); }
+        String& Append(Span<const char> span) { return Append(&span[0], span.Length()); }
 
       private:
-        void Append(const char* data, usz length);
+        String& Append(const char* data, usz length);
 
       public:
-        String& operator+=(const char c);
-        String& operator+=(const char* str);
-        String& operator+=(const String& other);
+        String& operator+=(const char c) { return Append(c); }
+        String& operator+=(const char* str) { return Append(str); }
+        String& operator+=(const String& other) { return Append(other); }
+        String& operator+=(Span<const char> span) { return Append(span); }
 
-        String operator+(const char c) const;
-        String operator+(const char* str) const;
-        String operator+(const String& other) const;
+        String operator+(const char c) const { return String{*this}.Append(c); }
+        String operator+(const char* str) const { return String{*this}.Append(str); }
+        String operator+(const String& other) const { return String{*this}.Append(other); }
+        String operator+(Span<const char> span) const { return String{*this}.Append(span); }
 
-        void Insert(usz to, const char c);
-        void Insert(usz to, const char* str);
-        void Insert(usz to, const String& other);
+        String& Insert(usz to, const char c) { return Insert(to, &c, 1); }
+        String& Insert(usz to, const char* str) { return Insert(to, &str[0], String::Length(str)); }
+        String& Insert(usz to, const String& other) { return Insert(to, &other[0], other.Length()); }
+        String& Insert(usz to, Span<const char> span) { return Insert(to, &span[0], span.Length()); }
 
       private:
-        void Insert(usz to, const char* data, usz length);
+        String& Insert(usz to, const char* data, usz length);
 
       public:
-        void Remove(usz at);
-        void Remove(usz from, usz to);
+        String& Remove(usz at) { return Remove(at, at); }
+        String& Remove(usz from, usz to);
 
-        bool operator==(const String& other) const;
-        bool operator!=(const String& other) const;
-        bool operator<(const String& other) const;
-        bool operator>(const String& other) const;
-        bool operator<=(const String& other) const;
-        bool operator>=(const String& other) const;
+        constexpr bool operator==(const String& other) const { return _length == other._length && Memory::Compare(_data, other._data, _length) == 0; }
+        constexpr bool operator!=(const String& other) const { return !(*this == other); }
 
       public:
         constexpr Span<char> ToSpan() const { return Span<char>(_data, _length); }
