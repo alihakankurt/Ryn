@@ -29,6 +29,7 @@ namespace Ryn::Collections
         constexpr TValue& operator[](Core::usz index) { return _data[index]; }
         constexpr const TValue& operator[](Core::usz index) const { return _data[index]; }
 
-        constexpr operator Core::Span<const TValue>() const { return Core::Span<const TValue>(_data, TLength); }
+        constexpr operator Core::Span<TValue>() { return Core::Span<TValue>{&_data[0], TLength}; }
+        constexpr operator Core::Span<const TValue>() const { return Core::Span<const TValue>{&_data[0], TLength}; }
     };
 }
