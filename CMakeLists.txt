@@ -30,7 +30,10 @@ target_link_libraries(${PROJECT_NAME}
         Ryn::Framework
     PRIVATE
         Ryn::CompilerOptions
-        $<$<PLATFORM_ID:Darwin>:
-            "-framework Cocoa"
-        >
+)
+
+install(TARGETS ${PROJECT_NAME} EXPORT RynTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/Lib
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/Lib
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/Bin
 )

@@ -6,7 +6,7 @@ target_include_directories(RynIO INTERFACE
     $<INSTALL_INTERFACE:Include>
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include/Ryn DESTINATION ${CMAKE_INSTALL_PREFIX}/Include)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 target_sources(RynIO INTERFACE
     $<$<PLATFORM_ID:Darwin>:

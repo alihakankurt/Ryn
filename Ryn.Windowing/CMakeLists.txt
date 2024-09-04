@@ -6,7 +6,13 @@ target_include_directories(RynWindowing INTERFACE
     $<INSTALL_INTERFACE:Include>
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include/Ryn DESTINATION ${CMAKE_INSTALL_PREFIX}/Include)
+target_link_libraries(RynWindowing INTERFACE
+    $<$<PLATFORM_ID:Darwin>:
+        "-framework Cocoa"
+    >
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 target_sources(RynWindowing INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Input/InputContext.cpp
