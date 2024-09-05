@@ -28,12 +28,12 @@ namespace Ryn::Windowing::Input
 
     KeyState InputContext::GetKeyState(Key key) const
     {
-        return _keys[static_cast<Core::usz>(key)];
+        return _keys[static_cast<Core::u32>(key)];
     }
 
     void InputContext::SetKeyState(Key key, KeyState state)
     {
-        _keys[static_cast<Core::usz>(key)] = state;
+        _keys[static_cast<Core::u32>(key)] = state;
     }
 
     bool InputContext::IsButtonUp(MouseButton button) const
@@ -62,12 +62,12 @@ namespace Ryn::Windowing::Input
 
     MouseButtonState InputContext::GetButtonState(MouseButton button) const
     {
-        return _mouseButtons[static_cast<Core::usz>(button)];
+        return _mouseButtons[static_cast<Core::u32>(button)];
     }
 
     void InputContext::SetButtonState(MouseButton button, MouseButtonState state)
     {
-        _mouseButtons[static_cast<Core::usz>(button)] = state;
+        _mouseButtons[static_cast<Core::u32>(button)] = state;
     }
 
     void InputContext::Update()

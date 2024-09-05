@@ -8,17 +8,17 @@ namespace Ryn::Core
     class String
     {
       private:
-        usz _length{};
+        u32 _length{};
         char* _data{};
 
       public:
         consteval String() {};
 
-        constexpr String(char* str, usz length) :
+        constexpr String(char* str, u32 length) :
             _length(length),
             _data(str) {}
 
-        template <usz N>
+        template <u32 N>
         constexpr String(const char (&str)[N]) :
             _length(N - 1)
         {
@@ -35,13 +35,13 @@ namespace Ryn::Core
         String& operator=(String&& other);
 
       private:
-        void Construct(const char* data, usz length);
+        void Construct(const char* data, u32 length);
 
       public:
-        constexpr usz Length() const { return _length; }
+        constexpr u32 Length() const { return _length; }
 
-        constexpr char& operator[](usz index) { return _data[index]; }
-        constexpr const char& operator[](usz index) const { return _data[index]; }
+        constexpr char& operator[](u32 index) { return _data[index]; }
+        constexpr const char& operator[](u32 index) const { return _data[index]; }
 
         String& Append(const char c) { return Append(&c, 1); }
         String& Append(const char* str) { return Append(&str[0], String::Length(str)); }
@@ -51,17 +51,15 @@ namespace Ryn::Core
         String& Append(i16 value) { return Append(static_cast<i64>(value)); }
         String& Append(i32 value) { return Append(static_cast<i64>(value)); }
         String& Append(i64 value) { char buffer[20]; return Append(String::Format(Span<char>(buffer, sizeof(buffer)), value)); }
-        String& Append(isz value) { return Append(static_cast<i64>(value)); }
         String& Append(u8 value) { return Append(static_cast<u64>(value)); }
         String& Append(u16 value) { return Append(static_cast<u64>(value)); }
         String& Append(u32 value) { return Append(static_cast<u64>(value)); }
         String& Append(u64 value) { char buffer[20]; return Append(String::Format(Span<char>(buffer, sizeof(buffer)), value)); }
-        String& Append(usz value) { return Append(static_cast<u64>(value)); }
         String& Append(f32 value) { return Append(static_cast<f64>(value)); }
         String& Append(f64 value) { char buffer[32]; return Append(String::Format(Span<char>(buffer, sizeof(buffer)), value)); }
 
       private:
-        String& Append(const char* data, usz length);
+        String& Append(const char* data, u32 length);
 
       public:
         String& operator+=(const char c) { return Append(c); }
@@ -72,12 +70,10 @@ namespace Ryn::Core
         String& operator+=(i16 value) { return Append(value); }
         String& operator+=(i32 value) { return Append(value); }
         String& operator+=(i64 value) { return Append(value); }
-        String& operator+=(isz value) { return Append(value); }
         String& operator+=(u8 value) { return Append(value); }
         String& operator+=(u16 value) { return Append(value); }
         String& operator+=(u32 value) { return Append(value); }
         String& operator+=(u64 value) { return Append(value); }
-        String& operator+=(usz value) { return Append(value); }
         String& operator+=(f32 value) { return Append(value); }
         String& operator+=(f64 value) { return Append(value); }
 
@@ -89,52 +85,48 @@ namespace Ryn::Core
         String operator+(i16 value) const { return String{*this}.Append(value); }
         String operator+(i32 value) const { return String{*this}.Append(value); }
         String operator+(i64 value) const { return String{*this}.Append(value); }
-        String operator+(isz value) const { return String{*this}.Append(value); }
         String operator+(u8 value) const { return String{*this}.Append(value); }
         String operator+(u16 value) const { return String{*this}.Append(value); }
         String operator+(u32 value) const { return String{*this}.Append(value); }
         String operator+(u64 value) const { return String{*this}.Append(value); }
-        String operator+(usz value) const { return String{*this}.Append(value); }
         String operator+(f32 value) const { return String{*this}.Append(value); }
         String operator+(f64 value) const { return String{*this}.Append(value); }
 
-        String& Insert(usz to, const char c) { return Insert(to, &c, 1); }
-        String& Insert(usz to, const char* str) { return Insert(to, &str[0], String::Length(str)); }
-        String& Insert(usz to, const String& other) { return Insert(to, &other[0], other.Length()); }
-        String& Insert(usz to, Span<const char> span) { return Insert(to, &span[0], span.Length()); }
-        String& Insert(usz to, i8 value) { return Insert(to, static_cast<i64>(value)); }
-        String& Insert(usz to, i16 value) { return Insert(to, static_cast<i64>(value)); }
-        String& Insert(usz to, i32 value) { return Insert(to, static_cast<i64>(value)); }
-        String& Insert(usz to, i64 value) { char buffer[20]; return Insert(to, String::Format(Span<char>(buffer, 20), value)); }
-        String& Insert(usz to, isz value) { return Insert(to, static_cast<i64>(value)); }
-        String& Insert(usz to, u8 value) { return Insert(to, static_cast<u64>(value)); }
-        String& Insert(usz to, u16 value) { return Insert(to, static_cast<u64>(value)); }
-        String& Insert(usz to, u32 value) { return Insert(to, static_cast<u64>(value)); }
-        String& Insert(usz to, u64 value) { char buffer[20]; return Insert(to, String::Format(Span<char>(buffer, 20), value)); }
-        String& Insert(usz to, usz value) { return Insert(to, static_cast<u64>(value)); }
-        String& Insert(usz to, f32 value) { return Insert(to, static_cast<f64>(value)); }
-        String& Insert(usz to, f64 value) { char buffer[32]; return Insert(to, String::Format(Span<char>(buffer, 32), value)); }
+        String& Insert(u32 to, const char c) { return Insert(to, &c, 1); }
+        String& Insert(u32 to, const char* str) { return Insert(to, &str[0], String::Length(str)); }
+        String& Insert(u32 to, const String& other) { return Insert(to, &other[0], other.Length()); }
+        String& Insert(u32 to, Span<const char> span) { return Insert(to, &span[0], span.Length()); }
+        String& Insert(u32 to, i8 value) { return Insert(to, static_cast<i64>(value)); }
+        String& Insert(u32 to, i16 value) { return Insert(to, static_cast<i64>(value)); }
+        String& Insert(u32 to, i32 value) { return Insert(to, static_cast<i64>(value)); }
+        String& Insert(u32 to, i64 value) { char buffer[20]; return Insert(to, String::Format(Span<char>(buffer, 20), value)); }
+        String& Insert(u32 to, u8 value) { return Insert(to, static_cast<u64>(value)); }
+        String& Insert(u32 to, u16 value) { return Insert(to, static_cast<u64>(value)); }
+        String& Insert(u32 to, u32 value) { return Insert(to, static_cast<u64>(value)); }
+        String& Insert(u32 to, u64 value) { char buffer[20]; return Insert(to, String::Format(Span<char>(buffer, 20), value)); }
+        String& Insert(u32 to, f32 value) { return Insert(to, static_cast<f64>(value)); }
+        String& Insert(u32 to, f64 value) { char buffer[32]; return Insert(to, String::Format(Span<char>(buffer, 32), value)); }
 
       private:
-        String& Insert(usz to, const char* data, usz length);
+        String& Insert(u32 to, const char* data, u32 length);
 
       public:
-        String& Remove(usz at) { return Remove(at, at); }
-        String& Remove(usz from, usz to);
+        String& Remove(u32 at) { return Remove(at, at); }
+        String& Remove(u32 from, u32 to);
 
         constexpr bool operator==(const String& other) const { return _length == other._length && Memory::Compare(_data, other._data, _length) == 0; }
         constexpr bool operator!=(const String& other) const { return !(*this == other); }
 
       public:
         constexpr Span<char> ToSpan() const { return Span<char>(_data, _length); }
-        constexpr Span<char> ToSpan(usz start) const { return ToSpan().Slice(start); }
-        constexpr Span<char> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
+        constexpr Span<char> ToSpan(u32 start) const { return ToSpan().Slice(start); }
+        constexpr Span<char> ToSpan(u32 start, u32 length) const { return ToSpan().Slice(start, length); }
 
         constexpr operator Span<char>() const { return ToSpan(); }
         constexpr operator Span<const char>() const { return ToSpan(); }
 
       public:
-        static usz Length(const char* str);
+        static u32 Length(const char* str);
 
         static Span<const char> Format(Span<char> buffer, i64 value);
         static Span<const char> Format(Span<char> buffer, u64 value);

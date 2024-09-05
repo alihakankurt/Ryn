@@ -7,8 +7,8 @@ namespace Ryn::Windowing
 {
     struct WindowSettings
     {
-        Core::usz Width;
-        Core::usz Height;
+        Core::u16 Width;
+        Core::u16 Height;
         const char* Title;
     };
 

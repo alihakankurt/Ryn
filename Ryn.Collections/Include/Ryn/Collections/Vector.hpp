@@ -11,41 +11,41 @@ namespace Ryn::Collections
     class Vector
     {
       private:
-        static constexpr Core::usz InitialCapacity = 4;
+        static constexpr Core::u32 InitialCapacity = 4;
 
       private:
         TValue* _data{};
-        Core::usz _count{};
-        Core::usz _capacity{};
+        Core::u32 _count{};
+        Core::u32 _capacity{};
 
       public:
         consteval Vector() {}
 
-        template <Core::usz N>
+        template <Core::u32 N>
         constexpr Vector(const TValue (&array)[N]) :
             _count{N},
             _capacity{N}
         {
             _data = new TValue[_capacity];
-            for (Core::usz index = 0; index < N; index += 1)
+            for (Core::u32 index = 0; index < N; index += 1)
             {
                 _data[index] = array[index];
             }
         }
 
-        template <Core::usz N>
+        template <Core::u32 N>
         constexpr Vector(TValue (&&array)[N]) :
             _count{N},
             _capacity{N}
         {
             _data = new TValue[_capacity];
-            for (Core::usz index = 0; index < N; index += 1)
+            for (Core::u32 index = 0; index < N; index += 1)
             {
                 _data[index] = Core::Utility::Move(array[index]);
             }
         }
 
-        constexpr Vector(Core::usz capacity) :
+        constexpr Vector(Core::u32 capacity) :
             _capacity{capacity}
         {
             _data = new TValue[_capacity];
@@ -106,14 +106,14 @@ namespace Ryn::Collections
             return *this;
         }
 
-        Core::usz Count() const { return _count; }
+        Core::u32 Count() const { return _count; }
 
-        constexpr TValue& operator[](Core::usz index) { return _data[index]; }
-        constexpr const TValue& operator[](Core::usz index) const { return _data[index]; }
+        constexpr TValue& operator[](Core::u32 index) { return _data[index]; }
+        constexpr const TValue& operator[](Core::u32 index) const { return _data[index]; }
 
         constexpr Core::Span<TValue> ToSpan() const { return Core::Span<TValue>(_data, _count); }
-        constexpr Core::Span<TValue> ToSpan(Core::usz start) const { return ToSpan().Slice(start); }
-        constexpr Core::Span<TValue> ToSpan(Core::usz start, Core::usz length) const { return ToSpan().Slice(start, length); }
+        constexpr Core::Span<TValue> ToSpan(Core::u32 start) const { return ToSpan().Slice(start); }
+        constexpr Core::Span<TValue> ToSpan(Core::u32 start, Core::u32 length) const { return ToSpan().Slice(start, length); }
 
         constexpr void Push(const TValue& value)
         {

@@ -6,30 +6,30 @@
 
 namespace Ryn::Collections
 {
-    template <typename TValue, Core::usz TLength>
+    template <typename TValue, Core::u32 TCount>
     class Array
     {
       private:
-        TValue _data[TLength];
+        TValue _data[TCount];
 
       public:
-        static_assert(TLength > 0, "The array cannot have a length of zero.");
+        static_assert(TCount > 0, "The array cannot be empty.");
 
         consteval Array() :
             _data{} {}
 
-        constexpr Array(TValue (&&array)[TLength])
+        constexpr Array(TValue (&&array)[TCount])
         {
-            for (Core::usz index = 0; index < TLength; index += 1)
+            for (Core::u32 index = 0; index < TCount; index += 1)
                 _data[index] = Core::Utility::Move(array[index]);
         }
 
-        constexpr Core::usz Length() const { return TLength; }
+        constexpr Core::u32 Count() const { return TCount; }
 
-        constexpr TValue& operator[](Core::usz index) { return _data[index]; }
-        constexpr const TValue& operator[](Core::usz index) const { return _data[index]; }
+        constexpr TValue& operator[](Core::u32 index) { return _data[index]; }
+        constexpr const TValue& operator[](Core::u32 index) const { return _data[index]; }
 
-        constexpr operator Core::Span<TValue>() { return Core::Span<TValue>{&_data[0], TLength}; }
-        constexpr operator Core::Span<const TValue>() const { return Core::Span<const TValue>{&_data[0], TLength}; }
+        constexpr operator Core::Span<TValue>() { return Core::Span<TValue>{&_data[0], TCount}; }
+        constexpr operator Core::Span<const TValue>() const { return Core::Span<const TValue>{&_data[0], TCount}; }
     };
 }

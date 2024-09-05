@@ -46,7 +46,7 @@ namespace Ryn::Core
         return *this;
     }
 
-    void String::Construct(const char* data, usz length)
+    void String::Construct(const char* data, u32 length)
     {
         delete[] _data;
 
@@ -57,9 +57,9 @@ namespace Ryn::Core
         _data[_length] = '\0';
     }
 
-    String& String::Append(const char* data, usz length)
+    String& String::Append(const char* data, u32 length)
     {
-        usz newLength = _length + length;
+        u32 newLength = _length + length;
         char* newData = new char[newLength + 1];
 
         Memory::Copy(&newData[0], &_data[0], _length);
@@ -74,14 +74,14 @@ namespace Ryn::Core
         return *this;
     }
 
-    String& String::Insert(usz to, const char* data, usz length)
+    String& String::Insert(u32 to, const char* data, u32 length)
     {
         if (to >= _length)
         {
             return Append(data, length);
         }
 
-        usz newLength = _length + length;
+        u32 newLength = _length + length;
         char* newData = new char[newLength + 1];
 
         Memory::Copy(&newData[0], &_data[0], to);
@@ -97,12 +97,12 @@ namespace Ryn::Core
         return *this;
     }
 
-    String& String::Remove(usz from, usz to)
+    String& String::Remove(u32 from, u32 to)
     {
         if (from >= _length || to >= _length || from > to)
             return *this;
 
-        usz newLength = _length - (to - from + 1);
+        u32 newLength = _length - (to - from + 1);
         char* newData = new char[newLength + 1];
 
         Memory::Copy(&newData[0], &_data[0], from);
@@ -117,9 +117,9 @@ namespace Ryn::Core
         return *this;
     }
 
-    usz String::Length(const char* str)
+    u32 String::Length(const char* str)
     {
-        usz length = 0;
+        u32 length = 0;
         while (str[length] != '\0')
         {
             length += 1;
@@ -142,7 +142,7 @@ namespace Ryn::Core
 
     Span<const char> String::Format(Span<char> buffer, u64 value)
     {
-        usz index = 0;
+        u32 index = 0;
         do
         {
             buffer[index] = static_cast<char>('0' + (value % 10));

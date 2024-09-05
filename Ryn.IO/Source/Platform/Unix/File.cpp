@@ -21,10 +21,10 @@ namespace Ryn::IO
             return Core::String{};
         }
 
-        Core::usz fileSize = static_cast<Core::usz>(fileStat.st_size);
+        Core::u32 fileSize = static_cast<Core::u32>(fileStat.st_size);
         char* buffer = new char[fileSize];
 
-        Core::usz bytesReadTotal = 0;
+        Core::u32 bytesReadTotal = 0;
         while (bytesReadTotal < fileSize)
         {
             ssize_t bytesRead = read(file, buffer + bytesReadTotal, fileSize - bytesReadTotal);
@@ -34,7 +34,7 @@ namespace Ryn::IO
                 return Core::String{};
             }
 
-            bytesReadTotal += static_cast<Core::usz>(bytesRead);
+            bytesReadTotal += static_cast<Core::u32>(bytesRead);
         }
 
         close(file);
@@ -43,14 +43,14 @@ namespace Ryn::IO
 
     static bool WriteToFile(int file, const Core::Span<const char> content)
     {
-        Core::usz bytesWrittenTotal = 0;
+        Core::u32 bytesWrittenTotal = 0;
         while (bytesWrittenTotal < content.Length())
         {
             ssize_t bytesWritten = write(file, &content[bytesWrittenTotal], content.Length() - bytesWrittenTotal);
             if (bytesWritten == -1)
                 return false;
 
-            bytesWrittenTotal += static_cast<Core::usz>(bytesWritten);
+            bytesWrittenTotal += static_cast<Core::u32>(bytesWritten);
         }
 
         return true;
