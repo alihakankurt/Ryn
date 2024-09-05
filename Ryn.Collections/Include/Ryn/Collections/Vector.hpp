@@ -2,50 +2,54 @@
 
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Utility.hpp>
-#include <Ryn/Core/Span.hpp>
 #include <Ryn/Core/Memory.hpp>
+#include <Ryn/Core/Span.hpp>
 
-namespace Ryn::Collections
+namespace Ryn
 {
     template <typename TValue>
     class Vector
     {
       private:
-        static constexpr Core::u32 InitialCapacity = 4;
+        static constexpr u32 InitialCapacity = 4;
 
       private:
-        TValue* _data{};
-        Core::u32 _count{};
-        Core::u32 _capacity{};
+        TValue* _data;
+        u32 _count;
+        u32 _capacity;
 
       public:
-        consteval Vector() {}
+        consteval Vector() :
+            _data{},
+            _count{},
+            _capacity{} {}
 
-        template <Core::u32 N>
+        template <u32 N>
         constexpr Vector(const TValue (&array)[N]) :
             _count{N},
             _capacity{N}
         {
             _data = new TValue[_capacity];
-            for (Core::u32 index = 0; index < N; index += 1)
+            for (u32 index = 0; index < N; index += 1)
             {
                 _data[index] = array[index];
             }
         }
 
-        template <Core::u32 N>
+        template <u32 N>
         constexpr Vector(TValue (&&array)[N]) :
             _count{N},
             _capacity{N}
         {
             _data = new TValue[_capacity];
-            for (Core::u32 index = 0; index < N; index += 1)
+            for (u32 index = 0; index < N; index += 1)
             {
-                _data[index] = Core::Utility::Move(array[index]);
+                _data[index] = Utility::Move(array[index]);
             }
         }
 
-        constexpr Vector(Core::u32 capacity) :
+        constexpr Vector(u32 capacity) :
+            _count{},
             _capacity{capacity}
         {
             _data = new TValue[_capacity];
@@ -56,37 +60,33 @@ namespace Ryn::Collections
             _capacity{other._capacity}
         {
             _data = new TValue[_capacity];
-            Core::Memory::Copy(&_data[0], &other._data[0], _count);
+            Memory::Copy(&_data[0], &other._data[0], _count);
         }
 
         constexpr Vector(Vector&& other) :
-            _count{other._count},
-            _capacity{other._capacity},
-            _data{other._data}
-        {
-            other._count = 0;
-            other._capacity = 0;
-            other._data = nullptr;
-        }
+            _data{Utility::Exchange(other._data)},
+            _count{Utility::Exchange(other._count)},
+            _capacity{Utility::Exchange(other._capacity)} {}
 
         constexpr ~Vector()
         {
             delete[] _data;
-            _data = nullptr;
+            _data = {};
+            _count = {};
+            _capacity = {};
         }
 
         constexpr Vector& operator=(const Vector& other)
         {
             if (this != &other)
             {
-                _count = other._count;
-                _capacity = other._capacity;
-
                 delete[] _data;
                 _data = new TValue[_capacity];
-                Core::Memory::Copy(&_data[0], &other._data[0], _count);
-            }
+                Memory::Copy(&_data[0], &other._data[0], _count);
 
+                _count = other._count;
+                _capacity = other._capacity;
+            }
             return *this;
         }
 
@@ -94,26 +94,28 @@ namespace Ryn::Collections
         {
             if (this != &other)
             {
-                _count = other._count;
-                _capacity = other._capacity;
-                _data = other._data;
-
-                other._count = 0;
-                other._capacity = 0;
-                other._data = nullptr;
+                delete[] _data;
+                _data = Utility::Exchange(other._data);
+                _count = Utility::Exchange(other._count);
+                _capacity = Utility::Exchange(other._capacity);
             }
-
             return *this;
         }
 
-        Core::u32 Count() const { return _count; }
+        u32 Count() const { return _count; }
 
-        constexpr TValue& operator[](Core::u32 index) { return _data[index]; }
-        constexpr const TValue& operator[](Core::u32 index) const { return _data[index]; }
+        constexpr TValue& operator[](u32 index) { return _data[index]; }
+        constexpr const TValue& operator[](u32 index) const { return _data[index]; }
 
-        constexpr Core::Span<TValue> ToSpan() const { return Core::Span<TValue>(_data, _count); }
-        constexpr Core::Span<TValue> ToSpan(Core::u32 start) const { return ToSpan().Slice(start); }
-        constexpr Core::Span<TValue> ToSpan(Core::u32 start, Core::u32 length) const { return ToSpan().Slice(start, length); }
+        constexpr TValue& First() { return _data[0]; }
+        constexpr const TValue& First() const { return _data[0]; }
+
+        constexpr TValue& Last() { return _data[_count - 1]; }
+        constexpr const TValue& Last() const { return _data[_count - 1]; }
+
+        constexpr Span<TValue> ToSpan() const { return Span<TValue>{_data, _count}; }
+        constexpr Span<TValue> ToSpan(u32 start) const { return ToSpan().Slice(start); }
+        constexpr Span<TValue> ToSpan(u32 start, u32 length) const { return ToSpan().Slice(start, length); }
 
         constexpr void Push(const TValue& value)
         {
@@ -121,7 +123,7 @@ namespace Ryn::Collections
             {
                 _capacity = (_capacity == 0) ? InitialCapacity : _capacity * 2;
                 TValue* newData = new TValue[_capacity];
-                Core::Memory::Copy(&newData[0], &_data[0], _count);
+                Memory::Copy(&newData[0], &_data[0], _count);
                 delete[] _data;
                 _data = newData;
             }
@@ -136,12 +138,12 @@ namespace Ryn::Collections
             {
                 _capacity = (_capacity == 0) ? InitialCapacity : _capacity * 2;
                 TValue* newData = new TValue[_capacity];
-                Core::Memory::Copy(&newData[0], &_data[0], _count);
+                Memory::Copy(&newData[0], &_data[0], _count);
                 delete[] _data;
                 _data = newData;
             }
 
-            _data[_count] = Core::Utility::Move(value);
+            _data[_count] = Utility::Move(value);
             _count += 1;
         }
 

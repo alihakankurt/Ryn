@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ryn::Core
+namespace Ryn
 {
     using i8 = signed char;
     using i16 = signed short;
@@ -27,4 +27,19 @@ namespace Ryn::Core
 
     static_assert(sizeof(f32) == 4, "f32 is not 4 bytes");
     static_assert(sizeof(f64) == 8, "f64 is not 8 bytes");
+
+    static constexpr i8 operator""_i8(unsigned long long value) { return static_cast<i8>(value); }
+    static constexpr i16 operator""_i16(unsigned long long value) { return static_cast<i16>(value); }
+    static constexpr i32 operator""_i32(unsigned long long value) { return static_cast<i32>(value); }
+    static constexpr i64 operator""_i64(unsigned long long value) { return static_cast<i64>(value); }
+
+    static constexpr u8 operator""_u8(unsigned long long value) { return static_cast<u8>(value); }
+    static constexpr u16 operator""_u16(unsigned long long value) { return static_cast<u16>(value); }
+    static constexpr u32 operator""_u32(unsigned long long value) { return static_cast<u32>(value); }
+    static constexpr u64 operator""_u64(unsigned long long value) { return static_cast<u64>(value); }
+
+    static constexpr f32 operator""_f32(unsigned long long value) { return static_cast<f32>(value); }
+    static constexpr f64 operator""_f64(unsigned long long value) { return static_cast<f64>(value); }
+    static constexpr f32 operator""_f32(long double value) { return static_cast<f32>(value); }
+    static constexpr f64 operator""_f64(long double value) { return static_cast<f64>(value); }
 }

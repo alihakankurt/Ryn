@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ryn::Windowing::Input
+namespace Ryn
 {
     enum class MouseButtonState
     {

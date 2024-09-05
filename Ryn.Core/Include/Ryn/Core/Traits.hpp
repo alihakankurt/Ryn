@@ -2,7 +2,7 @@
 
 #include <Ryn/Core/Types.hpp>
 
-namespace Ryn::Core::Traits
+namespace Ryn::Traits
 {
     template <typename T1, typename T2>
     struct SameTrait

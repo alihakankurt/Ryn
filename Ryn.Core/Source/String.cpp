@@ -1,7 +1,6 @@
 #include <Ryn/Core/String.hpp>
-#include <Ryn/Core/Memory.hpp>
 
-namespace Ryn::Core
+namespace Ryn
 {
     String::String(const String& other)
     {
@@ -9,26 +8,23 @@ namespace Ryn::Core
     }
 
     String::String(String&& other) :
-        _length(other._length),
-        _data(other._data)
-    {
-        other._length = 0;
-        other._data = nullptr;
-    }
+        _data{Utility::Exchange(other._data)},
+        _length{Utility::Exchange(other._length)} {}
 
     String::~String()
     {
         delete[] _data;
-        _data = nullptr;
+        _data = {};
+        _length = {};
     }
 
     String& String::operator=(const String& other)
     {
         if (this != &other)
         {
+            delete[] _data;
             Construct(other._data, other._length);
         }
-
         return *this;
     }
 
@@ -37,24 +33,19 @@ namespace Ryn::Core
         if (this != &other)
         {
             delete[] _data;
-            _length = other._length;
-            _data = other._data;
-            other._length = 0;
-            other._data = nullptr;
+            _data = Utility::Exchange(other._data);
+            _length = Utility::Exchange(other._length);
         }
-
         return *this;
     }
 
     void String::Construct(const char* data, u32 length)
     {
-        delete[] _data;
+        _data = new char[length + 1];
+        Memory::Copy(&_data[0], &data[0], length);
+        _data[length] = '\0';
 
         _length = length;
-        _data = new char[_length + 1];
-
-        Memory::Copy(&_data[0], &data[0], _length);
-        _data[_length] = '\0';
     }
 
     String& String::Append(const char* data, u32 length)
@@ -67,10 +58,8 @@ namespace Ryn::Core
         newData[newLength] = '\0';
 
         delete[] _data;
-
-        _length = newLength;
         _data = newData;
-
+        _length = newLength;
         return *this;
     }
 
@@ -90,10 +79,8 @@ namespace Ryn::Core
         newData[newLength] = '\0';
 
         delete[] _data;
-
-        _length = newLength;
         _data = newData;
-
+        _length = newLength;
         return *this;
     }
 
@@ -110,10 +97,8 @@ namespace Ryn::Core
         newData[newLength] = '\0';
 
         delete[] _data;
-
-        _length = newLength;
         _data = newData;
-
+        _length = newLength;
         return *this;
     }
 
@@ -137,7 +122,7 @@ namespace Ryn::Core
         }
 
         Span<const char> result = String::Format(buffer.Slice(1), static_cast<u64>(value));
-        return Span<const char>(&buffer[0], result.Length() + 1);
+        return Span<const char>{&buffer[0], result.Length() + 1};
     }
 
     Span<const char> String::Format(Span<char> buffer, u64 value)
@@ -152,7 +137,7 @@ namespace Ryn::Core
         while (value != 0 && index < buffer.Length());
 
         Memory::Reverse(&buffer[0], index);
-        return Span<const char>(&buffer[0], index);
+        return Span<const char>{&buffer[0], index};
     }
 
     Span<const char> String::Format(Span<char> buffer, f64 value, u64 precision)
@@ -166,6 +151,7 @@ namespace Ryn::Core
         buffer[integerPart.Length()] = '.';
         Span<const char> fractionPart = String::Format(buffer.Slice(integerPart.Length() + 1), static_cast<u64>(fraction));
 
-        return Span<const char>(&buffer[0], integerPart.Length() + 1 + fractionPart.Length());
+        u32 length = integerPart.Length() + 1 + fractionPart.Length();
+        return Span<const char>{&buffer[0], length};
     }
 }

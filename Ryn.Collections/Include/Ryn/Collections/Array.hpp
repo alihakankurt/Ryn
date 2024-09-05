@@ -4,9 +4,9 @@
 #include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/Span.hpp>
 
-namespace Ryn::Collections
+namespace Ryn
 {
-    template <typename TValue, Core::u32 TCount>
+    template <typename TValue, u32 TCount>
     class Array
     {
       private:
@@ -18,18 +18,24 @@ namespace Ryn::Collections
         consteval Array() :
             _data{} {}
 
-        constexpr Array(TValue (&&array)[TCount])
+        constexpr Array(const TValue& value)
         {
-            for (Core::u32 index = 0; index < TCount; index += 1)
-                _data[index] = Core::Utility::Move(array[index]);
+            for (u32 index = 0; index < TCount; index += 1)
+                _data[index] = value;
         }
 
-        constexpr Core::u32 Count() const { return TCount; }
+        constexpr Array(TValue (&&array)[TCount])
+        {
+            for (u32 index = 0; index < TCount; index += 1)
+                _data[index] = Utility::Move(array[index]);
+        }
 
-        constexpr TValue& operator[](Core::u32 index) { return _data[index]; }
-        constexpr const TValue& operator[](Core::u32 index) const { return _data[index]; }
+        constexpr u32 Count() const { return TCount; }
 
-        constexpr operator Core::Span<TValue>() { return Core::Span<TValue>{&_data[0], TCount}; }
-        constexpr operator Core::Span<const TValue>() const { return Core::Span<const TValue>{&_data[0], TCount}; }
+        constexpr TValue& operator[](u32 index) { return _data[index]; }
+        constexpr const TValue& operator[](u32 index) const { return _data[index]; }
+
+        constexpr operator Span<TValue>() { return Span<TValue>{&_data[0], TCount}; }
+        constexpr operator Span<const TValue>() const { return Span<const TValue>{&_data[0], TCount}; }
     };
 }

@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-namespace Ryn::Windowing
+namespace Ryn
 {
     class CocoaWindow : public Window
     {
@@ -29,21 +29,21 @@ namespace Ryn::Windowing
 
 @interface CocoaWindowDelegate : NSObject <NSWindowDelegate>
 {
-    Ryn::Windowing::CocoaWindow* _window;
+    Ryn::CocoaWindow* _window;
 }
 
-- (instancetype)initWithWindow:(Ryn::Windowing::CocoaWindow*)window;
+- (instancetype)initWithWindow:(Ryn::CocoaWindow*)window;
 
 @end
 
 @interface CocoaView : NSView
 {
-    Ryn::Windowing::CocoaWindow* _window;
+    Ryn::CocoaWindow* _window;
 }
 
-- (instancetype)initWithWindow:(Ryn::Windowing::CocoaWindow*)window;
+- (instancetype)initWithWindow:(Ryn::CocoaWindow*)window;
 
 @end
 
-static Ryn::Windowing::Input::Key MapCocoaKeyToRynKey(UInt16 keycode);
-static Ryn::Windowing::Input::MouseButton MapCocoaMouseButtonToRynMouseButton(NSInteger button);
+static Ryn::Key MapCocoaKeyToRynKey(UInt16 keycode);
+static Ryn::MouseButton MapCocoaMouseButtonToRynMouseButton(NSInteger button);

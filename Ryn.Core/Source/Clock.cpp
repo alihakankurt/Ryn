@@ -1,6 +1,6 @@
 #include <Ryn/Core/Clock.hpp>
 
-namespace Ryn::Core
+namespace Ryn
 {
     Clock::Clock()
     {

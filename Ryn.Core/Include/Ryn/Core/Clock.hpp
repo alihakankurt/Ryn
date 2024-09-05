@@ -2,7 +2,7 @@
 
 #include <Ryn/Core/Types.hpp>
 
-namespace Ryn::Core
+namespace Ryn
 {
     class Clock
     {

@@ -2,20 +2,20 @@
 
 #include <Ryn/Windowing/Window.hpp>
 
-namespace Ryn::Framework
+namespace Ryn
 {
     class Game
     {
       protected:
-        Windowing::Window* Window;
+        Window* Window;
 
       public:
-        virtual ~Game() = default;
+        virtual ~Game() {}
 
         void Run();
 
       protected:
-        virtual void Configure(Windowing::WindowSettings& settings) = 0;
+        virtual void Configure(WindowSettings& settings) = 0;
         virtual void Initialize() = 0;
         virtual void Finalize() = 0;
     };

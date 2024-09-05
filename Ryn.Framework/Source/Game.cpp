@@ -1,13 +1,13 @@
 #include <Ryn/Framework/Game.hpp>
 
-namespace Ryn::Framework
+namespace Ryn
 {
     void Game::Run()
     {
-        Windowing::WindowSettings settings;
+        WindowSettings settings;
         Configure(settings);
 
-        Window = Windowing::Window::Create(settings);
+        Window = Window::Create(settings);
 
         Initialize();
 

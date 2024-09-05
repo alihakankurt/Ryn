@@ -22,7 +22,7 @@
 
 @implementation CocoaWindowDelegate
 
-- (instancetype)initWithWindow:(Ryn::Windowing::CocoaWindow*)window
+- (instancetype)initWithWindow:(Ryn::CocoaWindow*)window
 {
     self = [super init];
     if (self)
@@ -47,7 +47,7 @@
 
 @implementation CocoaView
 
-- (instancetype)initWithWindow:(Ryn::Windowing::CocoaWindow*)window
+- (instancetype)initWithWindow:(Ryn::CocoaWindow*)window
 {
     self = [super init];
     if (self)
@@ -64,144 +64,144 @@
 
 - (void)keyDown:(NSEvent*)event
 {
-    _window->Input->SetKeyState(MapCocoaKeyToRynKey([event keyCode]), Ryn::Windowing::Input::KeyState::Pressed);
+    _window->Input->SetKeyState(MapCocoaKeyToRynKey([event keyCode]), Ryn::KeyState::Pressed);
 }
 
 - (void)keyUp:(NSEvent*)event
 {
-    _window->Input->SetKeyState(MapCocoaKeyToRynKey([event keyCode]), Ryn::Windowing::Input::KeyState::Released);
+    _window->Input->SetKeyState(MapCocoaKeyToRynKey([event keyCode]), Ryn::KeyState::Released);
 }
 
 - (void)mouseDown:(NSEvent*)event
 {
-    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Pressed);
+    _window->Input->SetButtonState(Ryn::MouseButton::Left, Ryn::MouseButtonState::Pressed);
 }
 
 - (void)mouseUp:(NSEvent*)event
 {
-    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Left, Ryn::Windowing::Input::MouseButtonState::Released);
+    _window->Input->SetButtonState(Ryn::MouseButton::Left, Ryn::MouseButtonState::Released);
 }
 
 - (void)rightMouseDown:(NSEvent*)event
 {
-    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Pressed);
+    _window->Input->SetButtonState(Ryn::MouseButton::Right, Ryn::MouseButtonState::Pressed);
 }
 
 - (void)rightMouseUp:(NSEvent*)event
 {
-    _window->Input->SetButtonState(Ryn::Windowing::Input::MouseButton::Right, Ryn::Windowing::Input::MouseButtonState::Released);
+    _window->Input->SetButtonState(Ryn::MouseButton::Right, Ryn::MouseButtonState::Released);
 }
 
 - (void)otherMouseDown:(NSEvent*)event
 {
-    _window->Input->SetButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Pressed);
+    _window->Input->SetButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::MouseButtonState::Pressed);
 }
 
 - (void)otherMouseUp:(NSEvent*)event
 {
-    _window->Input->SetButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::Windowing::Input::MouseButtonState::Released);
+    _window->Input->SetButtonState(MapCocoaMouseButtonToRynMouseButton([event buttonNumber]), Ryn::MouseButtonState::Released);
 }
 
 @end
 
-Ryn::Windowing::Input::Key MapCocoaKeyToRynKey(UInt16 keycode)
+Ryn::Key MapCocoaKeyToRynKey(UInt16 keycode)
 {
     switch (keycode)
     {
-        case 0:     return Ryn::Windowing::Input::Key::A;
-        case 1:     return Ryn::Windowing::Input::Key::S;
-        case 2:     return Ryn::Windowing::Input::Key::D;
-        case 3:     return Ryn::Windowing::Input::Key::F;
-        case 4:     return Ryn::Windowing::Input::Key::H;
-        case 5:     return Ryn::Windowing::Input::Key::G;
-        case 6:     return Ryn::Windowing::Input::Key::Z;
-        case 7:     return Ryn::Windowing::Input::Key::X;
-        case 8:     return Ryn::Windowing::Input::Key::C;
-        case 9:     return Ryn::Windowing::Input::Key::V;
-        case 10:    return Ryn::Windowing::Input::Key::Tilde;
-        case 11:    return Ryn::Windowing::Input::Key::B;
-        case 12:    return Ryn::Windowing::Input::Key::Q;
-        case 13:    return Ryn::Windowing::Input::Key::W;
-        case 14:    return Ryn::Windowing::Input::Key::E;
-        case 15:    return Ryn::Windowing::Input::Key::R;
-        case 16:    return Ryn::Windowing::Input::Key::Y;
-        case 17:    return Ryn::Windowing::Input::Key::T;
-        case 18:    return Ryn::Windowing::Input::Key::One;
-        case 19:    return Ryn::Windowing::Input::Key::Two;
-        case 20:    return Ryn::Windowing::Input::Key::Three;
-        case 21:    return Ryn::Windowing::Input::Key::Four;
-        case 22:    return Ryn::Windowing::Input::Key::Six;
-        case 23:    return Ryn::Windowing::Input::Key::Five;
-        case 24:    return Ryn::Windowing::Input::Key::Equal;
-        case 25:    return Ryn::Windowing::Input::Key::Nine;
-        case 26:    return Ryn::Windowing::Input::Key::Seven;
-        case 27:    return Ryn::Windowing::Input::Key::Minus;
-        case 28:    return Ryn::Windowing::Input::Key::Eight;
-        case 29:    return Ryn::Windowing::Input::Key::Zero;
-        case 30:    return Ryn::Windowing::Input::Key::RightBracket;
-        case 31:    return Ryn::Windowing::Input::Key::O;
-        case 32:    return Ryn::Windowing::Input::Key::U;
-        case 33:    return Ryn::Windowing::Input::Key::LeftBracket;
-        case 34:    return Ryn::Windowing::Input::Key::I;
-        case 35:    return Ryn::Windowing::Input::Key::P;
-        case 36:    return Ryn::Windowing::Input::Key::Enter;
-        case 37:    return Ryn::Windowing::Input::Key::L;
-        case 38:    return Ryn::Windowing::Input::Key::J;
-        case 39:    return Ryn::Windowing::Input::Key::Quote;
-        case 40:    return Ryn::Windowing::Input::Key::K;
-        case 41:    return Ryn::Windowing::Input::Key::Semicolon;
-        case 42:    return Ryn::Windowing::Input::Key::Backslash;
-        case 43:    return Ryn::Windowing::Input::Key::Comma;
-        case 44:    return Ryn::Windowing::Input::Key::Slash;
-        case 45:    return Ryn::Windowing::Input::Key::N;
-        case 46:    return Ryn::Windowing::Input::Key::M;
-        case 47:    return Ryn::Windowing::Input::Key::Period;
-        case 48:    return Ryn::Windowing::Input::Key::Tab;
-        case 49:    return Ryn::Windowing::Input::Key::Space;
-        case 50:    return Ryn::Windowing::Input::Key::Backtick;
-        case 51:    return Ryn::Windowing::Input::Key::Backspace;
-        case 53:    return Ryn::Windowing::Input::Key::Escape;
-        case 96:    return Ryn::Windowing::Input::Key::F5;
-        case 97:    return Ryn::Windowing::Input::Key::F6;
-        case 98:    return Ryn::Windowing::Input::Key::F7;
-        case 99:    return Ryn::Windowing::Input::Key::F3;
-        case 100:   return Ryn::Windowing::Input::Key::F8;
-        case 101:   return Ryn::Windowing::Input::Key::F9;
-        case 103:   return Ryn::Windowing::Input::Key::F11;
-        case 109:   return Ryn::Windowing::Input::Key::F10;
-        case 111:   return Ryn::Windowing::Input::Key::F12;
-        case 118:   return Ryn::Windowing::Input::Key::F4;
-        case 120:   return Ryn::Windowing::Input::Key::F2;
-        case 122:   return Ryn::Windowing::Input::Key::F1;
-        case 123:   return Ryn::Windowing::Input::Key::Left;
-        case 124:   return Ryn::Windowing::Input::Key::Right;
-        case 125:   return Ryn::Windowing::Input::Key::Down;
-        case 126:   return Ryn::Windowing::Input::Key::Up;
+        case 0:     return Ryn::Key::A;
+        case 1:     return Ryn::Key::S;
+        case 2:     return Ryn::Key::D;
+        case 3:     return Ryn::Key::F;
+        case 4:     return Ryn::Key::H;
+        case 5:     return Ryn::Key::G;
+        case 6:     return Ryn::Key::Z;
+        case 7:     return Ryn::Key::X;
+        case 8:     return Ryn::Key::C;
+        case 9:     return Ryn::Key::V;
+        case 10:    return Ryn::Key::Tilde;
+        case 11:    return Ryn::Key::B;
+        case 12:    return Ryn::Key::Q;
+        case 13:    return Ryn::Key::W;
+        case 14:    return Ryn::Key::E;
+        case 15:    return Ryn::Key::R;
+        case 16:    return Ryn::Key::Y;
+        case 17:    return Ryn::Key::T;
+        case 18:    return Ryn::Key::One;
+        case 19:    return Ryn::Key::Two;
+        case 20:    return Ryn::Key::Three;
+        case 21:    return Ryn::Key::Four;
+        case 22:    return Ryn::Key::Six;
+        case 23:    return Ryn::Key::Five;
+        case 24:    return Ryn::Key::Equal;
+        case 25:    return Ryn::Key::Nine;
+        case 26:    return Ryn::Key::Seven;
+        case 27:    return Ryn::Key::Minus;
+        case 28:    return Ryn::Key::Eight;
+        case 29:    return Ryn::Key::Zero;
+        case 30:    return Ryn::Key::RightBracket;
+        case 31:    return Ryn::Key::O;
+        case 32:    return Ryn::Key::U;
+        case 33:    return Ryn::Key::LeftBracket;
+        case 34:    return Ryn::Key::I;
+        case 35:    return Ryn::Key::P;
+        case 36:    return Ryn::Key::Enter;
+        case 37:    return Ryn::Key::L;
+        case 38:    return Ryn::Key::J;
+        case 39:    return Ryn::Key::Quote;
+        case 40:    return Ryn::Key::K;
+        case 41:    return Ryn::Key::Semicolon;
+        case 42:    return Ryn::Key::Backslash;
+        case 43:    return Ryn::Key::Comma;
+        case 44:    return Ryn::Key::Slash;
+        case 45:    return Ryn::Key::N;
+        case 46:    return Ryn::Key::M;
+        case 47:    return Ryn::Key::Period;
+        case 48:    return Ryn::Key::Tab;
+        case 49:    return Ryn::Key::Space;
+        case 50:    return Ryn::Key::Backtick;
+        case 51:    return Ryn::Key::Backspace;
+        case 53:    return Ryn::Key::Escape;
+        case 96:    return Ryn::Key::F5;
+        case 97:    return Ryn::Key::F6;
+        case 98:    return Ryn::Key::F7;
+        case 99:    return Ryn::Key::F3;
+        case 100:   return Ryn::Key::F8;
+        case 101:   return Ryn::Key::F9;
+        case 103:   return Ryn::Key::F11;
+        case 109:   return Ryn::Key::F10;
+        case 111:   return Ryn::Key::F12;
+        case 118:   return Ryn::Key::F4;
+        case 120:   return Ryn::Key::F2;
+        case 122:   return Ryn::Key::F1;
+        case 123:   return Ryn::Key::Left;
+        case 124:   return Ryn::Key::Right;
+        case 125:   return Ryn::Key::Down;
+        case 126:   return Ryn::Key::Up;
         default:
             NSLog(@"[Cocoa] Unknown key code: %u", keycode);
-            return Ryn::Windowing::Input::Key::Unknown;
+            return Ryn::Key::Unknown;
     }
 }
 
-Ryn::Windowing::Input::MouseButton MapCocoaMouseButtonToRynMouseButton(NSInteger button)
+Ryn::MouseButton MapCocoaMouseButtonToRynMouseButton(NSInteger button)
 {
     switch (button)
     {
-        case 0:     return Ryn::Windowing::Input::MouseButton::Button1;
-        case 1:     return Ryn::Windowing::Input::MouseButton::Button2;
-        case 2:     return Ryn::Windowing::Input::MouseButton::Button3;
-        case 3:     return Ryn::Windowing::Input::MouseButton::Button4;
-        case 4:     return Ryn::Windowing::Input::MouseButton::Button5;
-        case 5:     return Ryn::Windowing::Input::MouseButton::Button6;
-        case 6:     return Ryn::Windowing::Input::MouseButton::Button7;
-        case 7:     return Ryn::Windowing::Input::MouseButton::Button8;
+        case 0:     return Ryn::MouseButton::Button1;
+        case 1:     return Ryn::MouseButton::Button2;
+        case 2:     return Ryn::MouseButton::Button3;
+        case 3:     return Ryn::MouseButton::Button4;
+        case 4:     return Ryn::MouseButton::Button5;
+        case 5:     return Ryn::MouseButton::Button6;
+        case 6:     return Ryn::MouseButton::Button7;
+        case 7:     return Ryn::MouseButton::Button8;
         default:
             NSLog(@"[Cocoa] Unknown button code: %ld", button);
-            return Ryn::Windowing::Input::MouseButton::Unknown;
+            return Ryn::MouseButton::Unknown;
     }
 }
 
-namespace Ryn::Windowing
+namespace Ryn
 {
     CocoaWindow::CocoaWindow(const WindowSettings& settings)
     {

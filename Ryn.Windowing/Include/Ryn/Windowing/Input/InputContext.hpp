@@ -4,13 +4,13 @@
 #include <Ryn/Windowing/Input/Key.hpp>
 #include <Ryn/Windowing/Input/MouseButton.hpp>
 
-namespace Ryn::Windowing::Input
+namespace Ryn
 {
     class InputContext
     {
       private:
-        KeyState _keys[static_cast<Core::u32>(Key::Count)] = {KeyState::Up};
-        MouseButtonState _mouseButtons[static_cast<Core::u32>(MouseButton::Count)] = {MouseButtonState::Up};
+        KeyState _keys[static_cast<u32>(Key::Count)] = {KeyState::Up};
+        MouseButtonState _mouseButtons[static_cast<u32>(MouseButton::Count)] = {MouseButtonState::Up};
 
       public:
         bool IsKeyUp(Key key) const;

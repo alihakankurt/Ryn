@@ -1,6 +1,6 @@
 #include <Ryn/Windowing/Input/InputContext.hpp>
 
-namespace Ryn::Windowing::Input
+namespace Ryn
 {
     bool InputContext::IsKeyUp(Key key) const
     {
@@ -28,12 +28,12 @@ namespace Ryn::Windowing::Input
 
     KeyState InputContext::GetKeyState(Key key) const
     {
-        return _keys[static_cast<Core::u32>(key)];
+        return _keys[static_cast<u32>(key)];
     }
 
     void InputContext::SetKeyState(Key key, KeyState state)
     {
-        _keys[static_cast<Core::u32>(key)] = state;
+        _keys[static_cast<u32>(key)] = state;
     }
 
     bool InputContext::IsButtonUp(MouseButton button) const
@@ -62,12 +62,12 @@ namespace Ryn::Windowing::Input
 
     MouseButtonState InputContext::GetButtonState(MouseButton button) const
     {
-        return _mouseButtons[static_cast<Core::u32>(button)];
+        return _mouseButtons[static_cast<u32>(button)];
     }
 
     void InputContext::SetButtonState(MouseButton button, MouseButtonState state)
     {
-        _mouseButtons[static_cast<Core::u32>(button)] = state;
+        _mouseButtons[static_cast<u32>(button)] = state;
     }
 
     void InputContext::Update()

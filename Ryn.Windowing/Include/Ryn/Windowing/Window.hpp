@@ -3,22 +3,22 @@
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Windowing/Input/InputContext.hpp>
 
-namespace Ryn::Windowing
+namespace Ryn
 {
     struct WindowSettings
     {
-        Core::u16 Width;
-        Core::u16 Height;
+        u16 Width;
+        u16 Height;
         const char* Title;
     };
 
     class Window
     {
       public:
-        Input::InputContext* Input;
+        InputContext* Input;
 
       protected:
-        Window() { Input = new Input::InputContext(); }
+        Window() { Input = new InputContext(); }
 
       public:
         virtual ~Window() { delete Input; }
