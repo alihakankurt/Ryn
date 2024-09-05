@@ -5,21 +5,21 @@
 namespace Ryn::Core::Utility
 {
     template <typename TValue>
-    static constexpr TValue&& Forward(RemoveReferenceType<TValue>& value)
+    static constexpr TValue&& Forward(Core::Traits::RemoveReference<TValue>& value)
     {
         return static_cast<TValue&&>(value);
     }
 
     template <typename TValue>
-    static constexpr TValue&& Forward(RemoveReferenceType<TValue>&& value)
+    static constexpr TValue&& Forward(Core::Traits::RemoveReference<TValue>&& value)
     {
         return static_cast<TValue&&>(value);
     }
 
     template <typename TValue>
-    static constexpr RemoveReferenceType<TValue>&& Move(TValue&& value)
+    static constexpr Core::Traits::RemoveReference<TValue>&& Move(TValue&& value)
     {
-        return static_cast<RemoveReferenceType<TValue>&&>(value);
+        return static_cast<Core::Traits::RemoveReference<TValue>&&>(value);
     }
 
     template <typename TValue>
