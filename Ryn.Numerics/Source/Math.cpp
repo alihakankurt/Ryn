@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-namespace Ryn::Math::Internal
+namespace Ryn::Private::Math
 {
     f32 FloorImpl(f32 value) { return floorf(value); }
     f64 FloorImpl(f64 value) { return floor(value); }
