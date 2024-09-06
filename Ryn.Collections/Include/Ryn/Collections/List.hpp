@@ -8,7 +8,7 @@
 namespace Ryn
 {
     template <typename TValue>
-    class Vector
+    class List
     {
       private:
         static constexpr u32 InitialCapacity = 4;
@@ -19,13 +19,13 @@ namespace Ryn
         u32 _capacity;
 
       public:
-        consteval Vector() :
+        consteval List() :
             _data{},
             _count{},
             _capacity{} {}
 
         template <u32 N>
-        constexpr Vector(const TValue (&array)[N]) :
+        constexpr List(const TValue (&array)[N]) :
             _count{N},
             _capacity{N}
         {
@@ -37,7 +37,7 @@ namespace Ryn
         }
 
         template <u32 N>
-        constexpr Vector(TValue (&&array)[N]) :
+        constexpr List(TValue (&&array)[N]) :
             _count{N},
             _capacity{N}
         {
@@ -48,14 +48,14 @@ namespace Ryn
             }
         }
 
-        constexpr Vector(u32 capacity) :
+        constexpr List(u32 capacity) :
             _count{},
             _capacity{capacity}
         {
             _data = new TValue[_capacity];
         }
 
-        constexpr Vector(const Vector& other) :
+        constexpr List(const List& other) :
             _count{other._count},
             _capacity{other._capacity}
         {
@@ -63,12 +63,12 @@ namespace Ryn
             Memory::Copy(&_data[0], &other._data[0], _count);
         }
 
-        constexpr Vector(Vector&& other) :
+        constexpr List(List&& other) :
             _data{Utility::Exchange(other._data)},
             _count{Utility::Exchange(other._count)},
             _capacity{Utility::Exchange(other._capacity)} {}
 
-        constexpr ~Vector()
+        constexpr ~List()
         {
             delete[] _data;
             _data = {};
@@ -76,7 +76,7 @@ namespace Ryn
             _capacity = {};
         }
 
-        constexpr Vector& operator=(const Vector& other)
+        constexpr List& operator=(const List& other)
         {
             if (this != &other)
             {
@@ -90,7 +90,7 @@ namespace Ryn
             return *this;
         }
 
-        constexpr Vector& operator=(Vector&& other)
+        constexpr List& operator=(List&& other)
         {
             if (this != &other)
             {
@@ -117,47 +117,60 @@ namespace Ryn
         constexpr Span<TValue> ToSpan(u32 start) const { return ToSpan().Slice(start); }
         constexpr Span<TValue> ToSpan(u32 start, u32 length) const { return ToSpan().Slice(start, length); }
 
-        constexpr void Push(const TValue& value)
+        constexpr void EnsureCapacity(u32 capacity)
         {
-            if (_count >= _capacity)
-            {
-                _capacity = (_capacity == 0) ? InitialCapacity : _capacity * 2;
-                TValue* newData = new TValue[_capacity];
-                Memory::Copy(&newData[0], &_data[0], _count);
-                delete[] _data;
-                _data = newData;
-            }
+            if (_capacity >= capacity)
+                return;
 
+            _capacity = capacity;
+            TValue* newData = new TValue[_capacity];
+            Memory::Copy(&newData[0], &_data[0], _count);
+            delete[] _data;
+            _data = newData;
+        }
+
+        constexpr void Add(const TValue& value)
+        {
+            EnsureCapacity(_count + 1);
             _data[_count] = value;
             _count += 1;
         }
 
-        constexpr void Push(TValue&& value)
+        constexpr void Add(TValue&& value)
         {
-            if (_count >= _capacity)
-            {
-                _capacity = (_capacity == 0) ? InitialCapacity : _capacity * 2;
-                TValue* newData = new TValue[_capacity];
-                Memory::Copy(&newData[0], &_data[0], _count);
-                delete[] _data;
-                _data = newData;
-            }
-
+            EnsureCapacity(_count + 1);
             _data[_count] = Utility::Move(value);
             _count += 1;
         }
 
-        constexpr void Pop()
+        constexpr bool Remove(const TValue& value)
         {
-            if (_count > 0)
+            for (u32 index = 0; index < _count; index += 1)
             {
-                _count -= 1;
+                if (_data[index] == value)
+                {
+                    RemoveAt(index);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        constexpr void RemoveAt(u32 index)
+        {
+            if (index >= _count)
+                return;
+
+            _count -= 1;
+            for (u32 removeIndex = index; removeIndex < _count; removeIndex += 1)
+            {
+                _data[removeIndex] = _data[removeIndex + 1];
             }
         }
 
         constexpr void Clear()
         {
-            _count = 0;
+            _count = {};
         }
     };
 }
