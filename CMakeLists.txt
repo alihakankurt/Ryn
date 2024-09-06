@@ -13,6 +13,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/CompilerOptions.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BuildDefinitions.cmake)
 
 add_subdirectory(Ryn.Core)
+add_subdirectory(Ryn.Numerics)
 add_subdirectory(Ryn.Collections)
 add_subdirectory(Ryn.IO)
 add_subdirectory(Ryn.Windowing)
@@ -24,6 +25,7 @@ add_library(Ryn::Ryn ALIAS ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         Ryn::Core
+        Ryn::Numerics
         Ryn::Collections
         Ryn::IO
         Ryn::Windowing
