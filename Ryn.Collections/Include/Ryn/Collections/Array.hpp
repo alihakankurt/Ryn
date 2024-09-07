@@ -2,6 +2,7 @@
 
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Utility.hpp>
+#include <Ryn/Core/Iterator.hpp>
 #include <Ryn/Core/Span.hpp>
 
 namespace Ryn
@@ -9,12 +10,14 @@ namespace Ryn
     template <typename TValue, u32 TCount>
     class Array
     {
+        static_assert(TCount > 0, "Array cannot be empty.");
+        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference.");
+        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified.");
+
       private:
         TValue _data[TCount];
 
       public:
-        static_assert(TCount > 0, "The array cannot be empty.");
-
         consteval Array() :
             _data{} {}
 
@@ -37,5 +40,11 @@ namespace Ryn
 
         constexpr operator Span<TValue>() { return Span<TValue>{&_data[0], TCount}; }
         constexpr operator Span<const TValue>() const { return Span<const TValue>{&_data[0], TCount}; }
+
+      public:
+        constexpr Iterator<TValue> begin() { return Iterator<TValue>{_data}; }
+        constexpr Iterator<const TValue> begin() const { return Iterator<const TValue>{_data}; }
+        constexpr Iterator<TValue> end() { return Iterator<TValue>{_data + TCount}; }
+        constexpr Iterator<const TValue> end() const { return Iterator<const TValue>{_data + TCount}; }
     };
 }

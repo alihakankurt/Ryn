@@ -1,14 +1,18 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
+#include <Ryn/Core/Traits.hpp>
 #include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/Memory.hpp>
+#include <Ryn/Core/Iterator.hpp>
 
 namespace Ryn
 {
     template <typename TValue>
     class Span
     {
+        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference.");
+
       private:
         TValue* _data;
         u32 _length;
@@ -27,7 +31,12 @@ namespace Ryn
             _data{&data[0]},
             _length{N} {}
 
-        constexpr Span(const Span<TValue>& other) :
+        template <u32 N>
+        constexpr Span(TValue (&&data)[N]) :
+            _data{&data[0]},
+            _length{N} {}
+
+        constexpr Span(const Span& other) :
             _data{other._data},
             _length{other._length} {}
 
@@ -35,7 +44,7 @@ namespace Ryn
             _data{Utility::Exchange(other._data)},
             _length{Utility::Exchange(other._length)} {}
 
-        constexpr Span<TValue>& operator=(const Span<TValue>& other)
+        constexpr Span& operator=(const Span& other)
         {
             if (this != &other)
             {
@@ -45,7 +54,7 @@ namespace Ryn
             return *this;
         }
 
-        constexpr Span<TValue>& operator=(Span<TValue>&& other)
+        constexpr Span& operator=(Span<TValue>&& other)
         {
             if (this != &other)
             {
@@ -62,33 +71,39 @@ namespace Ryn
 
         constexpr operator Span<const TValue>() const { return Span<const TValue>{_data, _length}; }
 
-        constexpr Span<TValue> Slice(u32 start) const
+        constexpr Span Slice(u32 start) const
         {
             if (!_data || start >= _length)
-                return Span<TValue>{};
+                return Span{};
 
-            return Span<TValue>{_data + start, _length - start};
+            return Span{_data + start, _length - start};
         }
 
-        constexpr Span<TValue> Slice(u32 start, u32 length) const
+        constexpr Span Slice(u32 start, u32 length) const
         {
             if (!_data || start >= _length)
-                return Span<TValue>{};
+                return Span{};
 
             if (start + length > _length || length == 0)
-                return Span<TValue>{};
+                return Span{};
 
-            return Span<TValue>{_data + start, length};
+            return Span{_data + start, length};
         }
 
-        constexpr bool operator==(const Span<TValue>& other) const
+        constexpr bool operator==(const Span& other) const
         {
             return _length == other._length && Memory::Compare(_data, other._data, _length) == 0;
         }
 
-        constexpr bool operator!=(const Span<TValue>& other) const
+        constexpr bool operator!=(const Span& other) const
         {
             return !(*this == other);
         }
+
+      public:
+        constexpr Iterator<TValue> begin() { return Iterator<TValue>{_data}; }
+        constexpr Iterator<const TValue> begin() const { return Iterator<const TValue>{_data}; }
+        constexpr Iterator<TValue> end() { return Iterator<TValue>{_data + _length}; }
+        constexpr Iterator<const TValue> end() const { return Iterator<const TValue>{_data + _length}; }
     };
 }

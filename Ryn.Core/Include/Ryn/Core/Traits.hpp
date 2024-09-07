@@ -73,39 +73,45 @@ namespace Ryn::Traits
     template <typename T>
     concept Number = NumberTrait<T>::Value;
 
-    template <typename TValue>
+    template <typename T>
     struct RemoveReferenceTrait
     {
-        using Type = TValue;
+        using Type = T;
     };
 
-    template <typename TValue>
-    struct RemoveReferenceTrait<TValue&>
+    template <typename T>
+    struct RemoveReferenceTrait<T&>
     {
-        using Type = TValue;
+        using Type = T;
     };
 
-    template <typename TValue>
-    struct RemoveReferenceTrait<TValue&&>
+    template <typename T>
+    struct RemoveReferenceTrait<T&&>
     {
-        using Type = TValue;
+        using Type = T;
     };
 
-    template <typename TValue>
-    using RemoveReference = typename RemoveReferenceTrait<TValue>::Type;
+    template <typename T>
+    using RemoveReference = typename RemoveReferenceTrait<T>::Type;
 
-    template <typename TValue>
+    template <typename T>
+    concept Reference = !Same<T, RemoveReference<T>>;
+
+    template <typename T>
     struct RemoveConstTrait
     {
-        using Type = TValue;
+        using Type = T;
     };
 
-    template <typename TValue>
-    struct RemoveConstTrait<const TValue>
+    template <typename T>
+    struct RemoveConstTrait<const T>
     {
-        using Type = TValue;
+        using Type = T;
     };
 
-    template <typename TValue>
-    using RemoveConst = typename RemoveConstTrait<TValue>::Type;
+    template <typename T>
+    using RemoveConst = typename RemoveConstTrait<T>::Type;
+
+    template <typename T>
+    concept Const = !Same<T, RemoveConst<T>>;
 }

@@ -10,6 +10,9 @@ namespace Ryn
     template <typename TValue>
     class List
     {
+        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference.");
+        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified.");
+
       private:
         static constexpr u32 InitialCapacity = 4;
 
@@ -172,5 +175,11 @@ namespace Ryn
         {
             _count = {};
         }
+
+      public:
+        constexpr Iterator<TValue> begin() { return Iterator<TValue>{_data}; }
+        constexpr Iterator<const TValue> begin() const { return Iterator<const TValue>{_data}; }
+        constexpr Iterator<TValue> end() { return Iterator<TValue>{_data + _count}; }
+        constexpr Iterator<const TValue> end() const { return Iterator<const TValue>{_data + _count}; }
     };
 }

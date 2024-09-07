@@ -3,6 +3,7 @@
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/Memory.hpp>
+#include <Ryn/Core/Iterator.hpp>
 #include <Ryn/Core/Span.hpp>
 
 namespace Ryn
@@ -123,6 +124,12 @@ namespace Ryn
 
         constexpr operator Span<char>() const { return ToSpan(); }
         constexpr operator Span<const char>() const { return ToSpan(); }
+
+      public:
+        constexpr Iterator<char> begin() { return Iterator<char>{_data}; }
+        constexpr Iterator<const char> begin() const { return Iterator<const char>{_data}; }
+        constexpr Iterator<char> end() { return Iterator<char>{_data + _length}; }
+        constexpr Iterator<const char> end() const { return Iterator<const char>{_data + _length}; }
 
       public:
         static u32 Length(const char* str);
