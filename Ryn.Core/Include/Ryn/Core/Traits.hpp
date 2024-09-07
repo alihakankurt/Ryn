@@ -114,4 +114,16 @@ namespace Ryn::Traits
 
     template <typename T>
     concept Const = !Same<T, RemoveConst<T>>;
+
+    template <typename TLambda>
+    struct LambdaTrait;
+
+    template <typename TLambda, typename TReturn, typename... TArgs>
+    struct LambdaTrait<TReturn (TLambda::*)(TArgs...) const>
+    {
+        using Type = TReturn(TArgs...);
+    };
+
+    template <typename TLambda>
+    using Lambda = typename LambdaTrait<decltype(&TLambda::operator())>::Type;
 }
