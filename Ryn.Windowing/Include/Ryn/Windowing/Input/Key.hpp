@@ -1,15 +1,9 @@
 #pragma once
 
+#include <Ryn/Core/Types.hpp>
+
 namespace Ryn
 {
-    enum class KeyState
-    {
-        Up,
-        Down,
-        Pressed,
-        Released
-    };
-
     enum class Key
     {
         Unknown,
@@ -41,16 +35,16 @@ namespace Ryn
         Y,
         Z,
 
-        One,
-        Two,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine,
-        Zero,
+        Num0,
+        Num1,
+        Num2,
+        Num3,
+        Num4,
+        Num5,
+        Num6,
+        Num7,
+        Num8,
+        Num9,
 
         Space,
         Enter,
@@ -89,6 +83,8 @@ namespace Ryn
         F11,
         F12,
 
-        Count
+        Count,
     };
+
+    constexpr u32 operator+(Key key) { return static_cast<u32>(key); }
 }

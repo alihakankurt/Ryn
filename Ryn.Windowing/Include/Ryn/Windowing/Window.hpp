@@ -1,33 +1,31 @@
 #pragma once
 
-#include <Ryn/Core/Types.hpp>
-#include <Ryn/Windowing/Input/InputContext.hpp>
+#include <Ryn/Core/Utility.hpp>
+#include <Ryn/Core/Function.hpp>
+#include <Ryn/Numerics/Vector2.hpp>
+#include <Ryn/Windowing/Events/Event.hpp>
+#include <Ryn/Windowing/WindowSettings.hpp>
 
 namespace Ryn
 {
-    struct WindowSettings
-    {
-        u16 Width;
-        u16 Height;
-        const char* Title;
-    };
-
     class Window
     {
-      public:
-        InputContext* Input;
-
       protected:
-        Window() { Input = new InputContext(); }
+        Function<void(Event&)> EventCallback;
 
       public:
-        virtual ~Window() { delete Input; }
+        virtual ~Window() {}
 
         virtual bool IsRunning() const = 0;
 
         virtual void Close() = 0;
-        virtual void Update() = 0;
+
+        virtual void Resize(Vector2<u16> size) = 0;
+        virtual void SetTitle(const String& title) = 0;
+
+        void SetEventCallback(Function<void(Event&)>&& callback) { EventCallback = Utility::Move(callback); }
 
         static Window* Create(const WindowSettings& settings);
+        static void PollEvents();
     };
 }

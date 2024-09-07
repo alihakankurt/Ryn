@@ -10,4 +10,5 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTAL
 
 target_sources(RynFramework INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Game.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/InputContext.cpp
 )

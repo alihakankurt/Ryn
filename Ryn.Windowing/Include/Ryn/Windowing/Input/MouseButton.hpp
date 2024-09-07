@@ -1,15 +1,9 @@
 #pragma once
 
+#include <Ryn/Core/Types.hpp>
+
 namespace Ryn
 {
-    enum class MouseButtonState
-    {
-        Up,
-        Down,
-        Pressed,
-        Released,
-    };
-
     enum class MouseButton
     {
         Unknown,
@@ -29,4 +23,6 @@ namespace Ryn
         Right = Button2,
         Middle = Button3,
     };
+
+    constexpr u32 operator+(MouseButton button) { return static_cast<u32>(button); }
 }
