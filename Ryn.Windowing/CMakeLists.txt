@@ -15,7 +15,7 @@ target_link_libraries(RynWindowing INTERFACE
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 target_sources(RynWindowing INTERFACE
-    $<$<PLATFORM_ID:Darwin>:
+    $<$<BOOL:${RYN_PLATFORM_MACOS}>:
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/Cocoa/CocoaApplicationDelegate.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/Cocoa/CocoaApplicationDelegate.mm
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/Cocoa/CocoaWindowDelegate.hh

@@ -9,7 +9,7 @@ target_include_directories(RynIO INTERFACE
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 target_sources(RynIO INTERFACE
-    $<$<PLATFORM_ID:Darwin>:
-        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/Unix/File.cpp
+    $<$<BOOL:${RYN_PLATFORM_MACOS}>:
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/POSIX/File.cpp
     >
 )

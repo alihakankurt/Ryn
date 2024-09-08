@@ -1,17 +1,53 @@
+add_library(RynBuildDefinitions INTERFACE)
+add_library(Ryn::BuildDefinitions ALIAS RynBuildDefinitions)
+
+## CMake Definitions
+set(RYN_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(RYN_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(RYN_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(RYN_DEBUG TRUE)
+    set(RYN_DEBUG 1)
+    set(RYN_RELEASE 0)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(RYN_RELEASE TRUE)
+    set(RYN_DEBUG 0)
+    set(RYN_RELEASE 1)
 else()
-    message(FATAL_ERROR "Unrecognized build type")
+    message(FATAL_ERROR "Unsupported build type")
 endif()
 
 if (WIN32)
-    set(RYN_PLATFORM_WINDOWS TRUE)
-elseif (LINUX)
-    set(RYN_PLATFORM_LINUX TRUE)
-elseif (APPLE AND UNIX)
-    set(RYN_PLATFORM_MACOS TRUE)
+    set(RYN_PLATFORM_WINDOWS 1)
 else()
+    set(RYN_PLATFORM_WINDOWS 0)
+endif()
+
+if (LINUX)
+    set(RYN_PLATFORM_LINUX 1)
+else()
+    set(RYN_PLATFORM_LINUX 0)
+endif()
+
+if (APPLE AND UNIX)
+    set(RYN_PLATFORM_MACOS 1)
+else()
+    set(RYN_PLATFORM_MACOS 0)
+endif()
+
+if (NOT RYN_PLATFORM_WINDOWS AND NOT RYN_PLATFORM_LINUX AND NOT RYN_PLATFORM_MACOS)
     message(FATAL_ERROR "Unsupported platform")
 endif()
+
+## Compiler Definitions
+target_compile_definitions(RynBuildDefinitions INTERFACE
+    RYN_VERSION_MAJOR=${RYN_VERSION_MAJOR}
+    RYN_VERSION_MINOR=${RYN_VERSION_MINOR}
+    RYN_VERSION_PATCH=${RYN_VERSION_PATCH}
+
+    RYN_DEBUG=${RYN_DEBUG}
+    RYN_RELEASE=${RYN_RELEASE}
+
+    RYN_PLATFORM_WINDOWS=${RYN_PLATFORM_WINDOWS}
+    RYN_PLATFORM_LINUX=${RYN_PLATFORM_LINUX}
+    RYN_PLATFORM_MACOS=${RYN_PLATFORM_MACOS}
+)

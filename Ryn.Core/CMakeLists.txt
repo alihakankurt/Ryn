@@ -11,7 +11,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTAL
 target_sources(RynCore INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/String.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Clock.cpp
-    $<$<PLATFORM_ID:Darwin>:
+    $<$<BOOL:${RYN_PLATFORM_MACOS}>:
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/MacOS/Clock.cpp
     >
 )
