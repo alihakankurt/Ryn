@@ -12,5 +12,6 @@ target_sources(RynCore INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/String.cpp
     $<$<BOOL:${RYN_PLATFORM_MACOS}>:
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/Mach/Clock.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/POSIX/Process.cpp
     >
 )
