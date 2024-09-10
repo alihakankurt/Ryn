@@ -18,7 +18,7 @@ namespace Ryn
         TValue _data[TCount];
 
       public:
-        consteval Array() :
+        constexpr Array() :
             _data{} {}
 
         constexpr Array(const TValue& value)

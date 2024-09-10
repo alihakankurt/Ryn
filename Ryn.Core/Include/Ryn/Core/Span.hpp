@@ -18,7 +18,7 @@ namespace Ryn
         u32 _length;
 
       public:
-        consteval Span() :
+        constexpr Span() :
             _data{},
             _length{} {}
 

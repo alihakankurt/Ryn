@@ -22,7 +22,7 @@ namespace Ryn
         u32 _capacity;
 
       public:
-        consteval List() :
+        constexpr List() :
             _data{},
             _count{},
             _capacity{} {}

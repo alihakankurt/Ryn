@@ -11,7 +11,7 @@ namespace Ryn
         TValue* _ptr;
 
       public:
-        consteval Iterator() :
+        constexpr Iterator() :
             _ptr{} {}
 
         constexpr Iterator(TValue* ptr) :

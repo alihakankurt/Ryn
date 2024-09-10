@@ -37,7 +37,7 @@ namespace Ryn
         const CallableBase* _callable;
 
       public:
-        consteval Function() :
+        constexpr Function() :
             _callable{} {}
 
         template <typename TLambda>

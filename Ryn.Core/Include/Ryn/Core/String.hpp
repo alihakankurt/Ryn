@@ -15,7 +15,7 @@ namespace Ryn
         u32 _length;
 
       public:
-        consteval String() :
+        constexpr String() :
             _data{},
             _length{} {}
 
