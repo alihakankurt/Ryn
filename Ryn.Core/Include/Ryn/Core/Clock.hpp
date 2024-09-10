@@ -4,17 +4,50 @@
 
 namespace Ryn
 {
+    class Time
+    {
+      private:
+        f64 _seconds;
+
+      public:
+        constexpr Time() :
+            _seconds{} {}
+
+        constexpr explicit Time(f64 seconds) :
+            _seconds(seconds) {}
+
+        constexpr f64 Seconds() const { return _seconds; }
+
+        constexpr operator f64() const { return _seconds; }
+
+        constexpr Time operator+(const Time& other) const { return Time(_seconds + other._seconds); }
+        constexpr Time operator-(const Time& other) const { return Time(_seconds - other._seconds); }
+
+        constexpr bool operator==(const Time& other) const { return _seconds == other._seconds; }
+        constexpr bool operator!=(const Time& other) const { return _seconds != other._seconds; }
+        constexpr bool operator<(const Time& other) const { return _seconds < other._seconds; }
+        constexpr bool operator>(const Time& other) const { return _seconds > other._seconds; }
+        constexpr bool operator<=(const Time& other) const { return _seconds <= other._seconds; }
+        constexpr bool operator>=(const Time& other) const { return _seconds >= other._seconds; }
+    };
+
     class Clock
     {
       private:
-        f64 _start;
+        Time _start;
+        Time _cycle;
 
       public:
-        Clock();
+        inline Clock() :
+            _start(Now()),
+            _cycle(_start) {}
 
-        f64 Restart();
+        inline void Restart() { _cycle = Clock::Now(); }
+
+        inline Time Total() const { return Clock::Now() - _start; }
+        inline Time Delta() const { return Clock::Now() - _cycle; }
 
       public:
-        static f64 Current();
+        static Time Now();
     };
 }
