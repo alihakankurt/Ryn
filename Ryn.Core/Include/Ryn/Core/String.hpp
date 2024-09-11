@@ -188,11 +188,11 @@ namespace Ryn
 
         static constexpr u32 MaxBoolLength = 5;
         static constexpr u32 MaxIntLength = 20;
-        static constexpr u32 MaxFloatLength = 32;
+        static constexpr u32 MaxFloatLength = 27;
 
         static Span<char> Format(Span<char> span, bool value);
         static Span<char> Format(Span<char> span, i64 value);
         static Span<char> Format(Span<char> span, u64 value);
-        static Span<char> Format(Span<char> span, f64 value, u64 precision = 1e4);
+        static Span<char> Format(Span<char> span, f64 value);
     };
 }

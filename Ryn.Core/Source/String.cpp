@@ -176,11 +176,13 @@ namespace Ryn
         return span.Slice(0, length);
     }
 
-    Span<char> String::Format(Span<char> span, f64 value, u64 precision)
+    Span<char> String::Format(Span<char> span, f64 value)
     {
         i64 integer = static_cast<i64>(value);
         f64 fraction = value - integer;
         fraction = (fraction < 0) ? -fraction : fraction;
+
+        constexpr u64 precision = 1e6;
         fraction *= precision;
 
         Span<char> integerPart = String::Format(span, integer);
