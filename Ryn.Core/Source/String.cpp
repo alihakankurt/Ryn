@@ -113,45 +113,88 @@ namespace Ryn
         return length;
     }
 
-    Span<const char> String::Format(Span<char> buffer, i64 value)
+    Span<char> String::Format(Span<char> span, bool value)
     {
+        if (value)
+        {
+            if (span.Length() < 4)
+                return {};
+
+            span[0] = 't';
+            span[1] = 'r';
+            span[2] = 'u';
+            span[3] = 'e';
+            return span.Slice(0, 4);
+        }
+        else
+        {
+            if (span.Length() < 5)
+                return {};
+
+            span[0] = 'f';
+            span[1] = 'a';
+            span[2] = 'l';
+            span[3] = 's';
+            span[4] = 'e';
+            return span.Slice(0, 5);
+        }
+    }
+
+    Span<char> String::Format(Span<char> span, i64 value)
+    {
+        if (span.Length() == 0)
+            return {};
+
+        u32 length = 0;
         if (value < 0)
         {
-            buffer[0] = '-';
+            span[length] = '-';
+            length += 1;
             value = -value;
         }
 
-        Span<const char> result = String::Format(buffer.Slice(1), static_cast<u64>(value));
-        return Span<const char>{&buffer[0], result.Length() + 1};
+        Span<char> integerPart = String::Format(span.Slice(length), static_cast<u64>(value));
+        length += integerPart.Length();
+        return span.Slice(0, length);
     }
 
-    Span<const char> String::Format(Span<char> buffer, u64 value)
+    Span<char> String::Format(Span<char> span, u64 value)
     {
-        u32 index = 0;
+        if (span.Length() == 0)
+            return {};
+
+        u32 length = 0;
         do
         {
-            buffer[index] = static_cast<char>('0' + (value % 10));
-            index += 1;
+            span[length] = static_cast<char>('0' + (value % 10));
+            length += 1;
             value /= 10;
         }
-        while (value != 0 && index < buffer.Length());
+        while (value != 0 && length < span.Length());
 
-        Memory::Reverse(&buffer[0], index);
-        return Span<const char>{&buffer[0], index};
+        Memory::Reverse(&span[0], length);
+        return span.Slice(0, length);
     }
 
-    Span<const char> String::Format(Span<char> buffer, f64 value, u64 precision)
+    Span<char> String::Format(Span<char> span, f64 value, u64 precision)
     {
         i64 integer = static_cast<i64>(value);
         f64 fraction = value - integer;
         fraction = (fraction < 0) ? -fraction : fraction;
         fraction *= precision;
 
-        Span<const char> integerPart = String::Format(buffer, integer);
-        buffer[integerPart.Length()] = '.';
-        Span<const char> fractionPart = String::Format(buffer.Slice(integerPart.Length() + 1), static_cast<u64>(fraction));
+        Span<char> integerPart = String::Format(span, integer);
+        u32 length = integerPart.Length();
 
-        u32 length = integerPart.Length() + 1 + fractionPart.Length();
-        return Span<const char>{&buffer[0], length};
+        if (length >= span.Length())
+            return span.Slice(0, length);
+
+        span[length] = '.';
+        length += 1;
+
+        Span<char> fractionPart = String::Format(span.Slice(integerPart.Length() + 1), static_cast<u64>(fraction));
+        length += fractionPart.Length();
+
+        return span.Slice(0, length);
     }
 }

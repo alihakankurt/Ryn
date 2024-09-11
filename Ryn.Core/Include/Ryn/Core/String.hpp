@@ -47,16 +47,37 @@ namespace Ryn
         String& Append(const char* str) { return Append(&str[0], String::Length(str)); }
         String& Append(const String& other) { return Append(&other[0], other.Length()); }
         String& Append(Span<const char> span) { return Append(&span[0], span.Length()); }
+
+        String& Append(bool value)
+        {
+            char buffer[String::MaxBoolLength];
+            return Append(String::Format(buffer, value));
+        }
+
         String& Append(i8 value) { return Append(static_cast<i64>(value)); }
         String& Append(i16 value) { return Append(static_cast<i64>(value)); }
         String& Append(i32 value) { return Append(static_cast<i64>(value)); }
-        String& Append(i64 value) { char buffer[20]; return Append(String::Format(Span<char>{buffer, sizeof(buffer)}, value)); }
+        String& Append(i64 value)
+        {
+            char buffer[String::MaxIntLength];
+            return Append(String::Format(buffer, value));
+        }
+
         String& Append(u8 value) { return Append(static_cast<u64>(value)); }
         String& Append(u16 value) { return Append(static_cast<u64>(value)); }
         String& Append(u32 value) { return Append(static_cast<u64>(value)); }
-        String& Append(u64 value) { char buffer[20]; return Append(String::Format(Span<char>{buffer, sizeof(buffer)}, value)); }
+        String& Append(u64 value)
+        {
+            char buffer[String::MaxIntLength];
+            return Append(String::Format(buffer, value));
+        }
+
         String& Append(f32 value) { return Append(static_cast<f64>(value)); }
-        String& Append(f64 value) { char buffer[32]; return Append(String::Format(Span<char>{buffer, sizeof(buffer)}, value)); }
+        String& Append(f64 value)
+        {
+            char buffer[String::MaxFloatLength];
+            return Append(String::Format(buffer, value));
+        }
 
       private:
         String& Append(const char* data, u32 length);
@@ -66,14 +87,19 @@ namespace Ryn
         String& operator+=(const char* str) { return Append(str); }
         String& operator+=(const String& other) { return Append(other); }
         String& operator+=(Span<const char> span) { return Append(span); }
+
+        String& operator+=(bool value) { return Append(value); }
+
         String& operator+=(i8 value) { return Append(value); }
         String& operator+=(i16 value) { return Append(value); }
         String& operator+=(i32 value) { return Append(value); }
         String& operator+=(i64 value) { return Append(value); }
+
         String& operator+=(u8 value) { return Append(value); }
         String& operator+=(u16 value) { return Append(value); }
         String& operator+=(u32 value) { return Append(value); }
         String& operator+=(u64 value) { return Append(value); }
+
         String& operator+=(f32 value) { return Append(value); }
         String& operator+=(f64 value) { return Append(value); }
 
@@ -81,14 +107,19 @@ namespace Ryn
         String operator+(const char* str) const { return String{*this}.Append(str); }
         String operator+(const String& other) const { return String{*this}.Append(other); }
         String operator+(Span<const char> span) const { return String{*this}.Append(span); }
+
+        String operator+(bool value) const { return String{*this}.Append(value); }
+
         String operator+(i8 value) const { return String{*this}.Append(value); }
         String operator+(i16 value) const { return String{*this}.Append(value); }
         String operator+(i32 value) const { return String{*this}.Append(value); }
         String operator+(i64 value) const { return String{*this}.Append(value); }
+
         String operator+(u8 value) const { return String{*this}.Append(value); }
         String operator+(u16 value) const { return String{*this}.Append(value); }
         String operator+(u32 value) const { return String{*this}.Append(value); }
         String operator+(u64 value) const { return String{*this}.Append(value); }
+
         String operator+(f32 value) const { return String{*this}.Append(value); }
         String operator+(f64 value) const { return String{*this}.Append(value); }
 
@@ -96,16 +127,37 @@ namespace Ryn
         String& Insert(u32 to, const char* str) { return Insert(to, &str[0], String::Length(str)); }
         String& Insert(u32 to, const String& other) { return Insert(to, &other[0], other.Length()); }
         String& Insert(u32 to, Span<const char> span) { return Insert(to, &span[0], span.Length()); }
+
+        String& Insert(u32 to, bool value)
+        {
+            char buffer[String::MaxBoolLength];
+            return Insert(to, String::Format(buffer, value));
+        }
+
         String& Insert(u32 to, i8 value) { return Insert(to, static_cast<i64>(value)); }
         String& Insert(u32 to, i16 value) { return Insert(to, static_cast<i64>(value)); }
         String& Insert(u32 to, i32 value) { return Insert(to, static_cast<i64>(value)); }
-        String& Insert(u32 to, i64 value) { char buffer[20]; return Insert(to, String::Format(Span<char>{buffer, sizeof(buffer)}, value)); }
+        String& Insert(u32 to, i64 value)
+        {
+            char buffer[String::MaxIntLength];
+            return Insert(to, String::Format(buffer, value));
+        }
+
         String& Insert(u32 to, u8 value) { return Insert(to, static_cast<u64>(value)); }
         String& Insert(u32 to, u16 value) { return Insert(to, static_cast<u64>(value)); }
         String& Insert(u32 to, u32 value) { return Insert(to, static_cast<u64>(value)); }
-        String& Insert(u32 to, u64 value) { char buffer[20]; return Insert(to, String::Format(Span<char>{buffer, sizeof(buffer)}, value)); }
+        String& Insert(u32 to, u64 value)
+        {
+            char buffer[String::MaxIntLength];
+            return Insert(to, String::Format(buffer, value));
+        }
+
         String& Insert(u32 to, f32 value) { return Insert(to, static_cast<f64>(value)); }
-        String& Insert(u32 to, f64 value) { char buffer[32]; return Insert(to, String::Format(Span<char>{buffer, sizeof(buffer)}, value)); }
+        String& Insert(u32 to, f64 value)
+        {
+            char buffer[String::MaxFloatLength];
+            return Insert(to, String::Format(buffer, value));
+        }
 
       private:
         String& Insert(u32 to, const char* data, u32 length);
@@ -134,8 +186,13 @@ namespace Ryn
       public:
         static u32 Length(const char* str);
 
-        static Span<const char> Format(Span<char> buffer, i64 value);
-        static Span<const char> Format(Span<char> buffer, u64 value);
-        static Span<const char> Format(Span<char> buffer, f64 value, u64 precision = 1e4);
+        static constexpr u32 MaxBoolLength = 5;
+        static constexpr u32 MaxIntLength = 20;
+        static constexpr u32 MaxFloatLength = 32;
+
+        static Span<char> Format(Span<char> span, bool value);
+        static Span<char> Format(Span<char> span, i64 value);
+        static Span<char> Format(Span<char> span, u64 value);
+        static Span<char> Format(Span<char> span, f64 value, u64 precision = 1e4);
     };
 }
