@@ -1,5 +1,6 @@
 #include "CocoaView.hh"
 
+#include <Ryn/IO/Log.hpp>
 #include <Ryn/Windowing/Events/KeyEvent.hpp>
 #include <Ryn/Windowing/Events/MouseEvent.hpp>
 
@@ -68,6 +69,55 @@
     Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
     Ryn::KeyReleaseEvent e{key, modifiers};
     cocoaWindow->OnEvent(e);
+}
+
+- (void)flagsChanged:(NSEvent*)event
+{
+    Ryn::Key key = MapCocoaKey([event keyCode]);
+    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
+
+    Ryn::ModifierFlags flag = Ryn::ModifierFlags::None;
+    switch (key)
+    {
+        case Ryn::Key::LeftShift:
+        case Ryn::Key::RightShift: 
+            flag = Ryn::ModifierFlags::Shift;
+            break;
+
+        case Ryn::Key::LeftControl:
+        case Ryn::Key::RightControl:
+            flag = Ryn::ModifierFlags::Control;
+            break;
+        
+        case Ryn::Key::LeftAlt:
+        case Ryn::Key::RightAlt:
+            flag = Ryn::ModifierFlags::Alt;
+            break;
+        
+        case Ryn::Key::LeftSystem:
+        case Ryn::Key::RightSystem:
+            flag = Ryn::ModifierFlags::System;
+            break;
+        
+        case Ryn::Key::CapsLock:
+            flag = Ryn::ModifierFlags::CapsLock;
+            break;
+
+        default:
+            Ryn::Log::Error("Unexpected key in flagsChanged: ", static_cast<Ryn::u16>(key));
+            break;
+    }
+
+    if ((flag & modifiers) == flag)
+    {
+        Ryn::KeyPressEvent e{key, modifiers};
+        cocoaWindow->OnEvent(e);
+    }
+    else
+    {
+        Ryn::KeyReleaseEvent e{key, modifiers};
+        cocoaWindow->OnEvent(e);
+    }
 }
 
 - (void)mouseMoved:(NSEvent*)event
@@ -209,6 +259,15 @@ Ryn::Key MapCocoaKey(UInt16 keycode)
         case 50:    return Ryn::Key::Backtick;
         case 51:    return Ryn::Key::Backspace;
         case 53:    return Ryn::Key::Escape;
+        case 54:    return Ryn::Key::RightSystem;
+        case 55:    return Ryn::Key::LeftSystem;
+        case 56:    return Ryn::Key::LeftShift;
+        case 57:    return Ryn::Key::CapsLock;
+        case 58:    return Ryn::Key::LeftAlt;
+        case 59:    return Ryn::Key::LeftControl;
+        case 60:    return Ryn::Key::RightShift;
+        case 61:    return Ryn::Key::RightAlt;
+        case 62:    return Ryn::Key::RightControl;
         case 96:    return Ryn::Key::F5;
         case 97:    return Ryn::Key::F6;
         case 98:    return Ryn::Key::F7;
@@ -226,7 +285,7 @@ Ryn::Key MapCocoaKey(UInt16 keycode)
         case 125:   return Ryn::Key::Down;
         case 126:   return Ryn::Key::Up;
         default:
-            NSLog(@"[Cocoa] Unknown key code: %u", keycode);
+            Ryn::Log::Warn("Unmapped Cocoa key code: ", static_cast<Ryn::u16>(keycode));
             return Ryn::Key::Unknown;
     }
 }
@@ -244,7 +303,7 @@ Ryn::MouseButton MapCocoaMouseButton(NSInteger button)
         case 6:     return Ryn::MouseButton::Button7;
         case 7:     return Ryn::MouseButton::Button8;
         default:
-            NSLog(@"[Cocoa] Unknown button code: %ld", button);
+            Ryn::Log::Warn("Unmapped Cocoa mouse button: ", static_cast<Ryn::i64>(button));
             return Ryn::MouseButton::Unknown;
     }
 }

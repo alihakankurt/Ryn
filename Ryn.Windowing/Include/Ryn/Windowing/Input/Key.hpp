@@ -83,6 +83,16 @@ namespace Ryn
         F11,
         F12,
 
+        LeftShift,
+        RightShift,
+        LeftControl,
+        RightControl,
+        LeftAlt,
+        RightAlt,
+        LeftSystem,
+        RightSystem,
+        CapsLock,
+
         Count,
     };
 
