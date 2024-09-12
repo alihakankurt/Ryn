@@ -11,5 +11,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTAL
 target_sources(RynIO INTERFACE
     $<$<BOOL:${RYN_PLATFORM_MACOS}>:
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/POSIX/File.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/POSIX/Log.cpp
     >
 )
