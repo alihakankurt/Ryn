@@ -11,13 +11,47 @@
     if (self)
     {
         cocoaWindow = window;
+        trackingArea = nil;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [trackingArea release];
+    [super dealloc];
 }
 
 - (BOOL)acceptsFirstResponder
 {
     return YES;
+}
+
+- (BOOL)canBecomeKeyView
+{
+    return YES;
+}
+
+- (void)updateTrackingAreas
+{
+    if (trackingArea)
+    {
+        [self removeTrackingArea:trackingArea];
+        [trackingArea release];
+    }
+
+    NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited |
+                                    NSTrackingMouseMoved |
+                                    NSTrackingActiveInKeyWindow |
+                                    NSTrackingInVisibleRect;
+
+    trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds]
+                                           options:options
+                                           owner:self
+                                           userInfo:nil];
+
+    [self addTrackingArea:trackingArea];
+    [super updateTrackingAreas];
 }
 
 - (void)keyDown:(NSEvent*)event

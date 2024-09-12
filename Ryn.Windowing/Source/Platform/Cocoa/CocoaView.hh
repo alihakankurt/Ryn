@@ -11,10 +11,14 @@
 @interface CocoaView : NSView
 {
     Ryn::CocoaWindow* cocoaWindow;
+    NSTrackingArea* trackingArea;
 }
 
 - (instancetype)initWithWindow:(Ryn::CocoaWindow*)window;
+- (void)dealloc;
 - (BOOL)acceptsFirstResponder;
+- (BOOL)canBecomeKeyView;
+- (void)updateTrackingAreas;
 - (void)keyDown:(NSEvent*)event;
 - (void)keyUp:(NSEvent*)event;
 - (void)mouseMoved:(NSEvent*)event;
