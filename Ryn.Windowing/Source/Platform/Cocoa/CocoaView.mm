@@ -13,12 +13,16 @@
     {
         cocoaWindow = window;
         trackingArea = nil;
+        metalLayer = [CAMetalLayer layer];
+        [self setLayer:metalLayer];
+        [self setWantsLayer:YES];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    [metalLayer release];
     [trackingArea release];
     [super dealloc];
 }
@@ -29,6 +33,11 @@
 }
 
 - (BOOL)canBecomeKeyView
+{
+    return YES;
+}
+
+- (BOOL)wantsUpdateLayer
 {
     return YES;
 }

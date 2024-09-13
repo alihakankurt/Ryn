@@ -9,6 +9,7 @@ target_include_directories(RynWindowing INTERFACE
 target_link_libraries(RynWindowing INTERFACE
     $<$<PLATFORM_ID:Darwin>:
         "-framework Cocoa"
+        "-framework QuartzCore"
     >
 )
 

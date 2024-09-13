@@ -12,6 +12,8 @@ namespace Ryn
         CocoaWindow(const WindowSettings& settings);
         virtual ~CocoaWindow() override;
 
+        virtual void* GetNativeHandle() const override { return _window; }
+
         virtual bool IsRunning() const override;
 
         virtual void Close() override;

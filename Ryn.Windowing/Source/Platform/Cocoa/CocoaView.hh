@@ -7,17 +7,20 @@
 #include "CocoaWindow.hh"
 
 #import <Cocoa/Cocoa.h>
+#import <QuartzCore/CAMetalLayer.h>
 
 @interface CocoaView : NSView
 {
     Ryn::CocoaWindow* cocoaWindow;
     NSTrackingArea* trackingArea;
+    CAMetalLayer* metalLayer;
 }
 
 - (instancetype)initWithWindow:(Ryn::CocoaWindow*)window;
 - (void)dealloc;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)canBecomeKeyView;
+- (BOOL)wantsUpdateLayer;
 - (void)updateTrackingAreas;
 - (void)keyDown:(NSEvent*)event;
 - (void)keyUp:(NSEvent*)event;

@@ -16,6 +16,8 @@ namespace Ryn
       public:
         virtual ~Window() {}
 
+        virtual void* GetNativeHandle() const = 0;
+
         virtual bool IsRunning() const = 0;
 
         virtual void Close() = 0;
