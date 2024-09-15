@@ -3,10 +3,11 @@
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Memory.hpp>
 #include <Ryn/Core/String.hpp>
+#include <Ryn/Collections/List.hpp>
 
 namespace Ryn
 {
-    void VulkanInstance::Create(VulkanContext& context, const Window& window)
+    void VulkanInstance::Create()
     {
         VkApplicationInfo applicationInfo{};
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -22,10 +23,10 @@ namespace Ryn
 
         List<const char*> instanceExtensions;
         instanceExtensions.Add(VK_KHR_SURFACE_EXTENSION_NAME);
-        AddInstanceExtensions(instanceExtensions, instanceCreateInfo.flags);
+        VulkanPlatform::AddInstanceExtensions(instanceExtensions, instanceCreateInfo.flags);
 
 #if RYN_DEBUG
-        if (CheckValidationLayerSupport())
+        if (HasValidationLayerSupport())
         {
             Log::Info("Vulkan Validation Layers Supported");
             instanceExtensions.Add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -38,67 +39,58 @@ namespace Ryn
         }
 #endif
 
+        instanceCreateInfo.enabledExtensionCount = instanceExtensions.Count();
+        instanceCreateInfo.ppEnabledExtensionNames = &instanceExtensions[0];
+
         Log::Info("Vulkan Instance Extensions: ", instanceExtensions.Count());
         for (const char* extension : instanceExtensions)
         {
             Log::Info("- ", extension);
         }
 
-        instanceCreateInfo.enabledExtensionCount = instanceExtensions.Count();
-        instanceCreateInfo.ppEnabledExtensionNames = &instanceExtensions[0];
-
-        VulkanContext::CheckResult(vkCreateInstance(&instanceCreateInfo, {}, &context.Instance), "Failed to create Vulkan instance");
+        VulkanPlatform::CheckResult(vkCreateInstance(&instanceCreateInfo, {}, &_instance), "Failed to create Vulkan instance");
 
         Log::Info("Vulkan Instance Created");
 
 #if RYN_DEBUG
-        VkDebugUtilsMessengerCreateInfoEXT debugMessengerCreateInfo = {
-            .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-            .pNext = {},
-            .flags = {},
-            .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-            .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-            .pfnUserCallback = VulkanContext::DebugCallback,
-            .pUserData = {},
-        };
+        VkDebugUtilsMessengerCreateInfoEXT debugMessengerCreateInfo{};
+        debugMessengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        debugMessengerCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+                                                 | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        debugMessengerCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+                                             | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        debugMessengerCreateInfo.pfnUserCallback = VulkanDebugCallback;
 
         PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-            vkGetInstanceProcAddr(context.Instance, "vkCreateDebugUtilsMessengerEXT")
+            vkGetInstanceProcAddr(_instance, "vkCreateDebugUtilsMessengerEXT")
         );
 
-        VulkanContext::CheckResult(
-            vkCreateDebugUtilsMessengerEXT(context.Instance, &debugMessengerCreateInfo, {}, &context.DebugMessenger),
+        VulkanPlatform::CheckResult(
+            vkCreateDebugUtilsMessengerEXT(_instance, &debugMessengerCreateInfo, {}, &_debugMessenger),
             "Failed to create Vulkan debug messenger"
         );
 
         Log::Info("Vulkan Debug Messenger Created");
 #endif
-
-        CreateSurface(window, context.Instance, context.Surface);
-
-        Log::Info("Vulkan Surface Created");
     }
 
-    void VulkanInstance::Destroy(VulkanContext& context)
+    void VulkanInstance::Destroy()
     {
-        vkDestroySurfaceKHR(context.Instance, context.Surface, {});
-        Log::Info("Vulkan Surface Destroyed");
-
 #if RYN_DEBUG
         PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-            vkGetInstanceProcAddr(context.Instance, "vkDestroyDebugUtilsMessengerEXT")
+            vkGetInstanceProcAddr(_instance, "vkDestroyDebugUtilsMessengerEXT")
         );
 
-        vkDestroyDebugUtilsMessengerEXT(context.Instance, context.DebugMessenger, {});
+        vkDestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, {});
         Log::Info("Vulkan Debug Messenger Destroyed");
 #endif
 
-        vkDestroyInstance(context.Instance, {});
+        vkDestroyInstance(_instance, {});
         Log::Info("Vulkan Instance Destroyed");
     }
 
 #if RYN_DEBUG
-    bool VulkanInstance::CheckValidationLayerSupport()
+    bool VulkanInstance::HasValidationLayerSupport()
     {
         u32 layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, {});
@@ -133,6 +125,31 @@ namespace Ryn
         }
 
         return true;
+    }
+
+    VkBool32 VulkanInstance::VulkanDebugCallback(
+        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        void* pUserData
+    )
+    {
+        switch (messageSeverity)
+        {
+            case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+            case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+                Log::Info("Vulkan Validation Layer: ", pCallbackData->pMessage);
+                break;
+            case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+                Log::Warn("Vulkan Validation Layer: ", pCallbackData->pMessage);
+                break;
+            case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            default:
+                Log::Error("Vulkan Validation Layer: ", pCallbackData->pMessage);
+                break;
+        }
+
+        return VK_FALSE;
     }
 #endif
 }

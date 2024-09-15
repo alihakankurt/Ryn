@@ -1,35 +1,36 @@
 #pragma once
 
 #include <Ryn/Collections/Array.hpp>
-#include <Ryn/Collections/List.hpp>
-#include <Ryn/Windowing/Window.hpp>
 
-#include "VulkanContext.hpp"
+#include "Vulkan.hpp"
 
 namespace Ryn
 {
     class VulkanInstance
     {
       private:
+        VkInstance _instance;
+
 #if RYN_DEBUG
-        static constexpr Array<const char*, 1> ValidationLayers = {{
-            "VK_LAYER_KHRONOS_validation",
-        }};
+        VkDebugUtilsMessengerEXT _debugMessenger;
+        static constexpr Array<const char*, 1> ValidationLayers = {{"VK_LAYER_KHRONOS_validation"}};
 #endif
 
       public:
-        VulkanInstance() = delete;
-        ~VulkanInstance() = delete;
+        void Create();
+        void Destroy();
 
-        static void Create(VulkanContext& context, const Window& window);
-        static void Destroy(VulkanContext& context);
+        VkInstance Get() const { return _instance; }
 
       private:
-        static void AddInstanceExtensions(List<const char*>& extensions, VkInstanceCreateFlags& flags);
-        static void CreateSurface(const Window& window, VkInstance instance, VkSurfaceKHR& surface);
-
 #if RYN_DEBUG
-        static bool CheckValidationLayerSupport();
+        static bool HasValidationLayerSupport();
+        static VkBool32 VulkanDebugCallback(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageTypeFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+            void* pUserData
+        );
 #endif
     };
 }

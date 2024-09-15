@@ -1,16 +1,17 @@
 #include "VulkanRenderer.hpp"
-#include "VulkanInstance.hpp"
 
 namespace Ryn
 {
     VulkanRenderer::VulkanRenderer(const Window& window)
     {
-        VulkanInstance::Create(_context, window);
+        _instance.Create();
+        _surface.Create(_instance, window);
     }
 
     VulkanRenderer::~VulkanRenderer()
     {
-        VulkanInstance::Destroy(_context);
+        _surface.Destroy(_instance);
+        _instance.Destroy();
     }
 
     Renderer* Renderer::Create(const Window& window)
