@@ -2,6 +2,7 @@
 
 #include <Ryn/Windowing/Events/Event.hpp>
 #include <Ryn/Windowing/Window.hpp>
+#include <Ryn/Graphics/Renderer.hpp>
 #include <Ryn/Framework/InputContext.hpp>
 
 namespace Ryn
@@ -9,8 +10,9 @@ namespace Ryn
     class Game
     {
       protected:
-        Window* Window;
         InputContext* Input;
+        Window* Window;
+        Renderer* Renderer;
 
       public:
         virtual ~Game() {}

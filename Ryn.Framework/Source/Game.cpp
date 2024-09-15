@@ -1,6 +1,7 @@
 #include <Ryn/Framework/Game.hpp>
 #include <Ryn/Windowing/Events/KeyEvent.hpp>
 #include <Ryn/Windowing/Events/MouseEvent.hpp>
+#include <Ryn/IO/Log.hpp>
 
 namespace Ryn
 {
@@ -9,8 +10,9 @@ namespace Ryn
         WindowSettings settings;
         Configure(settings);
 
-        Window = Window::Create(settings);
         Input = new InputContext();
+        Window = Window::Create(settings);
+        Renderer = Renderer::Create(*Window);
 
         Window->SetEventCallback([this](Event& event) { OnEvent(event); });
 
@@ -24,8 +26,9 @@ namespace Ryn
 
         Finalize();
 
-        delete Input;
+        delete Renderer;
         delete Window;
+        delete Input;
     }
 
     void Game::OnEvent(Event& event)

@@ -17,6 +17,7 @@ add_subdirectory(Ryn.Numerics)
 add_subdirectory(Ryn.Collections)
 add_subdirectory(Ryn.IO)
 add_subdirectory(Ryn.Windowing)
+add_subdirectory(Ryn.Graphics)
 add_subdirectory(Ryn.Framework)
 
 add_library(${PROJECT_NAME})
@@ -29,6 +30,7 @@ target_link_libraries(${PROJECT_NAME}
         Ryn::Collections
         Ryn::IO
         Ryn::Windowing
+        Ryn::Graphics
         Ryn::Framework
     PUBLIC
         Ryn::BuildDefinitions
