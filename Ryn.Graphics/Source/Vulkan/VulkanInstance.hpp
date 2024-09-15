@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Ryn/Collections/Array.hpp>
-
 #include "Vulkan.hpp"
 
 namespace Ryn
