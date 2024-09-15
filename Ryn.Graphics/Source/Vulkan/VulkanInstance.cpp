@@ -107,10 +107,10 @@ namespace Ryn
         for (const char* layer : ValidationLayers)
         {
             bool layerFound = false;
+            u32 length = String::Length(layer);
 
             for (const VkLayerProperties& availableLayer : availableLayers)
             {
-                u32 length = String::Length(layer);
                 if (Memory::Compare(layer, availableLayer.layerName, length) == 0)
                 {
                     layerFound = true;
