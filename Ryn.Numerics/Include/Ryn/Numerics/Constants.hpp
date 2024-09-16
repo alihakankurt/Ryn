@@ -6,7 +6,7 @@
 namespace Ryn
 {
     template <Traits::Number TNumber>
-    struct NumericConstans
+    struct NumericConstants
     {
         static constexpr TNumber Zero{};
         static constexpr TNumber One{};
@@ -19,7 +19,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<i8>
+    struct NumericConstants<i8>
     {
         static constexpr i8 Zero = 0_i8;
         static constexpr i8 One = 1_i8;
@@ -32,7 +32,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<i16>
+    struct NumericConstants<i16>
     {
         static constexpr i16 Zero = 0_i16;
         static constexpr i16 One = 1_i16;
@@ -45,7 +45,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<i32>
+    struct NumericConstants<i32>
     {
         static constexpr i32 Zero = 0_i32;
         static constexpr i32 One = 1_i32;
@@ -58,7 +58,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<i64>
+    struct NumericConstants<i64>
     {
         static constexpr i64 Zero = 0_i64;
         static constexpr i64 One = 1_i64;
@@ -71,7 +71,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<u8>
+    struct NumericConstants<u8>
     {
         static constexpr u8 Zero = 0_u8;
         static constexpr u8 One = 1_u8;
@@ -84,7 +84,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<u16>
+    struct NumericConstants<u16>
     {
         static constexpr u16 Zero = 0_u16;
         static constexpr u16 One = 1_u16;
@@ -97,7 +97,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<u32>
+    struct NumericConstants<u32>
     {
         static constexpr u32 Zero = 0_u32;
         static constexpr u32 One = 1_u32;
@@ -110,7 +110,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<u64>
+    struct NumericConstants<u64>
     {
         static constexpr u64 Zero = 0_u64;
         static constexpr u64 One = 1_u64;
@@ -123,7 +123,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<f32>
+    struct NumericConstants<f32>
     {
         static constexpr f32 Zero = 0_f32;
         static constexpr f32 One = 1_f32;
@@ -136,7 +136,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstans<f64>
+    struct NumericConstants<f64>
     {
         static constexpr f64 Zero = 0_f64;
         static constexpr f64 One = 1_f64;

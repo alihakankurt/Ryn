@@ -94,14 +94,14 @@ namespace Ryn::Math
     template <Traits::Number TNumber>
     constexpr bool IsZero(TNumber value)
     {
-        return value == NumericConstans<TNumber>::Zero;
+        return value == NumericConstants<TNumber>::Zero;
     }
 
     template <Traits::Number TNumber>
     constexpr bool IsNegative(TNumber value)
     {
         if constexpr (Traits::SignedInteger<TNumber> || Traits::FloatingPoint<TNumber>)
-            return value < NumericConstans<TNumber>::Zero;
+            return value < NumericConstants<TNumber>::Zero;
         else
             return false;
     }
@@ -109,20 +109,20 @@ namespace Ryn::Math
     template <Traits::Number TNumber>
     constexpr bool IsPositive(TNumber value)
     {
-        return value > NumericConstans<TNumber>::Zero;
+        return value > NumericConstants<TNumber>::Zero;
     }
 
     template <Traits::Number TNumber>
     constexpr TNumber Abs(TNumber value)
     {
         if constexpr (Traits::SignedInteger<TNumber> || Traits::FloatingPoint<TNumber>)
-            return (value < NumericConstans<TNumber>::Zero) ? -value : value;
+            return (value < NumericConstants<TNumber>::Zero) ? -value : value;
         else
             return value;
     }
 
     template <Traits::Number TNumber>
-    constexpr bool IsApproximatelyEqual(TNumber value1, TNumber value2, TNumber epsilon = NumericConstans<TNumber>::Epsilon)
+    constexpr bool IsApproximatelyEqual(TNumber value1, TNumber value2, TNumber epsilon = NumericConstants<TNumber>::Epsilon)
     {
         return Abs(value1 - value2) <= epsilon;
     }
@@ -148,7 +148,7 @@ namespace Ryn::Math
     template <Traits::Number TNumber, Traits::Number TTime = f32>
     constexpr TNumber Lerp(TNumber value1, TNumber value2, TTime time)
     {
-        return static_cast<TNumber>((NumericConstans<TTime>::One - time) * value1 + time * value2);
+        return static_cast<TNumber>((NumericConstants<TTime>::One - time) * value1 + time * value2);
     }
 
     template <Traits::Number TNumber>
