@@ -4,6 +4,7 @@
 
 #include "VulkanInstance.hpp"
 #include "VulkanSurface.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Ryn
 {
@@ -12,6 +13,7 @@ namespace Ryn
       private:
         VulkanInstance _instance;
         VulkanSurface _surface;
+        VulkanDevice _device;
 
       public:
         VulkanRenderer(const Window& window);
