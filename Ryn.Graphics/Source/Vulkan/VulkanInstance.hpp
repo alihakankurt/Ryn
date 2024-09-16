@@ -11,7 +11,7 @@ namespace Ryn
 
 #if RYN_DEBUG
         VkDebugUtilsMessengerEXT _debugMessenger;
-        static constexpr Array<const char*, 1> ValidationLayers = {{"VK_LAYER_KHRONOS_validation"}};
+        static constexpr Array<const char*, 1> ValidationLayers{{VK_KHR_VALIDATION_LAYER_EXTENSION_NAME}};
 #endif
 
       public:

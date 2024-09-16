@@ -31,7 +31,7 @@ namespace Ryn
         };
 
       private:
-        static constexpr Array<const char*, 1> DeviceExtensions = {{VK_KHR_SWAPCHAIN_EXTENSION_NAME}};
+        static constexpr Array<const char*, 1> DeviceExtensions{{VK_KHR_SWAPCHAIN_EXTENSION_NAME}};
 
       private:
         VkPhysicalDevice _physicalDevice;

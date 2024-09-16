@@ -25,6 +25,6 @@ namespace Ryn
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
         surfaceCreateInfo.pLayer = metalLayer;
 
-        VulkanPlatform::CheckResult(vkCreateMetalSurfaceEXT(instance, &surfaceCreateInfo, allocator, &surface), "Failed to create Vulkan Metal surface");
+        VK_CHECK_RESULT(vkCreateMetalSurfaceEXT(instance, &surfaceCreateInfo, allocator, &surface), "Failed to create Vulkan Metal surface");
     }
 }

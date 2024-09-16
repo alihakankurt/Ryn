@@ -8,8 +8,7 @@ namespace Ryn
         vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, {});
         if (deviceCount == 0)
         {
-            Log::Error("Failed to find GPUs with Vulkan support!");
-            Process::Exit(-1);
+            VK_ERROR("Failed to find GPUs with Vulkan support!");
         }
 
         VkPhysicalDevice* physicalDevices = new VkPhysicalDevice[deviceCount];
@@ -30,8 +29,7 @@ namespace Ryn
 
         if (_physicalDevice == VK_NULL_HANDLE)
         {
-            Log::Error("Failed to find a suitable GPU!");
-            Process::Exit(-1);
+            VK_ERROR("Failed to find a suitable GPU!");
         }
 
         List<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -74,7 +72,7 @@ namespace Ryn
 
         if (VulkanDevice::HasPortabilitySubsetExtension(_physicalDevice))
         {
-            deviceExtensions.Add("VK_KHR_portability_subset");
+            deviceExtensions.Add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
         }
 
         VkDeviceCreateInfo logicalDeviceCreateInfo{};
@@ -85,14 +83,13 @@ namespace Ryn
         logicalDeviceCreateInfo.ppEnabledExtensionNames = &deviceExtensions[0];
         logicalDeviceCreateInfo.enabledExtensionCount = deviceExtensions.Count();
 
-        VulkanPlatform::CheckResult(vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, {}, &_logicalDevice), "Failed to create Vulkan device");
+        VK_CHECK_RESULT(vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, {}, &_logicalDevice), "Failed to create Vulkan device");
     }
 
     void VulkanDevice::Destroy()
     {
         vkDestroyDevice(_logicalDevice, {});
         _physicalDevice = VK_NULL_HANDLE;
-        _logicalDevice = VK_NULL_HANDLE;
     }
 
     VulkanDevice::QueueFamilyIndices VulkanDevice::FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
@@ -223,7 +220,7 @@ namespace Ryn
         bool hasExtension = false;
         for (u32 extensionIndex = 0; extensionIndex < extensionCount; extensionIndex += 1)
         {
-            if (Memory::Compare(availableExtensions[extensionIndex].extensionName, "VK_KHR_portability_subset", 25))
+            if (Memory::Compare(availableExtensions[extensionIndex].extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, 25))
             {
                 hasExtension = true;
                 break;

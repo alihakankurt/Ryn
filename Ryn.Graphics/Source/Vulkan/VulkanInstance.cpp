@@ -23,7 +23,6 @@ namespace Ryn
 #if RYN_DEBUG
         if (HasValidationLayerSupport())
         {
-            Log::Info("Vulkan Validation Layers Supported");
             instanceExtensions.Add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             instanceCreateInfo.enabledLayerCount = ValidationLayers.Count();
             instanceCreateInfo.ppEnabledLayerNames = &ValidationLayers[0];
@@ -37,15 +36,7 @@ namespace Ryn
         instanceCreateInfo.enabledExtensionCount = instanceExtensions.Count();
         instanceCreateInfo.ppEnabledExtensionNames = &instanceExtensions[0];
 
-        Log::Info("Vulkan Instance Extensions: ", instanceExtensions.Count());
-        for (const char* extension : instanceExtensions)
-        {
-            Log::Info("- ", extension);
-        }
-
-        VulkanPlatform::CheckResult(vkCreateInstance(&instanceCreateInfo, {}, &_instance), "Failed to create Vulkan instance");
-
-        Log::Info("Vulkan Instance Created");
+        VK_CHECK_RESULT(vkCreateInstance(&instanceCreateInfo, {}, &_instance), "Failed to create Vulkan instance");
 
 #if RYN_DEBUG
         VkDebugUtilsMessengerCreateInfoEXT debugMessengerCreateInfo{};
@@ -60,12 +51,10 @@ namespace Ryn
             vkGetInstanceProcAddr(_instance, "vkCreateDebugUtilsMessengerEXT")
         );
 
-        VulkanPlatform::CheckResult(
+        VK_CHECK_RESULT(
             vkCreateDebugUtilsMessengerEXT(_instance, &debugMessengerCreateInfo, {}, &_debugMessenger),
             "Failed to create Vulkan debug messenger"
         );
-
-        Log::Info("Vulkan Debug Messenger Created");
 #endif
     }
 
@@ -77,11 +66,11 @@ namespace Ryn
         );
 
         vkDestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, {});
-        Log::Info("Vulkan Debug Messenger Destroyed");
+        _debugMessenger = VK_NULL_HANDLE;
 #endif
 
         vkDestroyInstance(_instance, {});
-        Log::Info("Vulkan Instance Destroyed");
+        _instance = VK_NULL_HANDLE;
     }
 
 #if RYN_DEBUG
