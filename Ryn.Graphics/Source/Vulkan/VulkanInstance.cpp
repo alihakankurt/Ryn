@@ -90,23 +90,18 @@ namespace Ryn
         u32 layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, {});
 
-        VkLayerProperties availableLayers[layerCount];
-        vkEnumerateInstanceLayerProperties(&layerCount, &availableLayers[0]);
+        VkLayerProperties* availableLayers = new VkLayerProperties[layerCount];
+        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
 
-        Log::Info("Available Vulkan Validation Layers: ", layerCount);
-        for (const VkLayerProperties& layer : availableLayers)
-        {
-            Log::Info("- ", layer.layerName);
-        }
-
+        bool supported = true;
         for (const char* layer : ValidationLayers)
         {
             bool layerFound = false;
             u32 length = String::Length(layer);
 
-            for (const VkLayerProperties& availableLayer : availableLayers)
+            for (u32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
             {
-                if (Memory::Compare(layer, availableLayer.layerName, length) == 0)
+                if (Memory::Compare(layer, availableLayers[layerIndex].layerName, length) == 0)
                 {
                     layerFound = true;
                     break;
@@ -115,11 +110,13 @@ namespace Ryn
 
             if (!layerFound)
             {
-                return false;
+                supported = false;
+                break;
             }
         }
 
-        return true;
+        delete[] availableLayers;
+        return supported;
     }
 
     VkBool32 VulkanInstance::VulkanDebugCallback(
