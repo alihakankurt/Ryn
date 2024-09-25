@@ -2,7 +2,7 @@
 
 namespace Ryn
 {
-    void VulkanInstance::Create()
+    void VulkanInstance::Create(const Window& window)
     {
         VkApplicationInfo applicationInfo{};
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -18,7 +18,7 @@ namespace Ryn
 
         List<const char*> instanceExtensions;
         instanceExtensions.Add(VK_KHR_SURFACE_EXTENSION_NAME);
-        VulkanPlatform::AddInstanceExtensions(instanceExtensions, instanceCreateInfo.flags);
+        vkAddInstanceExtensions(instanceExtensions, instanceCreateInfo.flags);
 
 #if RYN_DEBUG
         if (HasValidationLayerSupport())
@@ -56,10 +56,15 @@ namespace Ryn
             "Failed to create Vulkan debug messenger"
         );
 #endif
+
+        vkCreateSurfaceKHR(window.GetNativeHandle(), _instance, &_surface, {});
     }
 
     void VulkanInstance::Destroy()
     {
+        vkDestroySurfaceKHR(_instance, _surface, {});
+        _surface = VK_NULL_HANDLE;
+
 #if RYN_DEBUG
         PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
             vkGetInstanceProcAddr(_instance, "vkDestroyDebugUtilsMessengerEXT")

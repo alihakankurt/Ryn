@@ -2,7 +2,7 @@
 
 namespace Ryn
 {
-    void VulkanDevice::Create(const VulkanInstance& instance, const VulkanSurface& surface)
+    void VulkanDevice::Create(const VulkanInstance& instance)
     {
         u32 deviceCount = 0;
         vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, {});
@@ -17,7 +17,7 @@ namespace Ryn
         _physicalDevice = VK_NULL_HANDLE;
         for (u32 deviceIndex = 0, maxDeviceScore = 0; deviceIndex < deviceCount; deviceIndex += 1)
         {
-            u32 currentDeviceScore = VulkanDevice::CalculateScore(physicalDevices[deviceIndex], surface.Get());
+            u32 currentDeviceScore = VulkanDevice::CalculateScore(physicalDevices[deviceIndex], instance.GetSurface());
             if (currentDeviceScore > maxDeviceScore)
             {
                 _physicalDevice = physicalDevices[deviceIndex];
@@ -34,7 +34,7 @@ namespace Ryn
 
         List<VkDeviceQueueCreateInfo> queueCreateInfos;
 
-        QueueFamilyIndices queueFamilyIndices = VulkanDevice::FindQueueFamilies(_physicalDevice, surface.Get());
+        QueueFamilyIndices queueFamilyIndices = VulkanDevice::FindQueueFamilies(_physicalDevice, instance.GetSurface());
         Array<u32, 4> queueFamilyIndicesArray = queueFamilyIndices.AsArray();
         f32 queuePriority = 1.0f;
 

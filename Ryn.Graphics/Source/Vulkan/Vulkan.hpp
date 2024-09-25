@@ -28,11 +28,14 @@
 #define VK_CHECK_RESULT(result, ...) \
     if (result != VK_SUCCESS) VK_ERROR(__VA_ARGS__)
 
-namespace Ryn
-{
-    struct VulkanPlatform
-    {
-        static void AddInstanceExtensions(List<const char*>& extensions, VkInstanceCreateFlags& flags);
-        static void CreateSurface(const Window& window, VkInstance instance, VkSurfaceKHR& surface, VkAllocationCallbacks* allocator);
-    };
-};
+VKAPI_ATTR VkResult VKAPI_CALL vkCreateSurfaceKHR(
+    void* window,
+    const VkInstance instance,
+    VkSurfaceKHR* surface,
+    const VkAllocationCallbacks* pAllocator
+);
+
+VKAPI_ATTR void VKAPI_CALL vkAddInstanceExtensions(
+    Ryn::List<const char*>& extensions,
+    VkInstanceCreateFlags& flags
+);

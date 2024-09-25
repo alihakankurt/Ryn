@@ -2,7 +2,6 @@
 
 #include "Vulkan.hpp"
 #include "VulkanInstance.hpp"
-#include "VulkanSurface.hpp"
 
 namespace Ryn
 {
@@ -38,7 +37,7 @@ namespace Ryn
         VkDevice _logicalDevice;
 
       public:
-        void Create(const VulkanInstance& instance, const VulkanSurface& surface);
+        void Create(const VulkanInstance& instance);
         void Destroy();
 
         VkPhysicalDevice GetPhysical() const { return _physicalDevice; }

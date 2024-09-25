@@ -19,13 +19,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Include DESTINATION ${CMAKE_INSTAL
 
 target_sources(RynGraphics INTERFACE
     $<$<BOOL:{RYN_PLATFORM_MACOS}>:
-        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/Platform/VulkanPlatform.Metal.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/Platform/VulkanMetal.mm
     >
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/Vulkan.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanInstance.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanInstance.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanSurface.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanSurface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanDevice.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanDevice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanRenderer.hpp

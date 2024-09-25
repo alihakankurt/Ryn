@@ -4,15 +4,13 @@ namespace Ryn
 {
     VulkanRenderer::VulkanRenderer(const Window& window)
     {
-        _instance.Create();
-        _surface.Create(_instance, window);
-        _device.Create(_instance, _surface);
+        _instance.Create(window);
+        _device.Create(_instance);
     }
 
     VulkanRenderer::~VulkanRenderer()
     {
         _device.Destroy();
-        _surface.Destroy(_instance);
         _instance.Destroy();
     }
 

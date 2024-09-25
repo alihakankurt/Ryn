@@ -8,17 +8,18 @@ namespace Ryn
     {
       private:
         VkInstance _instance;
-
 #if RYN_DEBUG
         VkDebugUtilsMessengerEXT _debugMessenger;
         static constexpr Array<const char*, 1> ValidationLayers{{VK_KHR_VALIDATION_LAYER_EXTENSION_NAME}};
 #endif
+        VkSurfaceKHR _surface;
 
       public:
-        void Create();
+        void Create(const Window& window);
         void Destroy();
 
         VkInstance Get() const { return _instance; }
+        VkSurfaceKHR GetSurface() const { return _surface; }
 
       private:
 #if RYN_DEBUG
