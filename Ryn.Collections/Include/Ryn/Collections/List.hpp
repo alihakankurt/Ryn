@@ -27,6 +27,11 @@ namespace Ryn
             _count{},
             _capacity{} {}
 
+        constexpr List(TValue* data, u32 count) :
+            _data{data},
+            _count{count},
+            _capacity{count} {}
+
         template <u32 N>
         constexpr List(const TValue (&array)[N]) :
             _count{N},
