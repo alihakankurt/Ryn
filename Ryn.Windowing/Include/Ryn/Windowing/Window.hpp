@@ -25,6 +25,10 @@ namespace Ryn
         virtual void Resize(Vector2<u16> size) = 0;
         virtual void SetTitle(const String& title) = 0;
 
+        virtual Vector2<u16> GetSize() const = 0;
+        virtual Vector2<u16> GetFramebufferSize() const = 0;
+        virtual String GetTitle() const = 0;
+
         void SetEventCallback(Function<void(Event&)>&& callback) { EventCallback = Utility::Move(callback); }
 
         static Window* Create(const WindowSettings& settings);

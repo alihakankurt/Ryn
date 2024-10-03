@@ -21,6 +21,10 @@ namespace Ryn
         virtual void Resize(Vector2<u16> size) override;
         virtual void SetTitle(const String& title) override;
 
+        virtual Vector2<u16> GetSize() const override;
+        virtual Vector2<u16> GetFramebufferSize() const override;
+        virtual String GetTitle() const override;
+
         void OnEvent(Event& event) { if (EventCallback) EventCallback(event); }
 
       private:
