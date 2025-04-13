@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
-#include <Ryn/Numerics/Vector2.hpp>
+#include <Ryn/Core/Span.hpp>
+#include <Ryn/Mathematics/Vector2.hpp>
 #include <Ryn/Windowing/Events/Event.hpp>
 #include <Ryn/Windowing/Input/Key.hpp>
-#include <Ryn/Windowing/Input/ModifierFlags.hpp>
 
 namespace Ryn
 {
@@ -12,25 +12,25 @@ namespace Ryn
     {
       public:
         const Key Key;
-        const ModifierFlags Modifiers;
+        Span<const char> Text;
 
       public:
-        KeyPressEvent(Ryn::Key key, ModifierFlags modifiers) :
+        KeyPressEvent(Ryn::Key key, Span<const char> text) :
             Event(EventKind::KeyPress),
             Key(key),
-            Modifiers(modifiers) {}
+            Text(text) {}
     };
 
     class KeyReleaseEvent : public Event
     {
       public:
         const Key Key;
-        const ModifierFlags Modifiers;
+        Span<const char> Text;
 
       public:
-        KeyReleaseEvent(Ryn::Key key, ModifierFlags modifiers) :
+        KeyReleaseEvent(Ryn::Key key, Span<const char> text) :
             Event(EventKind::KeyRelease),
             Key(key),
-            Modifiers(modifiers) {}
+            Text(text) {}
     };
 }

@@ -15,23 +15,23 @@ namespace Ryn
 
       private:
         TValue* _data;
-        u32 _length;
+        usz _length;
 
       public:
         constexpr Span() :
             _data{},
             _length{} {}
 
-        constexpr Span(TValue* data, u32 length) :
+        constexpr Span(TValue* data, usz length) :
             _data{data},
             _length{length} {}
 
-        template <u32 N>
+        template <usz N>
         constexpr Span(TValue (&data)[N]) :
             _data{&data[0]},
             _length{N} {}
 
-        template <u32 N>
+        template <usz N>
         constexpr Span(TValue (&&data)[N]) :
             _data{&data[0]},
             _length{N} {}
@@ -64,14 +64,14 @@ namespace Ryn
             return *this;
         }
 
-        constexpr u32 Length() const { return _length; }
+        constexpr usz Length() const { return _length; }
 
-        constexpr TValue& operator[](u32 index) { return _data[index]; }
-        constexpr const TValue& operator[](u32 index) const { return _data[index]; }
+        constexpr TValue& operator[](usz index) { return _data[index]; }
+        constexpr const TValue& operator[](usz index) const { return _data[index]; }
 
         constexpr operator Span<const TValue>() const { return Span<const TValue>{_data, _length}; }
 
-        constexpr Span Slice(u32 start) const
+        constexpr Span Slice(usz start) const
         {
             if (!_data || start >= _length)
                 return Span{};
@@ -79,7 +79,7 @@ namespace Ryn
             return Span{_data + start, _length - start};
         }
 
-        constexpr Span Slice(u32 start, u32 length) const
+        constexpr Span Slice(usz start, usz length) const
         {
             if (!_data || start >= _length)
                 return Span{};

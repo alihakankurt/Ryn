@@ -2,7 +2,6 @@
 
 #include <Ryn/Windowing/Input/Key.hpp>
 #include <Ryn/Windowing/Input/MouseButton.hpp>
-#include <Ryn/Windowing/Input/ModifierFlags.hpp>
 
 #include "CocoaWindow.hh"
 
@@ -36,6 +35,5 @@
 
 @end
 
-Ryn::ModifierFlags MapCocoaModifierFlags(NSEventModifierFlags modifiers);
 Ryn::Key MapCocoaKey(UInt16 keycode);
 Ryn::MouseButton MapCocoaMouseButton(NSInteger button);

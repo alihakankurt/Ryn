@@ -14,17 +14,17 @@ namespace Ryn
             return String{};
         }
 
-        struct stat fileStat;
-        if (fstat(file, &fileStat) == -1)
+        struct stat fileStats;
+        if (fstat(file, &fileStats) == -1)
         {
             close(file);
             return String{};
         }
 
-        u32 fileSize = static_cast<u32>(fileStat.st_size);
+        usz fileSize = static_cast<usz>(fileStats.st_size);
         char* buffer = new char[fileSize];
 
-        u32 bytesReadTotal = 0;
+        usz bytesReadTotal = 0;
         while (bytesReadTotal < fileSize)
         {
             ssize_t bytesRead = read(file, buffer + bytesReadTotal, fileSize - bytesReadTotal);
@@ -34,7 +34,7 @@ namespace Ryn
                 return String{};
             }
 
-            bytesReadTotal += static_cast<u32>(bytesRead);
+            bytesReadTotal += static_cast<usz>(bytesRead);
         }
 
         close(file);
@@ -43,14 +43,16 @@ namespace Ryn
 
     static bool WriteToFile(int file, const Span<const char> content)
     {
-        u32 bytesWrittenTotal = 0;
+        usz bytesWrittenTotal = 0;
         while (bytesWrittenTotal < content.Length())
         {
             ssize_t bytesWritten = write(file, &content[bytesWrittenTotal], content.Length() - bytesWrittenTotal);
             if (bytesWritten == -1)
+            {
                 return false;
+            }
 
-            bytesWrittenTotal += static_cast<u32>(bytesWritten);
+            bytesWrittenTotal += static_cast<usz>(bytesWritten);
         }
 
         return true;
@@ -64,9 +66,9 @@ namespace Ryn
             return false;
         }
 
-        bool result = WriteToFile(file, content);
+        bool isWritten = WriteToFile(file, content);
         close(file);
-        return result;
+        return isWritten;
     }
 
     bool File::Append(const Span<const char> path, const Span<const char> content)
@@ -77,9 +79,9 @@ namespace Ryn
             return false;
         }
 
-        bool result = WriteToFile(file, content);
+        bool isWritten = WriteToFile(file, content);
         close(file);
-        return result;
+        return isWritten;
     }
 
     bool File::Exists(const Span<const char> path)

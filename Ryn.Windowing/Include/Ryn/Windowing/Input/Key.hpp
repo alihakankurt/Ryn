@@ -92,9 +92,10 @@ namespace Ryn
         LeftSystem,
         RightSystem,
         CapsLock,
+        Function,
 
         Count,
     };
 
-    constexpr u32 operator+(Key key) { return static_cast<u32>(key); }
+    constexpr usz operator+(Key key) { return static_cast<usz>(key); }
 }

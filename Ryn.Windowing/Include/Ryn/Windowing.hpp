@@ -2,7 +2,6 @@
 
 #include <Ryn/Windowing/Input/Key.hpp>
 #include <Ryn/Windowing/Input/MouseButton.hpp>
-#include <Ryn/Windowing/Input/ModifierFlags.hpp>
 #include <Ryn/Windowing/Events/Event.hpp>
 #include <Ryn/Windowing/Events/KeyEvent.hpp>
 #include <Ryn/Windowing/Events/MouseEvent.hpp>

@@ -24,5 +24,5 @@ namespace Ryn
         Middle = Button3,
     };
 
-    constexpr u32 operator+(MouseButton button) { return static_cast<u32>(button); }
+    constexpr usz operator+(MouseButton button) { return static_cast<usz>(button); }
 }

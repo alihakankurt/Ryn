@@ -1,4 +1,4 @@
-#include <Ryn/Numerics/Math.hpp>
+#include <Ryn/Mathematics/Math.hpp>
 
 #include <math.h>
 

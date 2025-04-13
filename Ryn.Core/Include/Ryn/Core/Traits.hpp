@@ -31,7 +31,7 @@ namespace Ryn::Traits
     template <typename T>
     struct SignedIntegerTrait
     {
-        static constexpr bool Value = OneOfTrait<T, i8, i16, i32, i64>::Value;
+        static constexpr bool Value = OneOfTrait<T, i8, i16, i32, i64, isz>::Value;
     };
 
     template <typename T>
@@ -40,7 +40,7 @@ namespace Ryn::Traits
     template <typename T>
     struct UnsignedIntegerTrait
     {
-        static constexpr bool Value = OneOfTrait<T, u8, u16, u32, u64>::Value;
+        static constexpr bool Value = OneOfTrait<T, u8, u16, u32, u64, usz>::Value;
     };
 
     template <typename T>

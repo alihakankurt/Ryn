@@ -15,9 +15,9 @@ namespace Ryn
         class CallableBase
         {
           public:
-            virtual inline ~CallableBase() {}
-            virtual inline TReturn Call(TArgs... args) const = 0;
-            virtual inline CallableBase* Clone() const = 0;
+            virtual ~CallableBase() {}
+            virtual TReturn Call(TArgs... args) const = 0;
+            virtual CallableBase* Clone() const = 0;
         };
 
         template <typename TLambda>
@@ -27,11 +27,11 @@ namespace Ryn
             TLambda _lambda;
 
           public:
-            inline explicit Callable(TLambda lambda) :
+            explicit Callable(TLambda lambda) :
                 _lambda(lambda) {}
 
-            inline TReturn Call(TArgs... args) const override { return _lambda(args...); }
-            inline CallableBase* Clone() const override { return new Callable<TLambda>(_lambda); }
+            TReturn Call(TArgs... args) const override { return _lambda(args...); }
+            CallableBase* Clone() const override { return new Callable<TLambda>(_lambda); }
         };
 
         const CallableBase* _callable;
@@ -42,7 +42,7 @@ namespace Ryn
 
         template <typename TLambda>
         constexpr Function(TLambda lambda) :
-            _callable(new Callable<TLambda>{lambda}) {}
+            _callable{new Callable<TLambda>{lambda}} {}
 
         constexpr Function(const Function& other) :
             _callable{}

@@ -4,8 +4,6 @@ namespace Ryn
 {
     enum class EventKind
     {
-        Unknown,
-
         WindowClose,
         WindowMove,
         WindowResize,

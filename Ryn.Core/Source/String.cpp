@@ -2,15 +2,6 @@
 
 namespace Ryn
 {
-    String::String(const String& other)
-    {
-        Construct(other._data, other._length);
-    }
-
-    String::String(String&& other) :
-        _data{Utility::Exchange(other._data)},
-        _length{Utility::Exchange(other._length)} {}
-
     String::~String()
     {
         delete[] _data;
@@ -39,7 +30,7 @@ namespace Ryn
         return *this;
     }
 
-    void String::Construct(const char* data, u32 length)
+    void String::Construct(const char* data, usz length)
     {
         _data = new char[length + 1];
         Memory::Copy(&_data[0], &data[0], length);
@@ -48,9 +39,9 @@ namespace Ryn
         _length = length;
     }
 
-    String& String::Append(const char* data, u32 length)
+    String& String::Append(const char* data, usz length)
     {
-        u32 newLength = _length + length;
+        usz newLength = _length + length;
         char* newData = new char[newLength + 1];
 
         Memory::Copy(&newData[0], &_data[0], _length);
@@ -63,14 +54,14 @@ namespace Ryn
         return *this;
     }
 
-    String& String::Insert(u32 to, const char* data, u32 length)
+    String& String::Insert(usz to, const char* data, usz length)
     {
         if (to >= _length)
         {
             return Append(data, length);
         }
 
-        u32 newLength = _length + length;
+        usz newLength = _length + length;
         char* newData = new char[newLength + 1];
 
         Memory::Copy(&newData[0], &_data[0], to);
@@ -84,12 +75,12 @@ namespace Ryn
         return *this;
     }
 
-    String& String::Remove(u32 from, u32 to)
+    String& String::Remove(usz from, usz to)
     {
         if (from >= _length || to >= _length || from > to)
             return *this;
 
-        u32 newLength = _length - (to - from + 1);
+        usz newLength = _length - (to - from + 1);
         char* newData = new char[newLength + 1];
 
         Memory::Copy(&newData[0], &_data[0], from);
@@ -102,9 +93,9 @@ namespace Ryn
         return *this;
     }
 
-    u32 String::Length(const char* str)
+    usz String::Length(const char* str)
     {
-        u32 length = 0;
+        usz length = 0;
         while (str[length] != '\0')
         {
             length += 1;
@@ -115,28 +106,26 @@ namespace Ryn
 
     Span<char> String::Format(Span<char> span, bool value)
     {
-        if (value)
+        if (value && span.Length() >= 4)
         {
-            if (span.Length() < 4)
-                return {};
-
             span[0] = 't';
             span[1] = 'r';
             span[2] = 'u';
             span[3] = 'e';
             return span.Slice(0, 4);
         }
-        else
+        else if (!value && span.Length() >= 5)
         {
-            if (span.Length() < 5)
-                return {};
-
             span[0] = 'f';
             span[1] = 'a';
             span[2] = 'l';
             span[3] = 's';
             span[4] = 'e';
             return span.Slice(0, 5);
+        }
+        else
+        {
+            return {};
         }
     }
 
@@ -145,7 +134,7 @@ namespace Ryn
         if (span.Length() == 0)
             return {};
 
-        u32 length = 0;
+        usz length = 0;
         if (value < 0)
         {
             span[length] = '-';
@@ -163,7 +152,7 @@ namespace Ryn
         if (span.Length() == 0)
             return {};
 
-        u32 length = 0;
+        usz length = 0;
         do
         {
             span[length] = static_cast<char>('0' + (value % 10));
@@ -186,7 +175,7 @@ namespace Ryn
         fraction *= precision;
 
         Span<char> integerPart = String::Format(span, integer);
-        u32 length = integerPart.Length();
+        usz length = integerPart.Length();
 
         if (length >= span.Length())
             return span.Slice(0, length);

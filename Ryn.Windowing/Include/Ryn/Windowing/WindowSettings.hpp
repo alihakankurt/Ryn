@@ -2,7 +2,7 @@
 
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/String.hpp>
-#include <Ryn/Numerics/Vector2.hpp>
+#include <Ryn/Mathematics/Vector2.hpp>
 
 namespace Ryn
 {

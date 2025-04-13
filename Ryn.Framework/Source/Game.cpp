@@ -35,10 +35,6 @@ namespace Ryn
     {
         switch (event.Kind)
         {
-            case EventKind::Unknown:
-            {
-                break;
-            }
             case EventKind::WindowClose:
             {
                 break;
@@ -73,6 +69,8 @@ namespace Ryn
             }
             case EventKind::MouseMove:
             {
+                MouseMoveEvent& mouseMoveEvent = event.As<MouseMoveEvent>();
+                Input->SetMousePosition(mouseMoveEvent.Position);
                 break;
             }
             case EventKind::MouseScroll:

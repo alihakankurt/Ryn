@@ -24,9 +24,12 @@
 {
     NSWindow* window = [notification object];
     NSRect frame = [window frame];
-    Ryn::f32 x = static_cast<Ryn::f32>(frame.origin.x);
-    Ryn::f32 y = static_cast<Ryn::f32>(frame.origin.y);
-    Ryn::WindowMoveEvent e{{x, y}};
+    Ryn::Vector2<Ryn::f64> position{
+        static_cast<Ryn::f64>(frame.origin.x),
+        static_cast<Ryn::f64>(frame.origin.y)
+    };
+
+    Ryn::WindowMoveEvent e{position};
     cocoaWindow->OnEvent(e);
 }
 
@@ -34,9 +37,12 @@
 {
     NSWindow* window = [notification object];
     NSRect frame = [window frame];
-    Ryn::u32 width = static_cast<Ryn::u32>(frame.size.width);
-    Ryn::u32 height = static_cast<Ryn::u32>(frame.size.height);
-    Ryn::WindowResizeEvent e{{width, height}};
+    Ryn::Vector2<Ryn::u32> size{
+        static_cast<Ryn::u32>(frame.size.width),
+        static_cast<Ryn::u32>(frame.size.height)
+    };
+
+    Ryn::WindowResizeEvent e{size};
     cocoaWindow->OnEvent(e);
 }
 

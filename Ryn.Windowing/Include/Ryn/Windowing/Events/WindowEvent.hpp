@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
-#include <Ryn/Numerics/Vector2.hpp>
+#include <Ryn/Mathematics/Vector2.hpp>
 #include <Ryn/Windowing/Events/Event.hpp>
 
 namespace Ryn
@@ -16,10 +16,10 @@ namespace Ryn
     class WindowMoveEvent : public Event
     {
       public:
-        const Vector2<f32> Position;
+        const Vector2<f64> Position;
 
       public:
-        WindowMoveEvent(Vector2<f32> position) :
+        WindowMoveEvent(Vector2<f64> position) :
             Event(EventKind::WindowMove),
             Position(position) {}
     };

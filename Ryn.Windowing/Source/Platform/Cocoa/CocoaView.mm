@@ -67,64 +67,71 @@
 - (void)keyDown:(NSEvent*)event
 {
     Ryn::Key key = MapCocoaKey([event keyCode]);
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::KeyPressEvent e{key, modifiers};
+    const char* chars = [[event characters] UTF8String];
+    Ryn::Span<const char> text{chars, Ryn::String::Length(chars)};
+
+    Ryn::KeyPressEvent e{key, text};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)keyUp:(NSEvent*)event
 {
     Ryn::Key key = MapCocoaKey([event keyCode]);
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::KeyReleaseEvent e{key, modifiers};
+    const char* chars = [[event characters] UTF8String];
+    Ryn::Span<const char> text{chars, Ryn::String::Length(chars)};
+
+    Ryn::KeyReleaseEvent e{key, text};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)flagsChanged:(NSEvent*)event
 {
     Ryn::Key key = MapCocoaKey([event keyCode]);
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
 
-    Ryn::ModifierFlags flag = Ryn::ModifierFlags::None;
+    NSEventModifierFlags flag = 0;
     switch (key)
     {
         case Ryn::Key::LeftShift:
-        case Ryn::Key::RightShift: 
-            flag = Ryn::ModifierFlags::Shift;
+        case Ryn::Key::RightShift:
+            flag = NSEventModifierFlagShift;
             break;
 
         case Ryn::Key::LeftControl:
         case Ryn::Key::RightControl:
-            flag = Ryn::ModifierFlags::Control;
+            flag = NSEventModifierFlagControl;
             break;
-        
+
         case Ryn::Key::LeftAlt:
         case Ryn::Key::RightAlt:
-            flag = Ryn::ModifierFlags::Alt;
+            flag = NSEventModifierFlagOption;
             break;
-        
+
         case Ryn::Key::LeftSystem:
         case Ryn::Key::RightSystem:
-            flag = Ryn::ModifierFlags::System;
+            flag = NSEventModifierFlagCommand;
             break;
-        
+
         case Ryn::Key::CapsLock:
-            flag = Ryn::ModifierFlags::CapsLock;
+            flag = NSEventModifierFlagCapsLock;
+            break;
+
+        case Ryn::Key::Function:
+            flag = NSEventModifierFlagFunction;
             break;
 
         default:
-            Ryn::Log::Error("Unexpected key in flagsChanged: ", static_cast<Ryn::u16>(key));
-            break;
+            Ryn::Log::Warn("Unhandled Cocoa key flag: ", +key);
+            return;
     }
 
-    if ((flag & modifiers) == flag)
+    if ([event modifierFlags] & flag)
     {
-        Ryn::KeyPressEvent e{key, modifiers};
+        Ryn::KeyPressEvent e{key, {}};
         cocoaWindow->OnEvent(e);
     }
     else
     {
-        Ryn::KeyReleaseEvent e{key, modifiers};
+        Ryn::KeyReleaseEvent e{key, {}};
         cocoaWindow->OnEvent(e);
     }
 }
@@ -132,84 +139,72 @@
 - (void)mouseMoved:(NSEvent*)event
 {
     NSPoint location = [event locationInWindow];
-    Ryn::f32 x = static_cast<Ryn::f32>(location.x);
-    Ryn::f32 y = static_cast<Ryn::f32>(location.y);
-    Ryn::MouseMoveEvent e{{x, y}};
+    Ryn::Vector2<Ryn::f64> position{
+        static_cast<Ryn::f64>(location.x),
+        static_cast<Ryn::f64>(location.y)
+    };
+
+    Ryn::MouseMoveEvent e{position};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)scrollWheel:(NSEvent*)event
 {
-    Ryn::f32 deltaX = static_cast<Ryn::f32>([event scrollingDeltaX]);
-    Ryn::f32 deltaY = static_cast<Ryn::f32>([event scrollingDeltaY]);
-    Ryn::MouseScrollEvent e{{deltaX, deltaY}};
+    if (![event hasPreciseScrollingDeltas])
+    {
+        Ryn::Vector2<Ryn::f64> offset{
+            static_cast<Ryn::f64>([event scrollingDeltaX]),
+            static_cast<Ryn::f64>([event scrollingDeltaY])
+        };
+
+        Ryn::MouseScrollEvent e{offset};
+        cocoaWindow->OnEvent(e);
+    }
 }
 
 - (void)mouseDown:(NSEvent*)event
 {
     Ryn::MouseButton button = Ryn::MouseButton::Left;
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::MouseButtonPressEvent e{button, modifiers};
+    Ryn::MouseButtonPressEvent e{button};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)mouseUp:(NSEvent*)event
 {
     Ryn::MouseButton button = Ryn::MouseButton::Left;
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::MouseButtonReleaseEvent e{button, modifiers};
+    Ryn::MouseButtonReleaseEvent e{button};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)rightMouseDown:(NSEvent*)event
 {
     Ryn::MouseButton button = Ryn::MouseButton::Right;
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::MouseButtonPressEvent e{button, modifiers};
+    Ryn::MouseButtonPressEvent e{button};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)rightMouseUp:(NSEvent*)event
 {
     Ryn::MouseButton button = Ryn::MouseButton::Right;
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::MouseButtonReleaseEvent e{button, modifiers};
+    Ryn::MouseButtonReleaseEvent e{button};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)otherMouseDown:(NSEvent*)event
 {
     Ryn::MouseButton button = MapCocoaMouseButton([event buttonNumber]);
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::MouseButtonPressEvent e{button, modifiers};
+    Ryn::MouseButtonPressEvent e{button};
     cocoaWindow->OnEvent(e);
 }
 
 - (void)otherMouseUp:(NSEvent*)event
 {
     Ryn::MouseButton button = MapCocoaMouseButton([event buttonNumber]);
-    Ryn::ModifierFlags modifiers = MapCocoaModifierFlags([event modifierFlags]);
-    Ryn::MouseButtonReleaseEvent e{button, modifiers};
+    Ryn::MouseButtonReleaseEvent e{button};
     cocoaWindow->OnEvent(e);
 }
 
 @end
-
-Ryn::ModifierFlags MapCocoaModifierFlags(NSEventModifierFlags modifiers)
-{
-    Ryn::ModifierFlags result = Ryn::ModifierFlags::None;
-    if (modifiers & NSEventModifierFlagShift)
-        result |= Ryn::ModifierFlags::Shift;
-    if (modifiers & NSEventModifierFlagControl)
-        result |= Ryn::ModifierFlags::Control;
-    if (modifiers & NSEventModifierFlagOption)
-        result |= Ryn::ModifierFlags::Alt;
-    if (modifiers & NSEventModifierFlagCommand)
-        result |= Ryn::ModifierFlags::System;
-    if (modifiers & NSEventModifierFlagCapsLock)
-        result |= Ryn::ModifierFlags::CapsLock;
-    return result;
-}
 
 Ryn::Key MapCocoaKey(UInt16 keycode)
 {
@@ -277,6 +272,7 @@ Ryn::Key MapCocoaKey(UInt16 keycode)
         case 60:    return Ryn::Key::RightShift;
         case 61:    return Ryn::Key::RightAlt;
         case 62:    return Ryn::Key::RightControl;
+        case 63:    return Ryn::Key::Function;
         case 96:    return Ryn::Key::F5;
         case 97:    return Ryn::Key::F6;
         case 98:    return Ryn::Key::F7;
@@ -312,7 +308,7 @@ Ryn::MouseButton MapCocoaMouseButton(NSInteger button)
         case 6:     return Ryn::MouseButton::Button7;
         case 7:     return Ryn::MouseButton::Button8;
         default:
-            Ryn::Log::Warn("Unmapped Cocoa mouse button: ", static_cast<Ryn::i64>(button));
+            Ryn::Log::Warn("Unmapped Cocoa mouse button: ", static_cast<Ryn::isz>(button));
             return Ryn::MouseButton::Unknown;
     }
 }

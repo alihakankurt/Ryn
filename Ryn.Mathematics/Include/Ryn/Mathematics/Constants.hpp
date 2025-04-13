@@ -5,21 +5,21 @@
 
 namespace Ryn
 {
-    template <Traits::Number TNumber>
-    struct NumericConstants
+    template <Traits::Number TScalar>
+    struct MathConstants
     {
-        static constexpr TNumber Zero{};
-        static constexpr TNumber One{};
-        static constexpr TNumber Min{};
-        static constexpr TNumber Max{};
-        static constexpr TNumber Epsilon{};
-        static constexpr TNumber E{};
-        static constexpr TNumber Pi{};
-        static constexpr TNumber Phi{};
+        static constexpr TScalar Zero{};
+        static constexpr TScalar One{};
+        static constexpr TScalar Min{};
+        static constexpr TScalar Max{};
+        static constexpr TScalar Epsilon{};
+        static constexpr TScalar E{};
+        static constexpr TScalar Pi{};
+        static constexpr TScalar Phi{};
     };
 
     template <>
-    struct NumericConstants<i8>
+    struct MathConstants<i8>
     {
         static constexpr i8 Zero = 0_i8;
         static constexpr i8 One = 1_i8;
@@ -32,7 +32,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<i16>
+    struct MathConstants<i16>
     {
         static constexpr i16 Zero = 0_i16;
         static constexpr i16 One = 1_i16;
@@ -45,7 +45,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<i32>
+    struct MathConstants<i32>
     {
         static constexpr i32 Zero = 0_i32;
         static constexpr i32 One = 1_i32;
@@ -58,7 +58,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<i64>
+    struct MathConstants<i64>
     {
         static constexpr i64 Zero = 0_i64;
         static constexpr i64 One = 1_i64;
@@ -71,7 +71,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<u8>
+    struct MathConstants<u8>
     {
         static constexpr u8 Zero = 0_u8;
         static constexpr u8 One = 1_u8;
@@ -84,7 +84,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<u16>
+    struct MathConstants<u16>
     {
         static constexpr u16 Zero = 0_u16;
         static constexpr u16 One = 1_u16;
@@ -97,7 +97,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<u32>
+    struct MathConstants<u32>
     {
         static constexpr u32 Zero = 0_u32;
         static constexpr u32 One = 1_u32;
@@ -110,7 +110,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<u64>
+    struct MathConstants<u64>
     {
         static constexpr u64 Zero = 0_u64;
         static constexpr u64 One = 1_u64;
@@ -123,7 +123,33 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<f32>
+    struct MathConstants<isz>
+    {
+        static constexpr isz Zero = 0_isz;
+        static constexpr isz One = 1_isz;
+        static constexpr isz Min = (sizeof(isz) == 8 ? MathConstants<i64>::Min : MathConstants<i32>::Min);
+        static constexpr isz Max = (sizeof(isz) == 8 ? MathConstants<i64>::Max : MathConstants<i32>::Max);
+        static constexpr isz Epsilon = 0_isz;
+        static constexpr isz E = 2_isz;
+        static constexpr isz Pi = 3_isz;
+        static constexpr isz Phi = 1_isz;
+    };
+
+    template <>
+    struct MathConstants<usz>
+    {
+        static constexpr usz Zero = 0_usz;
+        static constexpr usz One = 1_usz;
+        static constexpr usz Min = (sizeof(usz) == 8 ? MathConstants<u64>::Min : MathConstants<u32>::Min);
+        static constexpr usz Max = (sizeof(usz) == 8 ? MathConstants<u64>::Max : MathConstants<u32>::Max);
+        static constexpr usz Epsilon = 0_usz;
+        static constexpr usz E = 2_usz;
+        static constexpr usz Pi = 3_usz;
+        static constexpr usz Phi = 1_usz;
+    };
+
+    template <>
+    struct MathConstants<f32>
     {
         static constexpr f32 Zero = 0_f32;
         static constexpr f32 One = 1_f32;
@@ -136,7 +162,7 @@ namespace Ryn
     };
 
     template <>
-    struct NumericConstants<f64>
+    struct MathConstants<f64>
     {
         static constexpr f64 Zero = 0_f64;
         static constexpr f64 One = 1_f64;

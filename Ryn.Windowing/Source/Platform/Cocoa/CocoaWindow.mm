@@ -64,14 +64,14 @@ namespace Ryn
         _window = nil;
     }
 
-    void CocoaWindow::Resize(Vector2<u16> size)
+    void CocoaWindow::Resize(Vector2<u32> size)
     {
         if ([_window isResizable] == NO)
             return;
 
         NSRect frame = [_window frame];
-        frame.size.width = size.X;
-        frame.size.height = size.Y;
+        frame.size.width = static_cast<CGFloat>(size.X);
+        frame.size.height = static_cast<CGFloat>(size.Y);
         [_window setFrame:frame display:YES animate:YES];
     }
 
@@ -80,30 +80,31 @@ namespace Ryn
         [_window setTitle:[NSString stringWithUTF8String:&title[0]]];
     }
 
-    Vector2<u16> CocoaWindow::GetSize() const
+    Vector2<u32> CocoaWindow::GetSize() const
     {
         const NSRect contentRect = [_window frame];
-        u16 width = static_cast<u16>(contentRect.size.width);
-        u16 height = static_cast<u16>(contentRect.size.height);
-        return Vector2<u16>(width, height);
+        u32 width = static_cast<u32>(contentRect.size.width);
+        u32 height = static_cast<u32>(contentRect.size.height);
+        return Vector2<u32>{width, height};
     }
 
-    Vector2<u16> CocoaWindow::GetFramebufferSize() const
+    Vector2<u32> CocoaWindow::GetFramebufferSize() const
     {
         const NSRect contentRect = [_window frame];
         const NSRect backingRect = [_window convertRectToBacking:contentRect];
-        u16 width = static_cast<u16>(backingRect.size.width);
-        u16 height = static_cast<u16>(backingRect.size.height);
-        return Vector2<u16>(width, height);
+        u32 width = static_cast<u32>(backingRect.size.width);
+        u32 height = static_cast<u32>(backingRect.size.height);
+        return Vector2<u32>{width, height};
     }
 
     String CocoaWindow::GetTitle() const
     {
-        const NSString* title = [_window title];
-        u32 length = static_cast<u32>([title lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-        char* buffer = new char[length];
-        memcpy(buffer, [title UTF8String], length);
-        return String(buffer, length);
+        const char* title = [[_window title] UTF8String];
+        usz length = Ryn::String::Length(title);
+        char* buffer = new char[length + 1];
+        Ryn::Memory::Copy(buffer, title, length);
+        buffer[length] = '\0';
+        return String{buffer, length};
     }
 
     Window* Window::Create(const WindowSettings& settings)

@@ -7,18 +7,18 @@ namespace Ryn
     namespace Memory
     {
         template <typename TValue>
-        static constexpr i64 Compare(const TValue* source1, const TValue* source2, u32 count)
+        static constexpr isz Compare(const TValue* source1, const TValue* source2, usz count)
         {
             if (count == 0 || source1 == source2)
                 return 0;
 
-            u64 size = count * sizeof(TValue);
+            usz size = count * sizeof(TValue);
             const u8* src1 = reinterpret_cast<const u8*>(source1);
             const u8* src2 = reinterpret_cast<const u8*>(source2);
 
             while (size >= sizeof(i64))
             {
-                if (i64 difference = *reinterpret_cast<const i64*>(src1) - *reinterpret_cast<const i64*>(src2); difference != 0)
+                if (isz difference = *reinterpret_cast<const i64*>(src1) - *reinterpret_cast<const i64*>(src2); difference != 0)
                 {
                     return difference;
                 }
@@ -30,7 +30,7 @@ namespace Ryn
 
             while (size >= sizeof(u8))
             {
-                if (i64 difference = *src1 - *src2; difference != 0)
+                if (isz difference = *src1 - *src2; difference != 0)
                 {
                     return difference;
                 }
@@ -44,12 +44,12 @@ namespace Ryn
         }
 
         template <typename TValue>
-        static constexpr void Copy(TValue* destination, const TValue* source, u32 count)
+        static constexpr void Copy(TValue* destination, const TValue* source, usz count)
         {
             if (count == 0 || destination == source)
                 return;
 
-            u64 size = count * sizeof(TValue);
+            usz size = count * sizeof(TValue);
             u8* dst = reinterpret_cast<u8*>(destination);
             const u8* src = reinterpret_cast<const u8*>(source);
 
@@ -95,7 +95,7 @@ namespace Ryn
         }
 
         template <typename TValue>
-        static constexpr void Reverse(TValue* source, u32 count)
+        static constexpr void Reverse(TValue* source, usz count)
         {
             if (count == 0)
                 return;
