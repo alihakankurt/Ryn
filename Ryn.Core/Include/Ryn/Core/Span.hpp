@@ -2,8 +2,8 @@
 
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Traits.hpp>
-#include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/Memory.hpp>
+#include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/Iterator.hpp>
 
 namespace Ryn

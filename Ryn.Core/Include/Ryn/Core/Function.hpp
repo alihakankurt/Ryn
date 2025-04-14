@@ -92,4 +92,10 @@ namespace Ryn
 
     template <typename TLambda>
     Function(TLambda) -> Function<Traits::Lambda<TLambda>>;
+
+    template <typename... Ts>
+    using Predicate = Function<bool(const Ts&...)>;
+
+    template <typename... Ts>
+    using Action = Function<void(const Ts&...)>;
 }
