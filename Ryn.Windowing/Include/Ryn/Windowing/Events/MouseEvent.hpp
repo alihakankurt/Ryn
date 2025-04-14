@@ -10,7 +10,7 @@ namespace Ryn
     class MouseMoveEvent : public Event
     {
       public:
-        const Vector2<f64> Position;
+        Vector2<f64> Position;
 
       public:
         MouseMoveEvent(Vector2<f64> position) :
@@ -21,7 +21,7 @@ namespace Ryn
     class MouseScrollEvent : public Event
     {
       public:
-        const Vector2<f64> Offset;
+        Vector2<f64> Offset;
 
       public:
         MouseScrollEvent(Vector2<f64> offset) :
@@ -32,7 +32,7 @@ namespace Ryn
     class MouseButtonPressEvent : public Event
     {
       public:
-        const MouseButton Button;
+        MouseButton Button;
 
       public:
         MouseButtonPressEvent(MouseButton button) :
@@ -43,7 +43,7 @@ namespace Ryn
     class MouseButtonReleaseEvent : public Event
     {
       public:
-        const MouseButton Button;
+        MouseButton Button;
 
       public:
         MouseButtonReleaseEvent(MouseButton button) :

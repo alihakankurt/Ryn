@@ -11,7 +11,7 @@ namespace Ryn
     class Window
     {
       protected:
-        Function<void(Event&)> EventCallback;
+        Action<Event> EventCallback;
 
       public:
         virtual ~Window() {}
@@ -19,18 +19,19 @@ namespace Ryn
         virtual void* GetNativeHandle() const = 0;
 
         virtual bool IsRunning() const = 0;
-
         virtual void Close() = 0;
-
-        virtual void Resize(Vector2<u32> size) = 0;
-        virtual void SetTitle(const String& title) = 0;
 
         virtual Vector2<u32> GetSize() const = 0;
         virtual Vector2<u32> GetFramebufferSize() const = 0;
+        virtual void Resize(Vector2<u32> size) = 0;
+
         virtual String GetTitle() const = 0;
+        virtual void SetTitle(const String& title) = 0;
 
-        void SetEventCallback(Function<void(Event&)>&& callback) { EventCallback = Utility::Move(callback); }
+      public:
+        void SetEventCallback(Action<Event>&& callback) { EventCallback = Utility::Move(callback); }
 
+      public:
         static Window* Create(const WindowSettings& settings);
         static void PollEvents();
     };

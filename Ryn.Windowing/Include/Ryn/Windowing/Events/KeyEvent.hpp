@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Span.hpp>
 #include <Ryn/Mathematics/Vector2.hpp>
 #include <Ryn/Windowing/Events/Event.hpp>
@@ -11,7 +10,7 @@ namespace Ryn
     class KeyPressEvent : public Event
     {
       public:
-        const Key Key;
+        Key Key;
         Span<const char> Text;
 
       public:
@@ -24,7 +23,7 @@ namespace Ryn
     class KeyReleaseEvent : public Event
     {
       public:
-        const Key Key;
+        Key Key;
         Span<const char> Text;
 
       public:

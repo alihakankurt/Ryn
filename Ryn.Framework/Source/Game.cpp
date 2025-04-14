@@ -14,7 +14,7 @@ namespace Ryn
         Window = Window::Create(settings);
         Renderer = Renderer::Create(*Window);
 
-        Window->SetEventCallback([this](Event& event) { OnEvent(event); });
+        Window->SetEventCallback([this](const Event& event) { OnEvent(event); });
 
         Initialize();
 
@@ -31,7 +31,7 @@ namespace Ryn
         delete Input;
     }
 
-    void Game::OnEvent(Event& event)
+    void Game::OnEvent(const Event& event)
     {
         switch (event.Kind)
         {
@@ -57,19 +57,19 @@ namespace Ryn
             }
             case EventKind::KeyPress:
             {
-                KeyPressEvent& keyPressEvent = event.As<KeyPressEvent>();
+                const KeyPressEvent& keyPressEvent = event.As<KeyPressEvent>();
                 Input->SetKeyState(keyPressEvent.Key, KeyState::Pressed);
                 break;
             }
             case EventKind::KeyRelease:
             {
-                KeyReleaseEvent& keyReleaseEvent = event.As<KeyReleaseEvent>();
+                const KeyReleaseEvent& keyReleaseEvent = event.As<KeyReleaseEvent>();
                 Input->SetKeyState(keyReleaseEvent.Key, KeyState::Released);
                 break;
             }
             case EventKind::MouseMove:
             {
-                MouseMoveEvent& mouseMoveEvent = event.As<MouseMoveEvent>();
+                const MouseMoveEvent& mouseMoveEvent = event.As<MouseMoveEvent>();
                 Input->SetMousePosition(mouseMoveEvent.Position);
                 break;
             }
@@ -79,13 +79,13 @@ namespace Ryn
             }
             case EventKind::MouseButtonPress:
             {
-                MouseButtonPressEvent& mouseButtonPressEvent = event.As<MouseButtonPressEvent>();
+                const MouseButtonPressEvent& mouseButtonPressEvent = event.As<MouseButtonPressEvent>();
                 Input->SetMouseButtonState(mouseButtonPressEvent.Button, MouseButtonState::Pressed);
                 break;
             }
             case EventKind::MouseButtonRelease:
             {
-                MouseButtonReleaseEvent& mouseButtonReleaseEvent = event.As<MouseButtonReleaseEvent>();
+                const MouseButtonReleaseEvent& mouseButtonReleaseEvent = event.As<MouseButtonReleaseEvent>();
                 Input->SetMouseButtonState(mouseButtonReleaseEvent.Button, MouseButtonState::Released);
                 break;
             }

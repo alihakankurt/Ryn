@@ -16,7 +16,7 @@ namespace Ryn
     class WindowMoveEvent : public Event
     {
       public:
-        const Vector2<f64> Position;
+        Vector2<f64> Position;
 
       public:
         WindowMoveEvent(Vector2<f64> position) :
@@ -27,7 +27,7 @@ namespace Ryn
     class WindowResizeEvent : public Event
     {
       public:
-        const Vector2<u32> Size;
+        Vector2<u32> Size;
 
       public:
         WindowResizeEvent(Vector2<u32> size) :

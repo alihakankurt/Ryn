@@ -25,6 +25,6 @@ namespace Ryn
         virtual void Finalize() = 0;
 
       private:
-        void OnEvent(Event& event);
+        void OnEvent(const Event& event);
     };
 }

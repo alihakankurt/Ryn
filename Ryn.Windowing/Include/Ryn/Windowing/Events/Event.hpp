@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Ryn/Core/Types.hpp>
+
 namespace Ryn
 {
     enum class EventKind
@@ -19,10 +21,12 @@ namespace Ryn
         MouseButtonRelease,
     };
 
+    constexpr usz operator+(EventKind kind) { return static_cast<usz>(kind); }
+
     class Event
     {
       public:
-        const EventKind Kind;
+        EventKind Kind;
 
       protected:
         Event(EventKind kind) :
@@ -34,6 +38,9 @@ namespace Ryn
         bool Is(EventKind kind) const { return Kind == kind; }
 
         template <typename TEvent>
-        TEvent& As() { return static_cast<TEvent&>(*this); }
+        const TEvent& As() const
+        {
+            return static_cast<const TEvent&>(*this);
+        }
     };
 }

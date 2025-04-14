@@ -64,22 +64,6 @@ namespace Ryn
         _window = nil;
     }
 
-    void CocoaWindow::Resize(Vector2<u32> size)
-    {
-        if ([_window isResizable] == NO)
-            return;
-
-        NSRect frame = [_window frame];
-        frame.size.width = static_cast<CGFloat>(size.X);
-        frame.size.height = static_cast<CGFloat>(size.Y);
-        [_window setFrame:frame display:YES animate:YES];
-    }
-
-    void CocoaWindow::SetTitle(const String& title)
-    {
-        [_window setTitle:[NSString stringWithUTF8String:&title[0]]];
-    }
-
     Vector2<u32> CocoaWindow::GetSize() const
     {
         const NSRect contentRect = [_window frame];
@@ -97,6 +81,17 @@ namespace Ryn
         return Vector2<u32>{width, height};
     }
 
+    void CocoaWindow::Resize(Vector2<u32> size)
+    {
+        if ([_window isResizable] == NO)
+            return;
+
+        NSRect frame = [_window frame];
+        frame.size.width = static_cast<CGFloat>(size.X);
+        frame.size.height = static_cast<CGFloat>(size.Y);
+        [_window setFrame:frame display:YES animate:YES];
+    }
+
     String CocoaWindow::GetTitle() const
     {
         const char* title = [[_window title] UTF8String];
@@ -105,6 +100,11 @@ namespace Ryn
         Ryn::Memory::Copy(buffer, title, length);
         buffer[length] = '\0';
         return String{buffer, length};
+    }
+
+    void CocoaWindow::SetTitle(const String& title)
+    {
+        [_window setTitle:[NSString stringWithUTF8String:&title[0]]];
     }
 
     Window* Window::Create(const WindowSettings& settings)
