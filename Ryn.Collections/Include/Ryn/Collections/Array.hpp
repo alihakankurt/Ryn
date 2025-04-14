@@ -2,17 +2,17 @@
 
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Utility.hpp>
-#include <Ryn/Core/Iterator.hpp>
+#include <Ryn/Core/Iterable.hpp>
 #include <Ryn/Core/Span.hpp>
 
 namespace Ryn
 {
     template <typename TValue, usz TCount>
-    class Array
+    class Array : public Iterable<TValue>
     {
-        static_assert(TCount > 0, "Array cannot be empty.");
-        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference.");
-        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified.");
+        static_assert(TCount > 0, "Array cannot be empty!");
+        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
+        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified!");
 
       private:
         TValue _data[TCount];

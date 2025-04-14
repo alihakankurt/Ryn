@@ -5,16 +5,16 @@
 #include <Ryn/Core/Memory.hpp>
 #include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/Function.hpp>
-#include <Ryn/Core/Iterator.hpp>
+#include <Ryn/Core/Iterable.hpp>
 #include <Ryn/Core/Span.hpp>
 
 namespace Ryn
 {
     template <typename TValue>
-    class List
+    class List : public Iterable<TValue>
     {
-        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference.");
-        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified.");
+        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
+        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified!");
 
       private:
         static constexpr usz InitialCapacity = 4;
@@ -176,42 +176,6 @@ namespace Ryn
         void Clear()
         {
             _count = {};
-        }
-
-        usz FindFirst(Predicate<TValue> predicate)
-        {
-            for (usz index = 0; index < _count; index += 1)
-                if (predicate(_data[index]))
-                    return index;
-
-            return static_cast<usz>(-1);
-        }
-
-        usz FindLast(Predicate<TValue> predicate)
-        {
-            for (usz index = _count - 1; index != -1; index -= 1)
-                if (predicate(_data[index]))
-                    return index;
-
-            return static_cast<usz>(-1);
-        }
-
-        bool Any(Predicate<TValue> predicate)
-        {
-            for (usz index = 0; index < _count; index += 1)
-                if (predicate(_data[index]))
-                    return true;
-
-            return false;
-        }
-
-        bool All(Predicate<TValue> predicate)
-        {
-            for (usz index = 0; index < _count; index += 1)
-                if (!predicate(_data[index]))
-                    return false;
-
-            return true;
         }
 
       public:

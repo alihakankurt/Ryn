@@ -4,14 +4,14 @@
 #include <Ryn/Core/Traits.hpp>
 #include <Ryn/Core/Memory.hpp>
 #include <Ryn/Core/Utility.hpp>
-#include <Ryn/Core/Iterator.hpp>
+#include <Ryn/Core/Iterable.hpp>
 
 namespace Ryn
 {
     template <typename TValue>
-    class Span
+    class Span : public Iterable<TValue>
     {
-        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference.");
+        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
 
       private:
         TValue* _data;

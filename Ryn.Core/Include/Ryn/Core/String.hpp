@@ -3,12 +3,12 @@
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Memory.hpp>
 #include <Ryn/Core/Utility.hpp>
-#include <Ryn/Core/Iterator.hpp>
+#include <Ryn/Core/Iterable.hpp>
 #include <Ryn/Core/Span.hpp>
 
 namespace Ryn
 {
-    class String
+    class String : public Iterable<char>
     {
       private:
         char* _data;
