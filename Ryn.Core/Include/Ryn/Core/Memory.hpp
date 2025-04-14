@@ -13,31 +13,31 @@ namespace Ryn
                 return 0;
 
             usz size = count * sizeof(TValue);
-            const u8* src1 = reinterpret_cast<const u8*>(source1);
-            const u8* src2 = reinterpret_cast<const u8*>(source2);
+            const char* src1 = reinterpret_cast<const char*>(source1);
+            const char* src2 = reinterpret_cast<const char*>(source2);
 
-            while (size >= sizeof(i64))
+            while (size >= sizeof(usz))
             {
-                if (isz difference = *reinterpret_cast<const i64*>(src1) - *reinterpret_cast<const i64*>(src2); difference != 0)
+                if (isz difference = *reinterpret_cast<const isz*>(src1) - *reinterpret_cast<const isz*>(src2); difference != 0)
                 {
                     return difference;
                 }
 
-                src1 += sizeof(i64);
-                src2 += sizeof(i64);
-                size -= sizeof(i64);
+                src1 += sizeof(usz);
+                src2 += sizeof(usz);
+                size -= sizeof(usz);
             }
 
-            while (size >= sizeof(u8))
+            while (size >= sizeof(char))
             {
                 if (isz difference = *src1 - *src2; difference != 0)
                 {
                     return difference;
                 }
 
-                src1 += sizeof(u8);
-                src2 += sizeof(u8);
-                size -= sizeof(u8);
+                src1 += sizeof(char);
+                src2 += sizeof(char);
+                size -= sizeof(char);
             }
 
             return 0;
@@ -50,25 +50,25 @@ namespace Ryn
                 return;
 
             usz size = count * sizeof(TValue);
-            u8* dst = reinterpret_cast<u8*>(destination);
-            const u8* src = reinterpret_cast<const u8*>(source);
+            char* dst = reinterpret_cast<char*>(destination);
+            const char* src = reinterpret_cast<const char*>(source);
 
             if (destination < source)
             {
-                while (size >= sizeof(u64))
+                while (size >= sizeof(usz))
                 {
-                    *reinterpret_cast<u64*>(dst) = *reinterpret_cast<const u64*>(src);
-                    dst += sizeof(u64);
-                    src += sizeof(u64);
-                    size -= sizeof(u64);
+                    *reinterpret_cast<usz*>(dst) = *reinterpret_cast<const usz*>(src);
+                    dst += sizeof(usz);
+                    src += sizeof(usz);
+                    size -= sizeof(usz);
                 }
 
-                while (size >= sizeof(u8))
+                while (size >= sizeof(char))
                 {
                     *dst = *src;
-                    dst += sizeof(u8);
-                    src += sizeof(u8);
-                    size -= sizeof(u8);
+                    dst += sizeof(char);
+                    src += sizeof(char);
+                    size -= sizeof(char);
                 }
             }
             else
@@ -76,20 +76,20 @@ namespace Ryn
                 dst += size;
                 src += size;
 
-                while (size >= sizeof(u64))
+                while (size >= sizeof(usz))
                 {
-                    dst -= sizeof(u64);
-                    src -= sizeof(u64);
-                    *reinterpret_cast<u64*>(dst) = *reinterpret_cast<const u64*>(src);
-                    size -= sizeof(u64);
+                    dst -= sizeof(usz);
+                    src -= sizeof(usz);
+                    *reinterpret_cast<usz*>(dst) = *reinterpret_cast<const usz*>(src);
+                    size -= sizeof(usz);
                 }
 
-                while (size >= sizeof(u8))
+                while (size >= sizeof(char))
                 {
-                    dst -= sizeof(u8);
-                    src -= sizeof(u8);
+                    dst -= sizeof(char);
+                    src -= sizeof(char);
                     *dst = *src;
-                    size -= sizeof(u8);
+                    size -= sizeof(char);
                 }
             }
         }
