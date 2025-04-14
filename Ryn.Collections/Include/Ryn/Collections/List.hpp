@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
-#include <Ryn/Core/Utility.hpp>
+#include <Ryn/Core/Traits.hpp>
 #include <Ryn/Core/Memory.hpp>
+#include <Ryn/Core/Utility.hpp>
+#include <Ryn/Core/Function.hpp>
+#include <Ryn/Core/Iterator.hpp>
 #include <Ryn/Core/Span.hpp>
 
 namespace Ryn
@@ -33,7 +36,7 @@ namespace Ryn
             _capacity{count} {}
 
         template <usz N>
-        constexpr List(const TValue (&array)[N]) :
+        List(const TValue (&array)[N]) :
             _count{N},
             _capacity{N}
         {
@@ -45,7 +48,7 @@ namespace Ryn
         }
 
         template <usz N>
-        constexpr List(TValue (&&array)[N]) :
+        List(TValue (&&array)[N]) :
             _count{N},
             _capacity{N}
         {
@@ -56,14 +59,14 @@ namespace Ryn
             }
         }
 
-        constexpr List(usz capacity) :
-            _count{},
+        List(usz capacity) :
+            _count{capacity},
             _capacity{capacity}
         {
             _data = new TValue[_capacity];
         }
 
-        constexpr List(const List& other) :
+        List(const List& other) :
             _count{other._count},
             _capacity{other._capacity}
         {
@@ -76,7 +79,7 @@ namespace Ryn
             _count{Utility::Exchange(other._count)},
             _capacity{Utility::Exchange(other._capacity)} {}
 
-        constexpr ~List()
+        ~List()
         {
             delete[] _data;
             _data = {};
@@ -84,7 +87,7 @@ namespace Ryn
             _capacity = {};
         }
 
-        constexpr List& operator=(const List& other)
+        List& operator=(const List& other)
         {
             if (this != &other)
             {
@@ -98,7 +101,7 @@ namespace Ryn
             return *this;
         }
 
-        constexpr List& operator=(List&& other)
+        List& operator=(List&& other)
         {
             if (this != &other)
             {
@@ -110,22 +113,16 @@ namespace Ryn
             return *this;
         }
 
-        usz Count() const { return _count; }
+        constexpr usz Count() const { return _count; }
 
         constexpr TValue& operator[](usz index) { return _data[index]; }
         constexpr const TValue& operator[](usz index) const { return _data[index]; }
-
-        constexpr TValue& First() { return _data[0]; }
-        constexpr const TValue& First() const { return _data[0]; }
-
-        constexpr TValue& Last() { return _data[_count - 1]; }
-        constexpr const TValue& Last() const { return _data[_count - 1]; }
 
         constexpr Span<TValue> ToSpan() const { return Span<TValue>{_data, _count}; }
         constexpr Span<TValue> ToSpan(usz start) const { return ToSpan().Slice(start); }
         constexpr Span<TValue> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
 
-        constexpr void EnsureCapacity(usz capacity)
+        void Reserve(usz capacity)
         {
             if (_capacity >= capacity)
                 return;
@@ -137,21 +134,21 @@ namespace Ryn
             _data = newData;
         }
 
-        constexpr void Add(const TValue& value)
+        void Add(const TValue& value)
         {
-            EnsureCapacity(_count + 1);
+            Reserve(_count + 1);
             _data[_count] = value;
             _count += 1;
         }
 
-        constexpr void Add(TValue&& value)
+        void Add(TValue&& value)
         {
-            EnsureCapacity(_count + 1);
+            Reserve(_count + 1);
             _data[_count] = Utility::Move(value);
             _count += 1;
         }
 
-        constexpr bool Remove(const TValue& value)
+        bool Remove(const TValue& value)
         {
             for (usz index = 0; index < _count; index += 1)
             {
@@ -164,7 +161,7 @@ namespace Ryn
             return false;
         }
 
-        constexpr void RemoveAt(usz index)
+        void RemoveAt(usz index)
         {
             if (index >= _count)
                 return;
@@ -176,9 +173,45 @@ namespace Ryn
             }
         }
 
-        constexpr void Clear()
+        void Clear()
         {
             _count = {};
+        }
+
+        usz FindFirst(Predicate<TValue> predicate)
+        {
+            for (usz index = 0; index < _count; index += 1)
+                if (predicate(_data[index]))
+                    return index;
+
+            return static_cast<usz>(-1);
+        }
+
+        usz FindLast(Predicate<TValue> predicate)
+        {
+            for (usz index = _count - 1; index != -1; index -= 1)
+                if (predicate(_data[index]))
+                    return index;
+
+            return static_cast<usz>(-1);
+        }
+
+        bool Any(Predicate<TValue> predicate)
+        {
+            for (usz index = 0; index < _count; index += 1)
+                if (predicate(_data[index]))
+                    return true;
+
+            return false;
+        }
+
+        bool All(Predicate<TValue> predicate)
+        {
+            for (usz index = 0; index < _count; index += 1)
+                if (!predicate(_data[index]))
+                    return false;
+
+            return true;
         }
 
       public:
