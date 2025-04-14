@@ -5,23 +5,27 @@
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 
-VkResult vkCreateSurfaceKHR(void* window, const VkInstance instance, VkSurfaceKHR* surface, const VkAllocationCallbacks* allocator)
+namespace Ryn::VK
 {
-    NSWindow* nsWindow = static_cast<NSWindow*>(window);
-    NSView* nsView = [nsWindow contentView];
-    CAMetalLayer* metalLayer = static_cast<CAMetalLayer*>([nsView layer]);
+    void AddInstanceExtensions(List<const char*>& extensions, VkInstanceCreateFlags& createFlags)
+    {
+        extensions.Add(VK_KHR_SURFACE_EXTENSION_NAME);
+        extensions.Add(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
+        extensions.Add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 
-    VkMetalSurfaceCreateInfoEXT surfaceCreateInfo{};
-    surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-    surfaceCreateInfo.pLayer = metalLayer;
+        createFlags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    }
 
-    return vkCreateMetalSurfaceEXT(instance, &surfaceCreateInfo, allocator, surface);
-}
+    VkResult CreateSurfaceKHR(const Window& window, const VkInstance instance, VkSurfaceKHR* surface)
+    {
+        NSWindow* nsWindow = static_cast<NSWindow*>(window.GetNativeHandle());
+        NSView* nsView = [nsWindow contentView];
+        CAMetalLayer* metalLayer = static_cast<CAMetalLayer*>([nsView layer]);
 
-void vkAddInstanceExtensions(Ryn::List<const char*>& extensions, VkInstanceCreateFlags& flags)
-{
-    extensions.Add(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
-    extensions.Add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        VkMetalSurfaceCreateInfoEXT surfaceCreateInfo{};
+        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+        surfaceCreateInfo.pLayer = metalLayer;
 
-    flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+        return vkCreateMetalSurfaceEXT(instance, &surfaceCreateInfo, {}, surface);
+    }
 }

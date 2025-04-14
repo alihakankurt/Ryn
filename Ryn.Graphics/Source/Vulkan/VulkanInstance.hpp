@@ -18,12 +18,20 @@ namespace Ryn
         void Create(const Window& window);
         void Destroy();
 
+      private:
+        void CreateInstance();
+#if RYN_DEBUG
+        void CreateDebugMessenger();
+#endif
+        void CreateSurface(const Window& window);
+
+      public:
         VkInstance Get() const { return _instance; }
         VkSurfaceKHR GetSurface() const { return _surface; }
 
       private:
 #if RYN_DEBUG
-        static bool HasValidationLayerSupport();
+        static bool IsValidationLayersSupported();
         static VkBool32 VulkanDebugCallback(
             VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
             VkDebugUtilsMessageTypeFlagsEXT messageType,

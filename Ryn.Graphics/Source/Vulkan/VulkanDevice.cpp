@@ -4,51 +4,65 @@ namespace Ryn
 {
     void VulkanDevice::Create(const VulkanInstance& instance)
     {
-        u32 deviceCount = 0;
+        Destroy();
+        PickPhysicalDevice(instance);
+        CreateLogicalDevice(instance);
+    }
+
+    void VulkanDevice::Destroy()
+    {
+        if (_logicalDevice != VK_NULL_HANDLE)
+        {
+            vkDeviceWaitIdle(_logicalDevice);
+            vkDestroyDevice(_logicalDevice, {});
+        }
+
+        _logicalDevice = VK_NULL_HANDLE;
+        _physicalDevice = VK_NULL_HANDLE;
+    }
+
+    void VulkanDevice::PickPhysicalDevice(const VulkanInstance& instance)
+    {
+        uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, {});
         if (deviceCount == 0)
         {
-            VK_ERROR("Failed to find GPUs with Vulkan support!");
+            VK::Error("Failed to find GPUs with Vulkan support!");
         }
 
-        VkPhysicalDevice* physicalDevices = new VkPhysicalDevice[deviceCount];
-        vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, physicalDevices);
+        List<VkPhysicalDevice> physicalDevices{deviceCount};
+        vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, &physicalDevices.First());
 
-        _physicalDevice = VK_NULL_HANDLE;
-        for (u32 deviceIndex = 0, maxDeviceScore = 0; deviceIndex < deviceCount; deviceIndex += 1)
+        u64 maxDeviceScore = 0;
+        for (const VkPhysicalDevice& physicalDevice : physicalDevices)
         {
-            u32 currentDeviceScore = VulkanDevice::CalculateScore(physicalDevices[deviceIndex], instance.GetSurface());
+            u64 currentDeviceScore = VulkanDevice::CalculatePhysicalDeviceScore(physicalDevice, instance.GetSurface());
             if (currentDeviceScore > maxDeviceScore)
             {
-                _physicalDevice = physicalDevices[deviceIndex];
+                _physicalDevice = physicalDevice;
                 maxDeviceScore = currentDeviceScore;
             }
         }
 
-        delete[] physicalDevices;
-
-        if (_physicalDevice == VK_NULL_HANDLE)
+        if (maxDeviceScore == 0)
         {
-            VK_ERROR("Failed to find a suitable GPU!");
+            VK::Error("Failed to pick a suitable GPU for Vulkan features!");
         }
+    }
 
+    void VulkanDevice::CreateLogicalDevice(const VulkanInstance& instance)
+    {
         List<VkDeviceQueueCreateInfo> queueCreateInfos;
 
         QueueFamilyIndices queueFamilyIndices = VulkanDevice::FindQueueFamilies(_physicalDevice, instance.GetSurface());
-        Array<u32, 4> queueFamilyIndicesArray = queueFamilyIndices.AsArray();
+        Array<uint32_t, 4> queueFamilyIndicesArray = queueFamilyIndices.AsArray();
         f32 queuePriority = 1.0f;
 
-        for (u32 queueFamilyIndex : queueFamilyIndicesArray)
+        for (uint32_t queueFamilyIndex : queueFamilyIndicesArray)
         {
-            bool queueAlreadyAdded = false;
-            for (const VkDeviceQueueCreateInfo& previousQueueCreateInfo : queueCreateInfos)
-            {
-                if (previousQueueCreateInfo.queueFamilyIndex == queueFamilyIndex)
-                {
-                    queueAlreadyAdded = true;
-                    break;
-                }
-            }
+            bool queueAlreadyAdded = queueCreateInfos.IfAny([queueFamilyIndex](const VkDeviceQueueCreateInfo& queueCreateInfo) {
+                return queueCreateInfo.queueFamilyIndex == queueFamilyIndex;
+            });
 
             if (queueAlreadyAdded)
                 continue;
@@ -58,6 +72,7 @@ namespace Ryn
             queueCreateInfo.queueFamilyIndex = queueFamilyIndex;
             queueCreateInfo.queueCount = 1;
             queueCreateInfo.pQueuePriorities = &queuePriority;
+
             queueCreateInfos.Add(queueCreateInfo);
         }
 
@@ -65,46 +80,42 @@ namespace Ryn
         vkGetPhysicalDeviceFeatures(_physicalDevice, &physicalDeviceFeatures);
 
         List<const char*> deviceExtensions;
-        for (const char* extension : DeviceExtensions)
+        deviceExtensions.Reserve(RequiredDeviceExtensions.Count() + 1);
+        for (const char* extension : RequiredDeviceExtensions)
         {
             deviceExtensions.Add(extension);
         }
 
-        if (VulkanDevice::HasPortabilitySubsetExtension(_physicalDevice))
+        if (VulkanDevice::IsPhysicalDeviceHasPortabilitySubsetExtension(_physicalDevice))
         {
             deviceExtensions.Add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
         }
 
         VkDeviceCreateInfo logicalDeviceCreateInfo{};
         logicalDeviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        logicalDeviceCreateInfo.pQueueCreateInfos = &queueCreateInfos[0];
-        logicalDeviceCreateInfo.queueCreateInfoCount = queueCreateInfos.Count();
+        logicalDeviceCreateInfo.pQueueCreateInfos = &queueCreateInfos.First();
+        logicalDeviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.Count());
         logicalDeviceCreateInfo.pEnabledFeatures = &physicalDeviceFeatures;
-        logicalDeviceCreateInfo.ppEnabledExtensionNames = &deviceExtensions[0];
-        logicalDeviceCreateInfo.enabledExtensionCount = deviceExtensions.Count();
+        logicalDeviceCreateInfo.ppEnabledExtensionNames = &deviceExtensions.First();
+        logicalDeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.Count());
 
-        VK_CHECK_RESULT(vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, {}, &_logicalDevice), "Failed to create Vulkan device");
-    }
-
-    void VulkanDevice::Destroy()
-    {
-        vkDestroyDevice(_logicalDevice, {});
-        _physicalDevice = VK_NULL_HANDLE;
+        VkResult vkResult = vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, {}, &_logicalDevice);
+        VK::Check(vkResult, "Failed to create logical device for Vulkan features!");
     }
 
     VulkanDevice::QueueFamilyIndices VulkanDevice::FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
     {
         QueueFamilyIndices indices;
 
-        u32 queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, {});
+        uint32_t queueFamilyPropertyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, {});
 
-        VkQueueFamilyProperties* queueFamilies = new VkQueueFamilyProperties[queueFamilyCount];
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies);
+        List<VkQueueFamilyProperties> queueFamilyProperties{queueFamilyPropertyCount};
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, &queueFamilyProperties.First());
 
-        for (u32 queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount; queueFamilyIndex += 1)
+        for (uint32_t queueFamilyIndex = 0; queueFamilyIndex < queueFamilyPropertyCount; queueFamilyIndex += 1)
         {
-            if (queueFamilies[queueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            if (queueFamilyProperties[queueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT)
             {
                 indices.GraphicsFamily = queueFamilyIndex;
             }
@@ -116,12 +127,12 @@ namespace Ryn
                 indices.PresentFamily = queueFamilyIndex;
             }
 
-            if (queueFamilies[queueFamilyIndex].queueFlags & VK_QUEUE_TRANSFER_BIT)
+            if (queueFamilyProperties[queueFamilyIndex].queueFlags & VK_QUEUE_TRANSFER_BIT)
             {
                 indices.TransferFamily = queueFamilyIndex;
             }
 
-            if (queueFamilies[queueFamilyIndex].queueFlags & VK_QUEUE_COMPUTE_BIT)
+            if (queueFamilyProperties[queueFamilyIndex].queueFlags & VK_QUEUE_COMPUTE_BIT)
             {
                 indices.ComputeFamily = queueFamilyIndex;
             }
@@ -132,22 +143,20 @@ namespace Ryn
             }
         }
 
-        delete[] queueFamilies;
-
         return indices;
     }
 
-    u32 VulkanDevice::CalculateScore(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+    u64 VulkanDevice::CalculatePhysicalDeviceScore(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
     {
-        if (!IsExtensionsSupported(physicalDevice))
+        if (!IsPhysicalDeviceExtensionsSupported(physicalDevice))
             return 0;
 
-        u32 surfaceFormatCount = 0;
+        uint32_t surfaceFormatCount = 0;
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, {});
         if (surfaceFormatCount == 0)
             return 0;
 
-        u32 presentModeCount = 0;
+        uint32_t presentModeCount = 0;
         vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, {});
         if (presentModeCount == 0)
             return 0;
@@ -156,7 +165,7 @@ namespace Ryn
         if (!queueFamilyIndices.IsSuitable())
             return 0;
 
-        u32 deviceScore = 0;
+        u64 deviceScore = 0;
 
         VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
@@ -175,59 +184,38 @@ namespace Ryn
         return deviceScore;
     }
 
-    bool VulkanDevice::IsExtensionsSupported(VkPhysicalDevice device)
+    bool VulkanDevice::IsPhysicalDeviceExtensionsSupported(VkPhysicalDevice device)
     {
-        u32 extensionCount = 0;
-        vkEnumerateDeviceExtensionProperties(device, {}, &extensionCount, {});
+        uint32_t deviceExtensionCount = 0;
+        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, {});
+        if (deviceExtensionCount == 0)
+            return false;
 
-        VkExtensionProperties* availableExtensions = new VkExtensionProperties[extensionCount];
-        vkEnumerateDeviceExtensionProperties(device, {}, &extensionCount, availableExtensions);
+        List<VkExtensionProperties> deviceExtensions{deviceExtensionCount};
+        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, &deviceExtensions.First());
 
-        bool supported = true;
-        for (const char* extension : DeviceExtensions)
-        {
-            u32 length = String::Length(extension);
+        bool allSupported = RequiredDeviceExtensions.IfAll([deviceExtensions](const char* extension) {
+            usz length = String::Length(extension);
+            return deviceExtensions.IfAny([extension, length](const VkExtensionProperties& availableExtension) {
+                return Memory::Compare(extension, availableExtension.extensionName, length);
+            });
+        });
 
-            bool extensionFound = false;
-            for (u32 extensionIndex = 0; extensionIndex < extensionCount; extensionIndex += 1)
-            {
-                if (Memory::Compare(availableExtensions[extensionIndex].extensionName, extension, length))
-                {
-                    extensionFound = true;
-                    break;
-                }
-            }
-
-            if (!extensionFound)
-            {
-                supported = false;
-                break;
-            }
-        }
-
-        delete[] availableExtensions;
-        return supported;
+        return allSupported;
     }
 
-    bool VulkanDevice::HasPortabilitySubsetExtension(VkPhysicalDevice device)
+    bool VulkanDevice::IsPhysicalDeviceHasPortabilitySubsetExtension(VkPhysicalDevice device)
     {
-        u32 extensionCount = 0;
-        vkEnumerateDeviceExtensionProperties(device, {}, &extensionCount, {});
+        uint32_t deviceExtensionCount = 0;
+        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, {});
 
-        VkExtensionProperties* availableExtensions = new VkExtensionProperties[extensionCount];
-        vkEnumerateDeviceExtensionProperties(device, {}, &extensionCount, availableExtensions);
+        List<VkExtensionProperties> deviceExtensions{deviceExtensionCount};
+        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, &deviceExtensions.First());
 
-        bool hasExtension = false;
-        for (u32 extensionIndex = 0; extensionIndex < extensionCount; extensionIndex += 1)
-        {
-            if (Memory::Compare(availableExtensions[extensionIndex].extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, 25))
-            {
-                hasExtension = true;
-                break;
-            }
-        }
+        bool hasPortabilityExtension = deviceExtensions.IfAny([](const VkExtensionProperties& availableExtension) {
+            return Memory::Compare(availableExtension.extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, 25);
+        });
 
-        delete[] availableExtensions;
-        return hasExtension;
+        return hasPortabilityExtension;
     }
 }

@@ -2,6 +2,7 @@
 
 #include <Ryn/Core/Types.hpp>
 #include <Ryn/Core/Memory.hpp>
+#include <Ryn/Core/Utility.hpp>
 #include <Ryn/Core/String.hpp>
 #include <Ryn/Core/Process.hpp>
 #include <Ryn/Collections/Array.hpp>
@@ -11,31 +12,27 @@
 
 #include <vulkan/vulkan_core.h>
 
-#if RYN_DEBUG
-    #define VK_KHR_VALIDATION_LAYER_EXTENSION_NAME "VK_LAYER_KHRONOS_validation"
-#endif
-
+#define VK_KHR_VALIDATION_LAYER_EXTENSION_NAME "VK_LAYER_KHRONOS_validation"
 #define VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME "VK_KHR_portability_subset"
 
-#define VK_ERROR(...)            \
-    do                           \
-    {                            \
-        Log::Error(__VA_ARGS__); \
-        Process::Exit(-1);       \
-    }                            \
-    while (0)
+namespace Ryn::VK
+{
+    template <typename... TArgs>
+    void Error(TArgs&&... args)
+    {
+        Log::Error("(Vulkan) ", Utility::Forward<TArgs>(args)...);
+        Process::Exit(-1);
+    }
 
-#define VK_CHECK_RESULT(result, ...) \
-    if (result != VK_SUCCESS) VK_ERROR(__VA_ARGS__)
+    template <typename... TArgs>
+    void Check(VkResult result, TArgs&&... args)
+    {
+        if (result != VK_SUCCESS)
+        {
+            VK::Error(Utility::Forward<TArgs>(args)...);
+        }
+    }
 
-VKAPI_ATTR VkResult VKAPI_CALL vkCreateSurfaceKHR(
-    void* window,
-    const VkInstance instance,
-    VkSurfaceKHR* surface,
-    const VkAllocationCallbacks* pAllocator
-);
-
-VKAPI_ATTR void VKAPI_CALL vkAddInstanceExtensions(
-    Ryn::List<const char*>& extensions,
-    VkInstanceCreateFlags& flags
-);
+    void AddInstanceExtensions(List<const char*>& extensions, VkInstanceCreateFlags& createFlags);
+    VkResult CreateSurfaceKHR(const Window& window, const VkInstance instance, VkSurfaceKHR* surface);
+}
