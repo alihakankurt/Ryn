@@ -79,6 +79,9 @@ namespace Ryn
     class Iterable
     {
       public:
+        static constexpr usz IndexNotFound = static_cast<usz>(-1);
+
+      public:
         virtual Iterator<TValue> begin() = 0;
         virtual Iterator<const TValue> begin() const = 0;
 
@@ -100,19 +103,19 @@ namespace Ryn
                 if (predicate(*it))
                     return static_cast<usz>(it - begin());
 
-            return static_cast<usz>(-1);
+            return IndexNotFound;
         }
 
         usz FindLast(Predicate<TValue> predicate) const
         {
             if (IsEmpty())
-                return static_cast<usz>(-1);
+                return IndexNotFound;
 
             for (Iterator<const TValue> it = end() - 1; it >= begin(); --it)
                 if (predicate(*it))
                     return static_cast<usz>(it - begin());
 
-            return static_cast<usz>(-1);
+            return IndexNotFound;
         }
 
         bool IfAny(Predicate<TValue> predicate) const
