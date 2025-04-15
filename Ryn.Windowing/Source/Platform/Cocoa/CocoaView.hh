@@ -21,6 +21,7 @@
 - (BOOL)canBecomeKeyView;
 - (BOOL)wantsUpdateLayer;
 - (void)updateTrackingAreas;
+- (void)viewDidChangeBackingProperties;
 - (void)keyDown:(NSEvent*)event;
 - (void)keyUp:(NSEvent*)event;
 - (void)flagsChanged:(NSEvent*)event;

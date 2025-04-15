@@ -64,6 +64,11 @@
     [super updateTrackingAreas];
 }
 
+- (void)viewDidChangeBackingProperties
+{
+    [metalLayer setContentsScale:[static_cast<NSWindow*>(cocoaWindow->GetNativeHandle()) backingScaleFactor]];
+}
+
 - (void)keyDown:(NSEvent*)event
 {
     Ryn::Key key = MapCocoaKey([event keyCode]);

@@ -19,7 +19,8 @@ namespace Ryn
         }
 
         NSRect frame = NSMakeRect(0, 0, settings.Size.X, settings.Size.Y);
-        _window = [[NSWindow alloc] initWithContentRect:frame
+        _window = [[NSWindow alloc]
+            initWithContentRect:frame
             styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable)
             backing:NSBackingStoreBuffered
             defer:NO];
@@ -32,7 +33,7 @@ namespace Ryn
         [_window setContentView:view];
         [view release];
 
-        [_window setTitle:[NSString stringWithUTF8String:&settings.Title[0]]];
+        [_window setTitle:[NSString stringWithUTF8String:&settings.Title.First()]];
         [_window makeKeyAndOrderFront:nil];
         [_window setAcceptsMouseMovedEvents:YES];
         [_window center];
@@ -66,7 +67,8 @@ namespace Ryn
 
     Vector2<u32> CocoaWindow::GetSize() const
     {
-        const NSRect contentRect = [_window frame];
+        NSView* contentView = [_window contentView];
+        const NSRect contentRect = [contentView frame];
         u32 width = static_cast<u32>(contentRect.size.width);
         u32 height = static_cast<u32>(contentRect.size.height);
         return Vector2<u32>{width, height};
@@ -74,8 +76,9 @@ namespace Ryn
 
     Vector2<u32> CocoaWindow::GetFramebufferSize() const
     {
-        const NSRect contentRect = [_window frame];
-        const NSRect backingRect = [_window convertRectToBacking:contentRect];
+        NSView* contentView = [_window contentView];
+        const NSRect contentRect = [contentView frame];
+        const NSRect backingRect = [contentView convertRectToBacking:contentRect];
         u32 width = static_cast<u32>(backingRect.size.width);
         u32 height = static_cast<u32>(backingRect.size.height);
         return Vector2<u32>{width, height};
@@ -86,10 +89,9 @@ namespace Ryn
         if ([_window isResizable] == NO)
             return;
 
-        NSRect frame = [_window frame];
-        frame.size.width = static_cast<CGFloat>(size.X);
-        frame.size.height = static_cast<CGFloat>(size.Y);
-        [_window setFrame:frame display:YES animate:YES];
+        NSRect contentRect = [_window contentRectForFrameRect:[_window frame]];
+        contentRect.size = NSMakeSize(static_cast<CGFloat>(size.X), static_cast<CGFloat>(size.Y));
+        [_window setFrame:[_window frameRectForContentRect:contentRect] display:YES animate:YES];
     }
 
     String CocoaWindow::GetTitle() const
@@ -104,7 +106,7 @@ namespace Ryn
 
     void CocoaWindow::SetTitle(const String& title)
     {
-        [_window setTitle:[NSString stringWithUTF8String:&title[0]]];
+        [_window setTitle:[NSString stringWithUTF8String:&title.First()]];
     }
 
     Window* Window::Create(const WindowSettings& settings)
