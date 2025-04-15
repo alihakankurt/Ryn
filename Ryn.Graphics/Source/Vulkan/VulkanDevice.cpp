@@ -2,21 +2,20 @@
 
 namespace Ryn
 {
-    void VulkanDevice::Create(const VulkanInstance& instance)
+    VulkanDevice::VulkanDevice(const VulkanInstance& instance)
     {
-        Destroy();
         PickPhysicalDevice(instance);
         CreateLogicalDevice(instance);
     }
 
-    void VulkanDevice::Destroy()
+    VulkanDevice::~VulkanDevice()
     {
         if (_logicalDevice != VK_NULL_HANDLE)
         {
             vkDeviceWaitIdle(_logicalDevice);
             vkDestroyDevice(_logicalDevice, {});
         }
-
+        
         _logicalDevice = VK_NULL_HANDLE;
         _physicalDevice = VK_NULL_HANDLE;
     }
@@ -24,14 +23,14 @@ namespace Ryn
     void VulkanDevice::PickPhysicalDevice(const VulkanInstance& instance)
     {
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, {});
+        vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, {});
         if (deviceCount == 0)
         {
             VK::Error("Failed to find GPUs with Vulkan support!");
         }
 
         List<VkPhysicalDevice> physicalDevices{deviceCount};
-        vkEnumeratePhysicalDevices(instance.Get(), &deviceCount, &physicalDevices.First());
+        vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, &physicalDevices.First());
 
         u64 maxDeviceScore = 0;
         for (const VkPhysicalDevice& physicalDevice : physicalDevices)

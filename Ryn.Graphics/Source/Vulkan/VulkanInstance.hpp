@@ -15,18 +15,18 @@ namespace Ryn
         VkSurfaceKHR _surface;
 
       public:
-        void Create(const Window& window);
-        void Destroy();
+        VulkanInstance(const void* window);
+        ~VulkanInstance();
 
       private:
         void CreateInstance();
 #if RYN_DEBUG
         void CreateDebugMessenger();
 #endif
-        void CreateSurface(const Window& window);
+        void CreateSurface(const void* window);
 
       public:
-        VkInstance Get() const { return _instance; }
+        VkInstance GetInstance() const { return _instance; }
         VkSurfaceKHR GetSurface() const { return _surface; }
 
       private:

@@ -8,7 +8,6 @@
 #include <Ryn/Collections/Array.hpp>
 #include <Ryn/Collections/List.hpp>
 #include <Ryn/IO/Log.hpp>
-#include <Ryn/Windowing/Window.hpp>
 
 #include <vulkan/vulkan_core.h>
 
@@ -34,5 +33,5 @@ namespace Ryn::VK
     }
 
     void AddInstanceExtensions(List<const char*>& extensions, VkInstanceCreateFlags& createFlags);
-    VkResult CreateSurfaceKHR(const Window& window, const VkInstance instance, VkSurfaceKHR* surface);
+    VkResult CreateSurfaceKHR(const void* window, const VkInstance instance, VkSurfaceKHR* surface);
 }

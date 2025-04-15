@@ -37,16 +37,16 @@ namespace Ryn
         VkDevice _logicalDevice;
 
       public:
-        void Create(const VulkanInstance& instance);
-        void Destroy();
+        VulkanDevice(const VulkanInstance& instance);
+        ~VulkanDevice();
 
       private:
         void PickPhysicalDevice(const VulkanInstance& instance);
         void CreateLogicalDevice(const VulkanInstance& instance);
 
       public:
-        VkPhysicalDevice GetPhysical() const { return _physicalDevice; }
-        VkDevice GetLogical() const { return _logicalDevice; }
+        VkPhysicalDevice GetPhysicalDevice() const { return _physicalDevice; }
+        VkDevice GetLogicalDevice() const { return _logicalDevice; }
 
       public:
         static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);

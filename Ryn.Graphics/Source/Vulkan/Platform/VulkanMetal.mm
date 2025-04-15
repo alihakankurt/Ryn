@@ -16,9 +16,9 @@ namespace Ryn::VK
         createFlags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     }
 
-    VkResult CreateSurfaceKHR(const Window& window, const VkInstance instance, VkSurfaceKHR* surface)
+    VkResult CreateSurfaceKHR(const void* window, const VkInstance instance, VkSurfaceKHR* surface)
     {
-        NSWindow* nsWindow = static_cast<NSWindow*>(window.GetNativeHandle());
+        NSWindow* nsWindow = static_cast<NSWindow*>(window);
         NSView* nsView = [nsWindow contentView];
         CAMetalLayer* metalLayer = static_cast<CAMetalLayer*>([nsView layer]);
 
