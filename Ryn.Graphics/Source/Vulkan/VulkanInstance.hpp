@@ -15,7 +15,7 @@ namespace Ryn
         VkSurfaceKHR _surface;
 
       public:
-        VulkanInstance(const void* window);
+        VulkanInstance(const Window& window);
         ~VulkanInstance();
 
       private:
@@ -23,7 +23,7 @@ namespace Ryn
 #if RYN_DEBUG
         void CreateDebugMessenger();
 #endif
-        void CreateSurface(const void* window);
+        void CreateSurface(const Window& window);
 
       public:
         VkInstance GetInstance() const { return _instance; }

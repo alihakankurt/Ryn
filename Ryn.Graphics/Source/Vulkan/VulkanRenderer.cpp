@@ -3,8 +3,10 @@
 namespace Ryn
 {
     VulkanRenderer::VulkanRenderer(const Window& window) :
-        _instance(window.GetNativeHandle()),
-        _device(_instance) {}
+        _window(window),
+        _instance(window),
+        _device(_instance),
+        _swapchain(window, _instance, _device) {}
 
     VulkanRenderer::~VulkanRenderer()
     {

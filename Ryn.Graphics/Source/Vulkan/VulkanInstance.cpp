@@ -2,7 +2,12 @@
 
 namespace Ryn
 {
-    VulkanInstance::VulkanInstance(const void* window)
+    VulkanInstance::VulkanInstance(const Window& window) :
+        _instance(VK_NULL_HANDLE),
+#if RYN_DEBUG
+        _debugMessenger(VK_NULL_HANDLE),
+#endif
+        _surface(VK_NULL_HANDLE)
     {
         CreateInstance();
 #if RYN_DEBUG
@@ -46,9 +51,9 @@ namespace Ryn
         VkApplicationInfo applicationInfo{};
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         applicationInfo.pApplicationName = "Ryn";
-        applicationInfo.applicationVersion = VK_MAKE_VERSION(RYN_VERSION_MAJOR, RYN_VERSION_MINOR, RYN_VERSION_PATCH);
+        applicationInfo.applicationVersion = VK_MAKE_API_VERSION(0, RYN_VERSION_MAJOR, RYN_VERSION_MINOR, RYN_VERSION_PATCH);
         applicationInfo.pEngineName = "Ryn";
-        applicationInfo.engineVersion = VK_MAKE_VERSION(RYN_VERSION_MAJOR, RYN_VERSION_MINOR, RYN_VERSION_PATCH);
+        applicationInfo.engineVersion = VK_MAKE_API_VERSION(0, RYN_VERSION_MAJOR, RYN_VERSION_MINOR, RYN_VERSION_PATCH);
         applicationInfo.apiVersion = VK_API_VERSION_1_4;
 
         VkInstanceCreateInfo instanceCreateInfo{};
@@ -100,9 +105,9 @@ namespace Ryn
     }
 #endif
 
-    void VulkanInstance::CreateSurface(const void* window)
+    void VulkanInstance::CreateSurface(const Window& window)
     {
-        VkResult vkResult = VK::CreateSurfaceKHR(window, _instance, &_surface);
+        VkResult vkResult = VK::CreateSurfaceKHR(window.GetNativeHandle(), _instance, &_surface);
         VK::Check(vkResult, "Failed to create a surface!");
     }
 

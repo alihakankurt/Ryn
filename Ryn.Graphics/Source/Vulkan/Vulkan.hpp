@@ -8,6 +8,7 @@
 #include <Ryn/Collections/Array.hpp>
 #include <Ryn/Collections/List.hpp>
 #include <Ryn/IO/Log.hpp>
+#include <Ryn/Windowing/Window.hpp>
 
 #include <vulkan/vulkan_core.h>
 

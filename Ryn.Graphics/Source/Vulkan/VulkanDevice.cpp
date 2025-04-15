@@ -2,7 +2,9 @@
 
 namespace Ryn
 {
-    VulkanDevice::VulkanDevice(const VulkanInstance& instance)
+    VulkanDevice::VulkanDevice(const VulkanInstance& instance) :
+        _physicalDevice(VK_NULL_HANDLE),
+        _logicalDevice(VK_NULL_HANDLE)
     {
         PickPhysicalDevice(instance);
         CreateLogicalDevice(instance);
@@ -15,7 +17,7 @@ namespace Ryn
             vkDeviceWaitIdle(_logicalDevice);
             vkDestroyDevice(_logicalDevice, {});
         }
-        
+
         _logicalDevice = VK_NULL_HANDLE;
         _physicalDevice = VK_NULL_HANDLE;
     }
@@ -53,8 +55,8 @@ namespace Ryn
     {
         List<VkDeviceQueueCreateInfo> queueCreateInfos;
 
-        QueueFamilyIndices queueFamilyIndices = VulkanDevice::FindQueueFamilies(_physicalDevice, instance.GetSurface());
-        Array<uint32_t, 4> queueFamilyIndicesArray = queueFamilyIndices.AsArray();
+        _queueFamilyIndices = VulkanDevice::FindQueueFamilies(_physicalDevice, instance.GetSurface());
+        Array<uint32_t, 4> queueFamilyIndicesArray = _queueFamilyIndices.AsArray();
         f32 queuePriority = 1.0f;
 
         for (uint32_t queueFamilyIndex : queueFamilyIndicesArray)

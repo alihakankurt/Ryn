@@ -35,6 +35,7 @@ namespace Ryn
       private:
         VkPhysicalDevice _physicalDevice;
         VkDevice _logicalDevice;
+        QueueFamilyIndices _queueFamilyIndices;
 
       public:
         VulkanDevice(const VulkanInstance& instance);
@@ -47,6 +48,7 @@ namespace Ryn
       public:
         VkPhysicalDevice GetPhysicalDevice() const { return _physicalDevice; }
         VkDevice GetLogicalDevice() const { return _logicalDevice; }
+        const QueueFamilyIndices& GetQueueFamilyIndices() const { return _queueFamilyIndices; }
 
       public:
         static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
