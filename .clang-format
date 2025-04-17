@@ -131,8 +131,8 @@ BreakInheritanceList: AfterColon
 # Don't allow to break string literals. I'll break it myself if needed.
 BreakStringLiterals: false
 
-# Always break after the template declarations.
-BreakTemplateDeclarations: Yes
+# Don't automatically break after the template declarations because it puts the empty braces on the next line.
+BreakTemplateDeclarations: No
 
 # Column limit is 0 to disable ugly line wrapping.
 ColumnLimit: 0

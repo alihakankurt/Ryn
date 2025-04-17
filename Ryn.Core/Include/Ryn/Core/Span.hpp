@@ -29,14 +29,12 @@ namespace Ryn
         template <usz N>
         constexpr Span(TValue (&data)[N]) :
             _data{&data[0]},
-            _length{N}
-        {}
+            _length{N} {}
 
         template <usz N>
         constexpr Span(TValue (&&data)[N]) :
             _data{&data[0]},
-            _length{N}
-        {}
+            _length{N} {}
 
         constexpr Span(const Span& other) :
             _data{other._data},
