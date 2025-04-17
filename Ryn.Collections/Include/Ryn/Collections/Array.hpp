@@ -8,7 +8,7 @@
 namespace Ryn
 {
     template <typename TValue, usz TCount>
-    class Array : public Iterable<TValue>
+    class Array : public Iterable<TValue, LinearIterator<TValue>, LinearIterator<const TValue>>
     {
         static_assert(TCount > 0, "Array cannot be empty!");
         static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
@@ -41,16 +41,13 @@ namespace Ryn
 
         constexpr usz Count() const { return TCount; }
 
-        constexpr TValue& operator[](usz index) { return _data[index]; }
-        constexpr const TValue& operator[](usz index) const { return _data[index]; }
-
         constexpr operator Span<TValue>() { return Span<TValue>{&_data[0], TCount}; }
         constexpr operator Span<const TValue>() const { return Span<const TValue>{&_data[0], TCount}; }
 
       public:
-        constexpr Iterator<TValue> begin() { return Iterator<TValue>{_data}; }
-        constexpr Iterator<const TValue> begin() const { return Iterator<const TValue>{_data}; }
-        constexpr Iterator<TValue> end() { return Iterator<TValue>{_data + TCount}; }
-        constexpr Iterator<const TValue> end() const { return Iterator<const TValue>{_data + TCount}; }
+        constexpr LinearIterator<TValue> begin() override { return LinearIterator<TValue>{_data}; }
+        constexpr LinearIterator<const TValue> begin() const override { return LinearIterator<const TValue>{_data}; }
+        constexpr LinearIterator<TValue> end() override { return LinearIterator<TValue>{_data + TCount}; }
+        constexpr LinearIterator<const TValue> end() const override { return LinearIterator<const TValue>{_data + TCount}; }
     };
 }

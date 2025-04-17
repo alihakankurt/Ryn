@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
+#include <Ryn/Core/Traits.hpp>
 #include <Ryn/Core/Function.hpp>
 
 namespace Ryn
@@ -8,130 +9,171 @@ namespace Ryn
     template <typename TValue>
     class Iterator
     {
-      private:
-        TValue* _ptr;
+      protected:
+        TValue* Data;
+
+        template <typename TOther>
+        friend class Iterator;
 
       public:
         constexpr Iterator() :
-            _ptr{} {}
+            Data{} {}
 
-        constexpr Iterator(TValue* ptr) :
-            _ptr(ptr) {}
+        constexpr Iterator(TValue* data) :
+            Data(data) {}
 
-        constexpr Iterator& operator++()
-        {
-            _ptr += 1;
-            return *this;
-        }
+        virtual constexpr Iterator& operator++() = 0;
+        virtual constexpr Iterator& operator--() = 0;
 
-        constexpr Iterator& operator--()
-        {
-            _ptr -= 1;
-            return *this;
-        }
+        virtual constexpr Iterator& operator+=(usz offset) = 0;
+        virtual constexpr Iterator& operator-=(usz offset) = 0;
 
-        constexpr Iterator& operator+=(isz offset)
-        {
-            _ptr += offset;
-            return *this;
-        }
+        constexpr TValue& operator*() { return *Data; }
+        constexpr const TValue& operator*() const { return *Data; }
 
-        constexpr Iterator& operator-=(isz offset)
-        {
-            _ptr -= offset;
-            return *this;
-        }
+        constexpr TValue* operator->() { return Data; }
+        constexpr const TValue* operator->() const { return Data; }
 
-        constexpr Iterator operator+(isz offset) const
-        {
-            Iterator it = *this;
-            it += offset;
-            return it;
-        }
+        constexpr bool operator!() const { return !Data; }
+        constexpr operator bool() const { return Data; }
 
-        constexpr Iterator operator-(isz offset) const
-        {
-            Iterator it = *this;
-            it -= offset;
-            return it;
-        }
+        virtual constexpr bool operator==(const Iterator<Traits::RemoveConst<TValue>>& other) const { return Data == other.Data; }
+        virtual constexpr bool operator!=(const Iterator<Traits::RemoveConst<TValue>>& other) const { return Data != other.Data; }
 
-        constexpr isz operator-(const Iterator& other)
-        {
-            return static_cast<isz>(_ptr - other._ptr);
-        }
-
-        constexpr TValue& operator*() { return *_ptr; }
-        constexpr const TValue& operator*() const { return *_ptr; }
-
-        constexpr TValue* operator->() { return _ptr; }
-        constexpr const TValue* operator->() const { return _ptr; }
-
-        constexpr bool operator==(const Iterator& other) const { return _ptr == other._ptr; }
-        constexpr bool operator!=(const Iterator& other) const { return _ptr != other._ptr; }
-        constexpr bool operator<(const Iterator& other) const { return _ptr < other._ptr; }
-        constexpr bool operator>(const Iterator& other) const { return _ptr > other._ptr; }
-        constexpr bool operator<=(const Iterator& other) const { return _ptr <= other._ptr; }
-        constexpr bool operator>=(const Iterator& other) const { return _ptr >= other._ptr; }
+        virtual constexpr bool operator==(const Iterator<const Traits::RemoveConst<TValue>>& other) const { return Data == other.Data; }
+        virtual constexpr bool operator!=(const Iterator<const Traits::RemoveConst<TValue>>& other) const { return Data != other.Data; }
     };
 
     template <typename TValue>
+    class LinearIterator : public Iterator<TValue>
+    {
+      public:
+        constexpr LinearIterator() :
+            Iterator<TValue>{} {}
+
+        constexpr LinearIterator(TValue* data) :
+            Iterator<TValue>{data} {}
+
+        constexpr LinearIterator& operator++() override
+        {
+            ++this->Data;
+            return *this;
+        }
+
+        constexpr LinearIterator& operator--() override
+        {
+            --this->Data;
+            return *this;
+        }
+
+        constexpr LinearIterator& operator+=(usz offset) override
+        {
+            this->Data += offset;
+            return *this;
+        }
+
+        constexpr LinearIterator& operator-=(usz offset) override
+        {
+            this->Data -= offset;
+            return *this;
+        }
+
+        constexpr bool operator<(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data < other.Data; }
+        constexpr bool operator>(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data > other.Data; }
+        constexpr bool operator<=(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data <= other.Data; }
+        constexpr bool operator>=(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data >= other.Data; }
+
+        constexpr bool operator<(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data < other.Data; }
+        constexpr bool operator>(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data > other.Data; }
+        constexpr bool operator<=(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data <= other.Data; }
+        constexpr bool operator>=(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data >= other.Data; }
+    };
+
+    template <typename TValue, typename TIterator = Iterator<TValue>, typename TConstIterator = Iterator<const TValue>>
     class Iterable
     {
       public:
-        static constexpr usz IndexNotFound = static_cast<usz>(-1);
+        virtual TIterator begin() = 0;
+        virtual TConstIterator begin() const = 0;
+
+        virtual TIterator end() = 0;
+        virtual TConstIterator end() const = 0;
+
+        constexpr TIterator Begin() { return begin(); }
+        constexpr TConstIterator Begin() const { return begin(); }
+
+        constexpr TIterator End() { return end(); }
+        constexpr TConstIterator End() const { return end(); }
 
       public:
-        virtual Iterator<TValue> begin() = 0;
-        virtual Iterator<const TValue> begin() const = 0;
+        constexpr bool IsEmpty() const { return begin() == end(); }
 
-        virtual Iterator<TValue> end() = 0;
-        virtual Iterator<const TValue> end() const = 0;
+        constexpr TValue* Data() { return &*begin(); }
+        constexpr const TValue* Data() const { return &*begin(); }
 
-      public:
-        bool IsEmpty() const { return begin() == end(); }
+        constexpr TValue& First() { return *begin(); }
+        constexpr const TValue& First() const { return *begin(); }
 
-        TValue& First() { return *begin(); }
-        const TValue& First() const { return *begin(); }
+        constexpr TValue& Last() { return *(end() -= 1); }
+        constexpr const TValue& Last() const { return *(end() -= 1); }
 
-        TValue& Last() { return *(end() - 1); }
-        const TValue& Last() const { return *(end() - 1); }
+        constexpr TValue& At(usz index) { return *(begin() += index); }
+        constexpr const TValue& At(usz index) const { return *(begin() += index); }
 
-        usz FindFirst(Predicate<TValue> predicate) const
+        constexpr TValue& operator[](usz index) { return At(index); }
+        constexpr const TValue& operator[](usz index) const { return At(index); }
+
+        TConstIterator FindFirst(Predicate<TValue> predicate) const
         {
-            for (Iterator<const TValue> it = begin(); it < end(); ++it)
+            TConstIterator it = begin();
+            while (it != end())
+            {
                 if (predicate(*it))
-                    return static_cast<usz>(it - begin());
+                    return it;
 
-            return IndexNotFound;
+                ++it;
+            }
+
+            return end();
         }
 
-        usz FindLast(Predicate<TValue> predicate) const
+        TConstIterator FindLast(Predicate<TValue> predicate) const
         {
-            if (IsEmpty())
-                return IndexNotFound;
-
-            for (Iterator<const TValue> it = end() - 1; it >= begin(); --it)
+            TConstIterator it = end();
+            while (it != begin())
+            {
+                --it;
                 if (predicate(*it))
-                    return static_cast<usz>(it - begin());
+                    return it;
+            }
 
-            return IndexNotFound;
+            return end();
         }
 
         bool IfAny(Predicate<TValue> predicate) const
         {
-            for (Iterator<const TValue> it = begin(); it < end(); ++it)
+            TConstIterator it = begin();
+            while (it != end())
+            {
                 if (predicate(*it))
                     return true;
+
+                ++it;
+            }
 
             return false;
         }
 
         bool IfAll(Predicate<TValue> predicate) const
         {
-            for (Iterator<const TValue> it = begin(); it < end(); ++it)
+            TConstIterator it = begin();
+            while (it != end())
+            {
                 if (!predicate(*it))
                     return false;
+
+                ++it;
+            }
 
             return true;
         }

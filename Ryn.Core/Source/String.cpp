@@ -161,7 +161,7 @@ namespace Ryn
         }
         while (value != 0 && length < span.Length());
 
-        Memory::Reverse(&span[0], length);
+        Memory::Reverse(span.Data(), length);
         return span.Slice(0, length);
     }
 

@@ -8,7 +8,7 @@
 
 namespace Ryn
 {
-    class String : public Iterable<char>
+    class String : public Iterable<char, LinearIterator<char>, LinearIterator<const char>>
     {
       private:
         char* _data;
@@ -29,7 +29,7 @@ namespace Ryn
             Construct(&str[0], N - 1);
         }
 
-        explicit String(Span<const char> span) { Construct(&span[0], span.Length()); }
+        explicit String(Span<const char> span) { Construct(span.Data(), span.Length()); }
 
         String(const String& other) { Construct(other._data, other._length); }
 
@@ -48,19 +48,16 @@ namespace Ryn
       public:
         constexpr usz Length() const { return _length; }
 
-        constexpr char& operator[](usz index) { return _data[index]; }
-        constexpr const char& operator[](usz index) const { return _data[index]; }
-
         String& Append(const char c) { return Append(&c, 1); }
         String& Append(const char* str) { return Append(&str[0], String::Length(str)); }
-        String& Append(const String& other) { return Append(&other[0], other.Length()); }
-        String& Append(Span<const char> span) { return Append(&span[0], span.Length()); }
+        String& Append(const String& other) { return Append(other.Data(), other.Length()); }
+        String& Append(Span<const char> span) { return Append(span.Data(), span.Length()); }
 
         String& Append(bool value)
         {
             char buffer[String::MaxBoolLength];
             Span<char> span = String::Format(buffer, value);
-            return Append(&span[0], span.Length());
+            return Append(span.Data(), span.Length());
         }
 
         template <Traits::Integer TValue>
@@ -72,7 +69,7 @@ namespace Ryn
                 span = String::Format(buffer, static_cast<i64>(value));
             else
                 span = String::Format(buffer, static_cast<u64>(value));
-            return Append(&span[0], span.Length());
+            return Append(span.Data(), span.Length());
         }
 
         template <Traits::FloatingPoint TValue>
@@ -80,7 +77,7 @@ namespace Ryn
         {
             char buffer[String::MaxFloatLength];
             Span<char> span = String::Format(buffer, static_cast<f64>(value));
-            return Append(&span[0], span.Length());
+            return Append(span.Data(), span.Length());
         }
 
       private:
@@ -108,18 +105,21 @@ namespace Ryn
         String operator+(bool value) const { return String{*this}.Append(value); }
 
         template <Traits::Number TValue>
-        String operator+(TValue value) const { return String{*this}.Append(value); }
+        String operator+(TValue value) const
+        {
+            return String{*this}.Append(value);
+        }
 
         String& Insert(usz to, const char c) { return Insert(to, &c, 1); }
         String& Insert(usz to, const char* str) { return Insert(to, &str[0], String::Length(str)); }
-        String& Insert(usz to, const String& other) { return Insert(to, &other[0], other.Length()); }
-        String& Insert(usz to, Span<const char> span) { return Insert(to, &span[0], span.Length()); }
+        String& Insert(usz to, const String& other) { return Insert(to, other.Data(), other.Length()); }
+        String& Insert(usz to, Span<const char> span) { return Insert(to, span.Data(), span.Length()); }
 
         String& Insert(usz to, bool value)
         {
             char buffer[String::MaxBoolLength];
             Span<char> span = String::Format(buffer, value);
-            return Insert(to, &span[0], span.Length());
+            return Insert(to, span.Data(), span.Length());
         }
 
         template <Traits::Integer TValue>
@@ -131,7 +131,7 @@ namespace Ryn
                 span = String::Format(buffer, static_cast<i64>(value));
             else
                 span = String::Format(buffer, static_cast<u64>(value));
-            return Insert(to, &span[0], span.Length());
+            return Insert(to, span.Data(), span.Length());
         }
 
         template <Traits::FloatingPoint TValue>
@@ -139,7 +139,7 @@ namespace Ryn
         {
             char buffer[String::MaxFloatLength];
             Span<char> span = String::Format(buffer, static_cast<f64>(value));
-            return Insert(to, &span[0], span.Length());
+            return Insert(to, span.Data(), span.Length());
         }
 
       private:
@@ -161,10 +161,10 @@ namespace Ryn
         constexpr operator Span<const char>() const { return ToSpan(); }
 
       public:
-        constexpr Iterator<char> begin() { return Iterator<char>{_data}; }
-        constexpr Iterator<const char> begin() const { return Iterator<const char>{_data}; }
-        constexpr Iterator<char> end() { return Iterator<char>{_data + _length}; }
-        constexpr Iterator<const char> end() const { return Iterator<const char>{_data + _length}; }
+        constexpr LinearIterator<char> begin() override { return LinearIterator<char>{_data}; }
+        constexpr LinearIterator<const char> begin() const override { return LinearIterator<const char>{_data}; }
+        constexpr LinearIterator<char> end() override { return LinearIterator<char>{_data + _length}; }
+        constexpr LinearIterator<const char> end() const override { return LinearIterator<const char>{_data + _length}; }
 
       public:
         static usz Length(const char* str);

@@ -33,7 +33,7 @@ namespace Ryn
         [_window setContentView:view];
         [view release];
 
-        [_window setTitle:[NSString stringWithUTF8String:&settings.Title.First()]];
+        [_window setTitle:[NSString stringWithUTF8String:settings.Title.Data()]];
         [_window makeKeyAndOrderFront:nil];
         [_window setAcceptsMouseMovedEvents:YES];
         [_window center];
@@ -106,7 +106,7 @@ namespace Ryn
 
     void CocoaWindow::SetTitle(const String& title)
     {
-        [_window setTitle:[NSString stringWithUTF8String:&title.First()]];
+        [_window setTitle:[NSString stringWithUTF8String:title.Data()]];
     }
 
     Window* Window::Create(const WindowSettings& settings)

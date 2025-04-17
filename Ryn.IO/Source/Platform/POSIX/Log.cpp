@@ -27,7 +27,7 @@ namespace Ryn
 
     void Log::Write(const Span<const char> span)
     {
-        write(STDOUT_FILENO, &span[0], span.Length());
+        write(STDOUT_FILENO, span.Data(), span.Length());
     }
 #endif
 }

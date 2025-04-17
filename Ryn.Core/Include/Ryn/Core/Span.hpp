@@ -9,7 +9,7 @@
 namespace Ryn
 {
     template <typename TValue>
-    class Span : public Iterable<TValue>
+    class Span : public Iterable<TValue, LinearIterator<TValue>, LinearIterator<const TValue>>
     {
         static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
 
@@ -29,12 +29,14 @@ namespace Ryn
         template <usz N>
         constexpr Span(TValue (&data)[N]) :
             _data{&data[0]},
-            _length{N} {}
+            _length{N}
+        {}
 
         template <usz N>
         constexpr Span(TValue (&&data)[N]) :
             _data{&data[0]},
-            _length{N} {}
+            _length{N}
+        {}
 
         constexpr Span(const Span& other) :
             _data{other._data},
@@ -65,9 +67,6 @@ namespace Ryn
         }
 
         constexpr usz Length() const { return _length; }
-
-        constexpr TValue& operator[](usz index) { return _data[index]; }
-        constexpr const TValue& operator[](usz index) const { return _data[index]; }
 
         constexpr operator Span<const TValue>() const { return Span<const TValue>{_data, _length}; }
 
@@ -101,9 +100,9 @@ namespace Ryn
         }
 
       public:
-        constexpr Iterator<TValue> begin() { return Iterator<TValue>{_data}; }
-        constexpr Iterator<const TValue> begin() const { return Iterator<const TValue>{_data}; }
-        constexpr Iterator<TValue> end() { return Iterator<TValue>{_data + _length}; }
-        constexpr Iterator<const TValue> end() const { return Iterator<const TValue>{_data + _length}; }
+        constexpr LinearIterator<TValue> begin() override { return LinearIterator<TValue>{_data}; }
+        constexpr LinearIterator<const TValue> begin() const override { return LinearIterator<const TValue>{_data}; }
+        constexpr LinearIterator<TValue> end() override { return LinearIterator<TValue>{_data + _length}; }
+        constexpr LinearIterator<const TValue> end() const override { return LinearIterator<const TValue>{_data + _length}; }
     };
 }

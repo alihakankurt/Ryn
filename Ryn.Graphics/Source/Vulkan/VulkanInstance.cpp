@@ -69,7 +69,7 @@ namespace Ryn
         {
             instanceExtensions.Add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             instanceCreateInfo.enabledLayerCount = ValidationLayers.Count();
-            instanceCreateInfo.ppEnabledLayerNames = &ValidationLayers.First();
+            instanceCreateInfo.ppEnabledLayerNames = ValidationLayers.Data();
         }
         else
         {
@@ -78,7 +78,7 @@ namespace Ryn
 #endif
 
         instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(instanceExtensions.Count());
-        instanceCreateInfo.ppEnabledExtensionNames = &instanceExtensions.First();
+        instanceCreateInfo.ppEnabledExtensionNames = instanceExtensions.Data();
         instanceCreateInfo.flags = instanceCreateFlags;
 
         VkResult vkResult = vkCreateInstance(&instanceCreateInfo, {}, &_instance);
@@ -118,7 +118,7 @@ namespace Ryn
         vkEnumerateInstanceLayerProperties(&instanceLayerCount, {});
 
         List<VkLayerProperties> instanceLayers{instanceLayerCount};
-        vkEnumerateInstanceLayerProperties(&instanceLayerCount, &instanceLayers.First());
+        vkEnumerateInstanceLayerProperties(&instanceLayerCount, instanceLayers.Data());
 
         bool allSupported = ValidationLayers.IfAll([instanceLayers](const char* layer) {
             usz length = String::Length(layer);

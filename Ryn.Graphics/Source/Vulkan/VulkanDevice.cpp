@@ -32,7 +32,7 @@ namespace Ryn
         }
 
         List<VkPhysicalDevice> physicalDevices{deviceCount};
-        vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, &physicalDevices.First());
+        vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, physicalDevices.Data());
 
         u64 maxDeviceScore = 0;
         for (const VkPhysicalDevice& physicalDevice : physicalDevices)
@@ -94,10 +94,10 @@ namespace Ryn
 
         VkDeviceCreateInfo logicalDeviceCreateInfo{};
         logicalDeviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        logicalDeviceCreateInfo.pQueueCreateInfos = &queueCreateInfos.First();
+        logicalDeviceCreateInfo.pQueueCreateInfos = queueCreateInfos.Data();
         logicalDeviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.Count());
         logicalDeviceCreateInfo.pEnabledFeatures = &physicalDeviceFeatures;
-        logicalDeviceCreateInfo.ppEnabledExtensionNames = &deviceExtensions.First();
+        logicalDeviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.Data();
         logicalDeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.Count());
 
         VkResult vkResult = vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, {}, &_logicalDevice);
@@ -112,7 +112,7 @@ namespace Ryn
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, {});
 
         List<VkQueueFamilyProperties> queueFamilyProperties{queueFamilyPropertyCount};
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, &queueFamilyProperties.First());
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, queueFamilyProperties.Data());
 
         for (uint32_t queueFamilyIndex = 0; queueFamilyIndex < queueFamilyPropertyCount; queueFamilyIndex += 1)
         {
@@ -193,7 +193,7 @@ namespace Ryn
             return false;
 
         List<VkExtensionProperties> deviceExtensions{deviceExtensionCount};
-        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, &deviceExtensions.First());
+        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, deviceExtensions.Data());
 
         bool allSupported = RequiredDeviceExtensions.IfAll([deviceExtensions](const char* extension) {
             usz length = String::Length(extension);
@@ -211,7 +211,7 @@ namespace Ryn
         vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, {});
 
         List<VkExtensionProperties> deviceExtensions{deviceExtensionCount};
-        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, &deviceExtensions.First());
+        vkEnumerateDeviceExtensionProperties(device, {}, &deviceExtensionCount, deviceExtensions.Data());
 
         bool hasPortabilityExtension = deviceExtensions.IfAny([](const VkExtensionProperties& availableExtension) {
             return Memory::Compare(availableExtension.extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, 25);

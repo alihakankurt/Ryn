@@ -11,7 +11,7 @@
 namespace Ryn
 {
     template <typename TValue>
-    class List : public Iterable<TValue>
+    class List : public Iterable<TValue, LinearIterator<TValue>, LinearIterator<const TValue>>
     {
         static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
         static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified!");
@@ -115,9 +115,6 @@ namespace Ryn
 
         constexpr usz Count() const { return _count; }
 
-        constexpr TValue& operator[](usz index) { return _data[index]; }
-        constexpr const TValue& operator[](usz index) const { return _data[index]; }
-
         constexpr Span<TValue> ToSpan() const { return Span<TValue>{_data, _count}; }
         constexpr Span<TValue> ToSpan(usz start) const { return ToSpan().Slice(start); }
         constexpr Span<TValue> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
@@ -179,9 +176,9 @@ namespace Ryn
         }
 
       public:
-        constexpr Iterator<TValue> begin() { return Iterator<TValue>{_data}; }
-        constexpr Iterator<const TValue> begin() const { return Iterator<const TValue>{_data}; }
-        constexpr Iterator<TValue> end() { return Iterator<TValue>{_data + _count}; }
-        constexpr Iterator<const TValue> end() const { return Iterator<const TValue>{_data + _count}; }
+        constexpr LinearIterator<TValue> begin() override { return LinearIterator<TValue>{_data}; }
+        constexpr LinearIterator<const TValue> begin() const override { return LinearIterator<const TValue>{_data}; }
+        constexpr LinearIterator<TValue> end() override { return LinearIterator<TValue>{_data + _count}; }
+        constexpr LinearIterator<const TValue> end() const override { return LinearIterator<const TValue>{_data + _count}; }
     };
 }

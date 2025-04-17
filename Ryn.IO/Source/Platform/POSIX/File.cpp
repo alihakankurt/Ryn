@@ -8,7 +8,7 @@ namespace Ryn
 {
     String File::Read(const Span<const char> path)
     {
-        int file = open(&path[0], O_RDONLY);
+        int file = open(path.Data(), O_RDONLY);
         if (file == -1)
         {
             return String{};
@@ -60,7 +60,7 @@ namespace Ryn
 
     bool File::Write(const Span<const char> path, const Span<const char> content)
     {
-        int file = open(&path[0], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        int file = open(path.Data(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if (file == -1)
         {
             return false;
@@ -73,7 +73,7 @@ namespace Ryn
 
     bool File::Append(const Span<const char> path, const Span<const char> content)
     {
-        int file = open(&path[0], O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        int file = open(path.Data(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if (file == -1)
         {
             return false;
@@ -86,11 +86,11 @@ namespace Ryn
 
     bool File::Exists(const Span<const char> path)
     {
-        return access(&path[0], F_OK) != -1;
+        return access(path.Data(), F_OK) != -1;
     }
 
     bool File::Delete(const Span<const char> path)
     {
-        return unlink(&path[0]) != -1;
+        return unlink(path.Data()) != -1;
     }
 }

@@ -86,7 +86,7 @@ namespace Ryn
         if (formatCount != 0)
         {
             details.Formats = List<VkSurfaceFormatKHR>(formatCount);
-            vkResult = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, &details.Formats.First());
+            vkResult = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.Formats.Data());
             VK::Check(vkResult, "Failed to get Vulkan surface formats for physical device!");
         }
 
@@ -95,7 +95,7 @@ namespace Ryn
         if (presentModeCount != 0)
         {
             details.PresentModes = List<VkPresentModeKHR>(presentModeCount);
-            vkResult = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, &details.PresentModes.First());
+            vkResult = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, details.PresentModes.Data());
             VK::Check(vkResult, "Failed to get Vulkan surface present modes for physical device!");
         }
 
@@ -118,13 +118,13 @@ namespace Ryn
 
     VkSurfaceFormatKHR VulkanSwapchain::SupportDetails::PickSurfaceFormat() const
     {
-        usz index = Formats.FindFirst([](const VkSurfaceFormatKHR& format) {
+        auto it = Formats.FindFirst([](const VkSurfaceFormatKHR& format) {
             return format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
         });
 
-        if (index != Formats.IndexNotFound)
+        if (it != Formats.End())
         {
-            return Formats[index];
+            return *it;
         }
 
         return Formats.First();
@@ -132,13 +132,13 @@ namespace Ryn
 
     VkPresentModeKHR VulkanSwapchain::SupportDetails::PickPresentMode() const
     {
-        usz index = PresentModes.FindFirst([](const VkPresentModeKHR& presentMode) {
+        auto it = PresentModes.FindFirst([](const VkPresentModeKHR& presentMode) {
             return presentMode == VK_PRESENT_MODE_MAILBOX_KHR;
         });
 
-        if (index != PresentModes.IndexNotFound)
+        if (it != PresentModes.End())
         {
-            return PresentModes[index];
+            return *it;
         }
 
         return VK_PRESENT_MODE_FIFO_KHR;
