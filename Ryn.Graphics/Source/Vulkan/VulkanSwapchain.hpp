@@ -30,6 +30,8 @@ namespace Ryn
         VkSurfaceFormatKHR _surfaceFormat;
         VkPresentModeKHR _presentMode;
         uint32_t _imageCount;
+        List<VkImage> _swapchainImages;
+        List<VkImageView> _swapchainImageViews;
 
       public:
         VulkanSwapchain(const Window& window, const VulkanInstance& instance, const VulkanDevice& device) :
@@ -81,18 +83,30 @@ namespace Ryn
             Create(window, instance);
         }
 
+        uint32_t AcquireNextImage(uint64_t timeout = UINT64_MAX) const;
+
       private:
         void Create(const Window& window, const VulkanInstance& instance)
         {
             CreateSwapchain(window, instance);
+            RetreiveSwapchainImages();
+            CreateSwapchainImageViews();
         }
-
+        
         void Destroy()
         {
+            DestroySwapchainImageViews();
+            CleanupSwapchainImages();
             DestroySwapchain();
         }
 
         void CreateSwapchain(const Window& window, const VulkanInstance& instance);
         void DestroySwapchain();
+
+        void RetreiveSwapchainImages();
+        void CleanupSwapchainImages();
+
+        void CreateSwapchainImageViews();
+        void DestroySwapchainImageViews();
     };
 }

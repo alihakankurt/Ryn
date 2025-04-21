@@ -87,6 +87,14 @@ namespace Ryn
         return imageCount;
     }
 
+    uint32_t VulkanSwapchain::AcquireNextImage(uint64_t timeout) const
+    {
+        uint32_t imageIndex;
+        VkResult result = vkAcquireNextImageKHR(_device->GetVkDevice(), _swapchain, timeout, {}, {}, &imageIndex);
+        VulkanCheck(result, "Failed to acquire next Vulkan swapchain image!");
+        return imageIndex;
+    }
+
     void VulkanSwapchain::CreateSwapchain(const Window& window, const VulkanInstance& instance)
     {
         SupportDetails supportDetails = VulkanSwapchain::SupportDetails::Query(instance.GetVkSurface(), _device->GetVkPhysicalDevice());
@@ -138,5 +146,57 @@ namespace Ryn
             vkDestroySwapchainKHR(_device->GetVkDevice(), _swapchain, {});
             _swapchain = {};
         }
+    }
+
+    void VulkanSwapchain::RetreiveSwapchainImages()
+    {
+        _swapchainImages = List<VkImage>{_imageCount};
+
+        VkResult result = vkGetSwapchainImagesKHR(_device->GetVkDevice(), _swapchain, &_imageCount, _swapchainImages.Data());
+        VulkanCheck(result, "Failed to get Vulkan swapchain images!");
+    }
+
+    void VulkanSwapchain::CleanupSwapchainImages()
+    {
+        _swapchainImages.Clear();
+    }
+
+    void VulkanSwapchain::CreateSwapchainImageViews()
+    {
+        _swapchainImageViews.Reserve(_imageCount);
+
+        for (VkImage swapchainImage : _swapchainImages)
+        {
+            VkImageViewCreateInfo imageViewCreateInfo{};
+            imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            imageViewCreateInfo.image = swapchainImage;
+            imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            imageViewCreateInfo.format = _surfaceFormat.format;
+            imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+            imageViewCreateInfo.subresourceRange.levelCount = 1;
+            imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+            imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+            VkImageView swapchainImageView;
+            VkResult result = vkCreateImageView(_device->GetVkDevice(), &imageViewCreateInfo, {}, &swapchainImageView);
+            VulkanCheck(result, "Failed to create swap chain image view");
+
+            _swapchainImageViews.Add(swapchainImageView);
+        }
+    }
+
+    void VulkanSwapchain::DestroySwapchainImageViews()
+    {
+        for (VkImageView swapchainImageView : _swapchainImageViews)
+        {
+            vkDestroyImageView(_device->GetVkDevice(), swapchainImageView, {});
+        }
+
+        _swapchainImageViews.Clear();
     }
 }
