@@ -2,92 +2,20 @@
 
 namespace Ryn
 {
-    VulkanSwapchain::VulkanSwapchain(const Window& window, const VulkanInstance& instance, const VulkanDevice& device) :
-        _device(device)
-    {
-        CreateSwapchain(window, instance);
-    }
-
-    VulkanSwapchain::~VulkanSwapchain()
-    {
-        DestroySwapchain();
-        _swapchain = VK_NULL_HANDLE;
-    }
-
-    void VulkanSwapchain::Recreate(const Window& window, const VulkanInstance& instance)
-    {
-        DestroySwapchain();
-        CreateSwapchain(window, instance);
-    }
-
-    void VulkanSwapchain::CreateSwapchain(const Window& window, const VulkanInstance& instance)
-    {
-        SupportDetails supportDetails = VulkanSwapchain::QuerySupportDetails(instance.GetSurface(), _device.GetPhysicalDevice());
-
-        Vector2<u32> framebufferSize = window.GetFramebufferSize();
-        VkExtent2D extent = supportDetails.PickExtent2D(framebufferSize);
-        VkSurfaceFormatKHR surfaceFormat = supportDetails.PickSurfaceFormat();
-        VkPresentModeKHR presentMode = supportDetails.PickPresentMode();
-        uint32_t imageCount = supportDetails.PickImageCount();
-
-        VkSwapchainCreateInfoKHR swapchainCreateInfo{};
-        swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        swapchainCreateInfo.surface = instance.GetSurface();
-        swapchainCreateInfo.minImageCount = imageCount;
-        swapchainCreateInfo.imageFormat = surfaceFormat.format;
-        swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-        swapchainCreateInfo.imageExtent = extent;
-        swapchainCreateInfo.imageArrayLayers = 1;
-        swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-        VulkanDevice::QueueFamilyIndices queueFamilyIndices = _device.GetQueueFamilyIndices();
-        uint32_t graphicsAndPresentIndices[]{queueFamilyIndices.GraphicsFamily, queueFamilyIndices.PresentFamily};
-
-        if (queueFamilyIndices.GraphicsFamily != queueFamilyIndices.PresentFamily)
-        {
-            swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-            swapchainCreateInfo.queueFamilyIndexCount = 2;
-            swapchainCreateInfo.pQueueFamilyIndices = graphicsAndPresentIndices;
-        }
-        else
-        {
-            swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        }
-
-        swapchainCreateInfo.preTransform = supportDetails.Capabilities.currentTransform;
-        swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        swapchainCreateInfo.presentMode = presentMode;
-        swapchainCreateInfo.clipped = VK_TRUE;
-        swapchainCreateInfo.oldSwapchain = _swapchain;
-
-        VkResult vkResult = vkCreateSwapchainKHR(_device.GetLogicalDevice(), &swapchainCreateInfo, {}, &_swapchain);
-        VK::Check(vkResult, "Failed to create Vulkan swapchain!");
-    }
-
-    void VulkanSwapchain::DestroySwapchain()
-    {
-        vkDeviceWaitIdle(_device.GetLogicalDevice());
-
-        if (_swapchain != VK_NULL_HANDLE)
-        {
-            vkDestroySwapchainKHR(_device.GetLogicalDevice(), _swapchain, {});
-        }
-    }
-
-    VulkanSwapchain::SupportDetails VulkanSwapchain::QuerySupportDetails(VkSurfaceKHR surface, VkPhysicalDevice physicalDevice)
+    VulkanSwapchain::SupportDetails VulkanSwapchain::SupportDetails::Query(VkSurfaceKHR surface, VkPhysicalDevice physicalDevice)
     {
         VulkanSwapchain::SupportDetails details;
 
-        VkResult vkResult = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.Capabilities);
-        VK::Check(vkResult, "Failed to get Vulkan surface capabilities for physical device!");
+        VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.SurfaceCapabilities);
+        VulkanCheck(result, "Failed to get Vulkan surface capabilities for physical device!");
 
         uint32_t formatCount;
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, {});
         if (formatCount != 0)
         {
-            details.Formats = List<VkSurfaceFormatKHR>(formatCount);
-            vkResult = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.Formats.Data());
-            VK::Check(vkResult, "Failed to get Vulkan surface formats for physical device!");
+            details.SurfaceFormats = List<VkSurfaceFormatKHR>(formatCount);
+            result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.SurfaceFormats.Data());
+            VulkanCheck(result, "Failed to get Vulkan surface formats for physical device!");
         }
 
         uint32_t presentModeCount;
@@ -95,8 +23,8 @@ namespace Ryn
         if (presentModeCount != 0)
         {
             details.PresentModes = List<VkPresentModeKHR>(presentModeCount);
-            vkResult = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, details.PresentModes.Data());
-            VK::Check(vkResult, "Failed to get Vulkan surface present modes for physical device!");
+            result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, details.PresentModes.Data());
+            VulkanCheck(result, "Failed to get Vulkan surface present modes for physical device!");
         }
 
         return details;
@@ -104,30 +32,34 @@ namespace Ryn
 
     VkExtent2D VulkanSwapchain::SupportDetails::PickExtent2D(const Vector2<u32>& framebufferSize) const
     {
-        if (Capabilities.currentExtent.width != MathConstants<u32>::Max)
+        if (SurfaceCapabilities.currentExtent.width != MathConstants<u32>::Max)
         {
-            return Capabilities.currentExtent;
+            return SurfaceCapabilities.currentExtent;
         }
 
-        u32 width = Math::Clamp(framebufferSize.X, Capabilities.minImageExtent.width, Capabilities.maxImageExtent.width);
-        u32 height = Math::Clamp(framebufferSize.Y, Capabilities.minImageExtent.height, Capabilities.maxImageExtent.height);
+        u32 actualWidth = Math::Clamp(framebufferSize.X, SurfaceCapabilities.minImageExtent.width, SurfaceCapabilities.maxImageExtent.width);
+        u32 actualHeight = Math::Clamp(framebufferSize.Y, SurfaceCapabilities.minImageExtent.height, SurfaceCapabilities.maxImageExtent.height);
 
-        VkExtent2D actualExtent{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        VkExtent2D actualExtent{
+            static_cast<uint32_t>(actualWidth),
+            static_cast<uint32_t>(actualHeight)
+        };
+
         return actualExtent;
     }
 
     VkSurfaceFormatKHR VulkanSwapchain::SupportDetails::PickSurfaceFormat() const
     {
-        auto it = Formats.FindFirst([](const VkSurfaceFormatKHR& format) {
+        auto it = SurfaceFormats.FindFirst([](const VkSurfaceFormatKHR& format) {
             return format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
         });
 
-        if (it != Formats.End())
+        if (it != SurfaceFormats.End())
         {
             return *it;
         }
 
-        return Formats.First();
+        return SurfaceFormats.First();
     }
 
     VkPresentModeKHR VulkanSwapchain::SupportDetails::PickPresentMode() const
@@ -146,12 +78,66 @@ namespace Ryn
 
     uint32_t VulkanSwapchain::SupportDetails::PickImageCount() const
     {
-        uint32_t imageCount = Capabilities.minImageCount + 1;
-        if (Capabilities.maxImageCount > 0 && imageCount > Capabilities.maxImageCount)
+        uint32_t imageCount = SurfaceCapabilities.minImageCount + 1;
+        if (SurfaceCapabilities.maxImageCount > 0)
         {
-            imageCount = Capabilities.maxImageCount;
+            imageCount = Math::Min(imageCount, SurfaceCapabilities.maxImageCount);
         }
 
         return imageCount;
+    }
+
+    void VulkanSwapchain::CreateSwapchain(const Window& window, const VulkanInstance& instance)
+    {
+        SupportDetails supportDetails = VulkanSwapchain::SupportDetails::Query(instance.GetVkSurface(), _device->GetVkPhysicalDevice());
+
+        Vector2<u32> framebufferSize = window.GetFramebufferSize();
+        VkExtent2D extent = supportDetails.PickExtent2D(framebufferSize);
+        VkSurfaceFormatKHR surfaceFormat = supportDetails.PickSurfaceFormat();
+        VkPresentModeKHR presentMode = supportDetails.PickPresentMode();
+        uint32_t imageCount = supportDetails.PickImageCount();
+
+        VkSwapchainCreateInfoKHR swapchainCreateInfo{};
+        swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        swapchainCreateInfo.surface = instance.GetVkSurface();
+        swapchainCreateInfo.minImageCount = imageCount;
+        swapchainCreateInfo.imageFormat = surfaceFormat.format;
+        swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+        swapchainCreateInfo.imageExtent = extent;
+        swapchainCreateInfo.imageArrayLayers = 1;
+        swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        VulkanDevice::QueueFamilyIndices queueFamilyIndices = _device->GetQueueFamilyIndices();
+        uint32_t graphicsAndPresentIndices[]{queueFamilyIndices.GraphicsFamily, queueFamilyIndices.PresentFamily};
+
+        if (queueFamilyIndices.GraphicsFamily != queueFamilyIndices.PresentFamily)
+        {
+            swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            swapchainCreateInfo.queueFamilyIndexCount = 2;
+            swapchainCreateInfo.pQueueFamilyIndices = graphicsAndPresentIndices;
+        }
+        else
+        {
+            swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        }
+
+        swapchainCreateInfo.preTransform = supportDetails.SurfaceCapabilities.currentTransform;
+        swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        swapchainCreateInfo.presentMode = presentMode;
+        swapchainCreateInfo.clipped = VK_TRUE;
+        swapchainCreateInfo.oldSwapchain = _swapchain;
+
+        VkResult result = vkCreateSwapchainKHR(_device->GetVkDevice(), &swapchainCreateInfo, {}, &_swapchain);
+        VulkanCheck(result, "Failed to create Vulkan swapchain!");
+    }
+
+    void VulkanSwapchain::DestroySwapchain()
+    {
+        if (_swapchain)
+        {
+            _device->WaitIdle();
+            vkDestroySwapchainKHR(_device->GetVkDevice(), _swapchain, {});
+            _swapchain = {};
+        }
     }
 }

@@ -1,13 +1,13 @@
-#include "../Vulkan.hpp"
+#include "../VulkanInstance.hpp"
 
 #include <vulkan/vulkan_metal.h>
 
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 
-namespace Ryn::VK
+namespace Ryn
 {
-    void AddInstanceExtensions(List<const char*>& extensions, VkInstanceCreateFlags& createFlags)
+    void VulkanInstance::AddExtensions(List<const char*>& extensions, VkInstanceCreateFlags& createFlags)
     {
         extensions.Add(VK_KHR_SURFACE_EXTENSION_NAME);
         extensions.Add(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
@@ -16,16 +16,17 @@ namespace Ryn::VK
         createFlags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     }
 
-    VkResult CreateSurfaceKHR(const void* window, const VkInstance instance, VkSurfaceKHR* surface)
+    void VulkanInstance::CreateSurface(const Window& window)
     {
-        NSWindow* nsWindow = static_cast<NSWindow*>(window);
+        NSWindow* nsWindow = static_cast<NSWindow*>(window.GetNativeHandle());
         NSView* nsView = [nsWindow contentView];
         CAMetalLayer* metalLayer = static_cast<CAMetalLayer*>([nsView layer]);
 
-        VkMetalSurfaceCreateInfoEXT surfaceCreateInfo{};
-        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-        surfaceCreateInfo.pLayer = metalLayer;
+        VkMetalSurfaceCreateInfoEXT createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+        createInfo.pLayer = metalLayer;
 
-        return vkCreateMetalSurfaceEXT(instance, &surfaceCreateInfo, {}, surface);
+        VkResult result = vkCreateMetalSurfaceEXT(_instance, &createInfo, {}, &_surface);
+        VulkanCheck(result, "Failed to create Metal surface");
     }
 }

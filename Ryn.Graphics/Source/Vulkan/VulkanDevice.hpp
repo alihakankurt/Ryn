@@ -10,27 +10,31 @@ namespace Ryn
       public:
         struct QueueFamilyIndices
         {
-            static constexpr uint32_t NullIndex = 0xFFFFFFFF;
+            static constexpr uint32_t NullFamily = static_cast<uint32_t>(-1);
 
-            uint32_t GraphicsFamily = NullIndex;
-            uint32_t PresentFamily = NullIndex;
-            uint32_t TransferFamily = NullIndex;
-            uint32_t ComputeFamily = NullIndex;
+            uint32_t GraphicsFamily = NullFamily;
+            uint32_t PresentFamily = NullFamily;
+            uint32_t ComputeFamily = NullFamily;
+            uint32_t TransferFamily = NullFamily;
 
-            bool IsSuitable() const
+            bool IsFound() const
             {
-                return GraphicsFamily != NullIndex && PresentFamily != NullIndex
-                    && TransferFamily != NullIndex && ComputeFamily != NullIndex;
+                return GraphicsFamily != NullFamily && PresentFamily != NullFamily
+                    && ComputeFamily != NullFamily && TransferFamily != NullFamily;
             }
 
             Array<uint32_t, 4> AsArray() const
             {
-                return Array<uint32_t, 4>{{GraphicsFamily, PresentFamily, TransferFamily, ComputeFamily}};
+                return {{GraphicsFamily, PresentFamily, ComputeFamily, TransferFamily}};
             }
+
+            static QueueFamilyIndices Find(VkSurfaceKHR surface, VkPhysicalDevice physicalDevice);
         };
 
       private:
-        static constexpr Array<const char*, 1> RequiredDeviceExtensions{{VK_KHR_SWAPCHAIN_EXTENSION_NAME}};
+        static constexpr Array<const char*, 1> DeviceExtensionNames = {{
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        }};
 
       private:
         VkPhysicalDevice _physicalDevice;
@@ -38,24 +42,62 @@ namespace Ryn
         QueueFamilyIndices _queueFamilyIndices;
 
       public:
-        VulkanDevice(const VulkanInstance& instance);
-        ~VulkanDevice();
+        VulkanDevice(const VulkanInstance& instance) :
+            _physicalDevice{},
+            _logicalDevice{},
+            _queueFamilyIndices{} { Create(instance); }
 
-      private:
-        void PickPhysicalDevice(const VulkanInstance& instance);
-        void CreateLogicalDevice(const VulkanInstance& instance);
+        ~VulkanDevice() { Destroy(); }
 
-      public:
-        VkPhysicalDevice GetPhysicalDevice() const { return _physicalDevice; }
-        VkDevice GetLogicalDevice() const { return _logicalDevice; }
+        VulkanDevice(const VulkanDevice&) = delete;
+        VulkanDevice& operator=(const VulkanDevice&) = delete;
+
+        VulkanDevice(VulkanDevice&& other) :
+            _physicalDevice(Utility::Exchange(other._physicalDevice)),
+            _logicalDevice(Utility::Exchange(other._logicalDevice)),
+            _queueFamilyIndices(Utility::Exchange(other._queueFamilyIndices)) {}
+
+        VulkanDevice& operator=(VulkanDevice&& other)
+        {
+            if (this != &other)
+            {
+                Destroy();
+                _physicalDevice = Utility::Exchange(other._physicalDevice);
+                _logicalDevice = Utility::Exchange(other._logicalDevice);
+                _queueFamilyIndices = Utility::Exchange(other._queueFamilyIndices);
+            }
+            return *this;
+        }
+
+        VkPhysicalDevice GetVkPhysicalDevice() const { return _physicalDevice; }
+        VkDevice GetVkDevice() const { return _logicalDevice; }
         const QueueFamilyIndices& GetQueueFamilyIndices() const { return _queueFamilyIndices; }
 
+      private:
+        void Create(const VulkanInstance& instance)
+        {
+            bool hasPortabilityExtension = false;
+            PickPhysicalDevice(instance, hasPortabilityExtension);
+            CreateLogicalDevice(hasPortabilityExtension);
+        }
+
       public:
-        static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+        void Destroy()
+        {
+            DestroyLogicalDevice();
+            _physicalDevice = {};
+        }
+
+        void WaitIdle() const;
 
       private:
-        static u64 CalculatePhysicalDeviceScore(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-        static bool IsPhysicalDeviceExtensionsSupported(VkPhysicalDevice physicalDevice);
-        static bool IsPhysicalDeviceHasPortabilitySubsetExtension(VkPhysicalDevice physicalDevice);
+        void PickPhysicalDevice(const VulkanInstance& instance, bool& hasPortabilityExtension);
+
+        void CreateLogicalDevice(bool enablePortabilityExtension);
+        void DestroyLogicalDevice();
+
+      private:
+        static bool IsDeviceExtensionsSupported(VkPhysicalDevice physicalDevice, bool& hasPortabilityExtension);
+        static uint64_t CalculateDeviceScore(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
     };
 }
