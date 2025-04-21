@@ -73,6 +73,14 @@ namespace Ryn
         VkDevice GetVkDevice() const { return _logicalDevice; }
         const QueueFamilyIndices& GetQueueFamilyIndices() const { return _queueFamilyIndices; }
 
+        void Recreate(const VulkanInstance& instance)
+        {
+            Destroy();
+            Create(instance);
+        }
+
+        void WaitIdle() const;
+
       private:
         void Create(const VulkanInstance& instance)
         {
@@ -81,16 +89,12 @@ namespace Ryn
             CreateLogicalDevice(hasPortabilityExtension);
         }
 
-      public:
         void Destroy()
         {
             DestroyLogicalDevice();
             _physicalDevice = {};
         }
 
-        void WaitIdle() const;
-
-      private:
         void PickPhysicalDevice(const VulkanInstance& instance, bool& hasPortabilityExtension);
 
         void CreateLogicalDevice(bool enablePortabilityExtension);

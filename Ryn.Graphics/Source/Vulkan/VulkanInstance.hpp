@@ -49,6 +49,12 @@ namespace Ryn
 
         VkInstance GetVkInstance() const { return _instance; }
         VkSurfaceKHR GetVkSurface() const { return _surface; }
+        
+        void Recreate(const Window& window)
+        {
+            Destroy();
+            Create(window);
+        }
 
       private:
         void Create(const Window& window)
@@ -60,7 +66,6 @@ namespace Ryn
             CreateSurface(window);
         }
 
-      public:
         void Destroy()
         {
             DestroySurface();
@@ -70,7 +75,6 @@ namespace Ryn
             DestroyInstance();
         }
 
-      private:
         void CreateInstance();
         void DestroyInstance();
 

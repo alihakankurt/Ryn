@@ -40,7 +40,7 @@ namespace Ryn
             _presentMode{},
             _imageCount{} { Create(window, instance); }
 
-        ~VulkanSwapchain() { Destory(); }
+        ~VulkanSwapchain() { Destroy(); }
 
         VulkanSwapchain(const VulkanSwapchain&) = delete;
         VulkanSwapchain& operator=(const VulkanSwapchain&) = delete;
@@ -57,7 +57,7 @@ namespace Ryn
         {
             if (this != &other)
             {
-                Destory();
+                Destroy();
                 _device = Utility::Exchange(other._device);
                 _swapchain = Utility::Exchange(other._swapchain);
                 _extent = Utility::Exchange(other._extent);
@@ -74,19 +74,24 @@ namespace Ryn
         VkPresentModeKHR GetVkPresentMode() const { return _presentMode; }
         uint32_t GetImageCount() const { return _imageCount; }
 
+        void Recreate(const Window& window, const VulkanInstance& instance, const VulkanDevice& device)
+        {
+            Destroy();
+            _device = &device;
+            Create(window, instance);
+        }
+
       private:
         void Create(const Window& window, const VulkanInstance& instance)
         {
             CreateSwapchain(window, instance);
         }
 
-      public:
-        void Destory()
+        void Destroy()
         {
             DestroySwapchain();
         }
 
-      private:
         void CreateSwapchain(const Window& window, const VulkanInstance& instance);
         void DestroySwapchain();
     };
