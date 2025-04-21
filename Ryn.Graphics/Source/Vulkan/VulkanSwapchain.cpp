@@ -92,18 +92,18 @@ namespace Ryn
         SupportDetails supportDetails = VulkanSwapchain::SupportDetails::Query(instance.GetVkSurface(), _device->GetVkPhysicalDevice());
 
         Vector2<u32> framebufferSize = window.GetFramebufferSize();
-        VkExtent2D extent = supportDetails.PickExtent2D(framebufferSize);
-        VkSurfaceFormatKHR surfaceFormat = supportDetails.PickSurfaceFormat();
-        VkPresentModeKHR presentMode = supportDetails.PickPresentMode();
-        uint32_t imageCount = supportDetails.PickImageCount();
+        _extent = supportDetails.PickExtent2D(framebufferSize);
+        _surfaceFormat = supportDetails.PickSurfaceFormat();
+        _presentMode = supportDetails.PickPresentMode();
+        _imageCount = supportDetails.PickImageCount();
 
         VkSwapchainCreateInfoKHR swapchainCreateInfo{};
         swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         swapchainCreateInfo.surface = instance.GetVkSurface();
-        swapchainCreateInfo.minImageCount = imageCount;
-        swapchainCreateInfo.imageFormat = surfaceFormat.format;
-        swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-        swapchainCreateInfo.imageExtent = extent;
+        swapchainCreateInfo.minImageCount = _imageCount;
+        swapchainCreateInfo.imageFormat = _surfaceFormat.format;
+        swapchainCreateInfo.imageColorSpace = _surfaceFormat.colorSpace;
+        swapchainCreateInfo.imageExtent = _extent;
         swapchainCreateInfo.imageArrayLayers = 1;
         swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
@@ -123,7 +123,7 @@ namespace Ryn
 
         swapchainCreateInfo.preTransform = supportDetails.SurfaceCapabilities.currentTransform;
         swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        swapchainCreateInfo.presentMode = presentMode;
+        swapchainCreateInfo.presentMode = _presentMode;
         swapchainCreateInfo.clipped = VK_TRUE;
         swapchainCreateInfo.oldSwapchain = _swapchain;
 
@@ -135,7 +135,6 @@ namespace Ryn
     {
         if (_swapchain)
         {
-            _device->WaitIdle();
             vkDestroySwapchainKHR(_device->GetVkDevice(), _swapchain, {});
             _swapchain = {};
         }

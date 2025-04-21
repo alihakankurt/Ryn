@@ -28,6 +28,8 @@ target_sources(RynGraphics INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanDevice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanSwapchain.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanSwapchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanRenderPass.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanRenderPass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanRenderer.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Vulkan/VulkanRenderer.cpp
 )
