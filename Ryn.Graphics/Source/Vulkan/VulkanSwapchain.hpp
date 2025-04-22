@@ -75,6 +75,8 @@ namespace Ryn
         VkSurfaceFormatKHR GetVkSurfaceFormat() const { return _surfaceFormat; }
         VkPresentModeKHR GetVkPresentMode() const { return _presentMode; }
         uint32_t GetImageCount() const { return _imageCount; }
+        const List<VkImage>& GetSwapchainImages() const { return _swapchainImages; }
+        const List<VkImageView>& GetSwapchainImageViews() const { return _swapchainImageViews; }
 
         void Recreate(const Window& window, const VulkanInstance& instance, const VulkanDevice& device)
         {

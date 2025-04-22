@@ -11,6 +11,7 @@ namespace Ryn
       private:
         const VulkanDevice* _device;
         VkRenderPass _renderPass;
+        List<VkFramebuffer> _framebuffers;
 
       public:
         VulkanRenderPass(const VulkanDevice& device, const VulkanSwapchain& swapchain) :
@@ -37,12 +38,19 @@ namespace Ryn
         }
 
         VkRenderPass GetVkRenderPass() const { return _renderPass; }
+        const List<VkFramebuffer> GetFramebuffers() const { return _framebuffers; }
 
         void Recreate(const VulkanDevice& device, const VulkanSwapchain& swapchain)
         {
             Destroy();
             _device = &device;
             Create(swapchain);
+        }
+
+        void RecreateFramebuffers(const VulkanSwapchain& swapchain)
+        {
+            DestroyFramebuffers();
+            CreateFramebuffers(swapchain);
         }
 
       private:
@@ -58,5 +66,8 @@ namespace Ryn
 
         void CreateRenderPass(const VulkanSwapchain& swapchain);
         void DestroyRenderPass();
+
+        void CreateFramebuffers(const VulkanSwapchain& swapchain);
+        void DestroyFramebuffers();
     };
 }

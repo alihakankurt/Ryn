@@ -52,4 +52,38 @@ namespace Ryn
             _renderPass = {};
         }
     }
+
+    void VulkanRenderPass::CreateFramebuffers(const VulkanSwapchain& swapchain)
+    {
+        _framebuffers.Reserve(swapchain.GetImageCount());
+
+        VkExtent2D extent = swapchain.GetVkExtent();
+        for (VkImageView swapchainImageView : swapchain.GetSwapchainImageViews())
+        {
+            VkImageView attachments[] = {swapchainImageView};
+
+            VkFramebufferCreateInfo framebufferCreateInfo{};
+            framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferCreateInfo.renderPass = _renderPass;
+            framebufferCreateInfo.attachmentCount = 1;
+            framebufferCreateInfo.pAttachments = attachments;
+            framebufferCreateInfo.width = extent.width;
+            framebufferCreateInfo.height = extent.height;
+            framebufferCreateInfo.layers = 1;
+
+            VkFramebuffer framebuffer;
+            VkResult result = vkCreateFramebuffer(_device->GetVkDevice(), &framebufferCreateInfo, {}, &framebuffer);
+            VulkanCheck(result, "Failed to create framebuffer");
+        }
+    }
+
+    void VulkanRenderPass::DestroyFramebuffers()
+    {
+        for (VkFramebuffer framebuffer : _framebuffers)
+        {
+            vkDestroyFramebuffer(_device->GetVkDevice(), framebuffer, {});
+        }
+
+        _framebuffers.Clear();
+    }
 }
