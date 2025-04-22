@@ -2,6 +2,7 @@
 
 #include <Ryn/Core/Traits.hpp>
 #include <Ryn/Core/Utility.hpp>
+#include <Ryn/Core/Memory.hpp>
 
 namespace Ryn
 {
@@ -31,7 +32,7 @@ namespace Ryn
                 _lambda(lambda) {}
 
             TReturn Call(TArgs... args) const override { return _lambda(args...); }
-            CallableBase* Clone() const override { return new Callable<TLambda>(_lambda); }
+            CallableBase* Clone() const override { return Memory::Allocate<Callable<TLambda>>(_lambda); }
         };
 
         const CallableBase* _callable;
@@ -41,10 +42,10 @@ namespace Ryn
             _callable{} {}
 
         template <typename TLambda>
-        constexpr Function(TLambda lambda) :
-            _callable{new Callable<TLambda>{lambda}} {}
+        Function(TLambda lambda) :
+            _callable{Memory::Allocate<Callable<TLambda>>(lambda)} {}
 
-        constexpr Function(const Function& other) :
+        Function(const Function& other) :
             _callable{}
         {
             if (other._callable)
@@ -56,17 +57,17 @@ namespace Ryn
         constexpr Function(Function&& other) :
             _callable{Utility::Exchange(other._callable)} {}
 
-        constexpr ~Function()
+        ~Function()
         {
-            delete _callable;
+            Memory::Free<CallableBase>(_callable);
             _callable = {};
         }
 
-        constexpr Function& operator=(const Function& other)
+        Function& operator=(const Function& other)
         {
             if (this != &other)
             {
-                delete _callable;
+                Memory::Free<CallableBase>(_callable);
                 _callable = {};
                 if (other._callable)
                 {
@@ -76,11 +77,11 @@ namespace Ryn
             return *this;
         }
 
-        constexpr Function& operator=(Function&& other)
+        Function& operator=(Function&& other)
         {
             if (this != &other)
             {
-                delete _callable;
+                Memory::Free<CallableBase>(_callable);
                 _callable = Utility::Exchange(other._callable);
             }
             return *this;
@@ -93,9 +94,9 @@ namespace Ryn
     template <typename TLambda>
     Function(TLambda) -> Function<Traits::Lambda<TLambda>>;
 
-    template <typename... Ts>
-    using Predicate = Function<bool(const Ts&...)>;
+    template <typename... TArgs>
+    using Predicate = Function<bool(const TArgs&...)>;
 
-    template <typename... Ts>
-    using Action = Function<void(const Ts&...)>;
+    template <typename... TArgs>
+    using Action = Function<void(const TArgs&...)>;
 }

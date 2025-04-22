@@ -2,53 +2,31 @@
 
 namespace Ryn
 {
-    String::~String()
+    void String::Create(const char* data, usz length)
     {
-        delete[] _data;
-        _data = {};
-        _length = {};
-    }
-
-    String& String::operator=(const String& other)
-    {
-        if (this != &other)
-        {
-            delete[] _data;
-            Construct(other._data, other._length);
-        }
-        return *this;
-    }
-
-    String& String::operator=(String&& other)
-    {
-        if (this != &other)
-        {
-            delete[] _data;
-            _data = Utility::Exchange(other._data);
-            _length = Utility::Exchange(other._length);
-        }
-        return *this;
-    }
-
-    void String::Construct(const char* data, usz length)
-    {
-        _data = new char[length + 1];
-        Memory::Copy(&_data[0], &data[0], length);
+        _data = Memory::Allocate<char>(length + 1);
+        Memory::Copy(_data, data, length);
         _data[length] = '\0';
-
         _length = length;
+    }
+
+    void String::Destroy()
+    {
+        Memory::Free<char>(_data, _length + 1);
+        _data = {};
+        _length = 0;
     }
 
     String& String::Append(const char* data, usz length)
     {
         usz newLength = _length + length;
-        char* newData = new char[newLength + 1];
+        char* newData = Memory::Allocate<char>(newLength + 1);
 
         Memory::Copy(&newData[0], &_data[0], _length);
         Memory::Copy(&newData[_length], &data[0], length);
         newData[newLength] = '\0';
 
-        delete[] _data;
+        Memory::Free<char>(_data, _length + 1);
         _data = newData;
         _length = newLength;
         return *this;
@@ -62,14 +40,14 @@ namespace Ryn
         }
 
         usz newLength = _length + length;
-        char* newData = new char[newLength + 1];
+        char* newData = Memory::Allocate<char>(newLength + 1);
 
         Memory::Copy(&newData[0], &_data[0], to);
         Memory::Copy(&newData[to], &data[0], length);
         Memory::Copy(&newData[to + length], &_data[to], _length - to);
         newData[newLength] = '\0';
 
-        delete[] _data;
+        Memory::Free<char>(_data, _length + 1);
         _data = newData;
         _length = newLength;
         return *this;
@@ -81,13 +59,13 @@ namespace Ryn
             return *this;
 
         usz newLength = _length - (to - from + 1);
-        char* newData = new char[newLength + 1];
+        char* newData = Memory::Allocate<char>(newLength + 1);
 
         Memory::Copy(&newData[0], &_data[0], from);
         Memory::Copy(&newData[from], &_data[to + 1], _length - to - 1);
         newData[newLength] = '\0';
 
-        delete[] _data;
+        Memory::Free<char>(_data, _length + 1);
         _data = newData;
         _length = newLength;
         return *this;

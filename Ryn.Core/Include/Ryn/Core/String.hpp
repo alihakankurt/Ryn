@@ -24,26 +24,54 @@ namespace Ryn
             _length{length} {}
 
         template <usz N>
-        constexpr String(const char (&str)[N])
+        String(const char (&str)[N])
         {
-            Construct(&str[0], N - 1);
+            Create(&str[0], N - 1);
         }
 
-        explicit String(Span<const char> span) { Construct(span.Data(), span.Length()); }
+        explicit String(Span<const char> span)
+        {
+            Create(span.Data(), span.Length());
+        }
 
-        String(const String& other) { Construct(other._data, other._length); }
+        String(const String& other)
+        {
+            Create(other._data, other._length);
+        }
 
         String(String&& other) :
             _data{Utility::Exchange(other._data)},
             _length{Utility::Exchange(other._length)} {}
 
-        ~String();
+        ~String()
+        {
+            Destroy();
+        }
 
-        String& operator=(const String& other);
-        String& operator=(String&& other);
+        String& operator=(const String& other)
+        {
+            if (this != &other)
+            {
+                Destroy();
+                Create(other._data, other._length);
+            }
+            return *this;
+        }
+
+        String& operator=(String&& other)
+        {
+            if (this != &other)
+            {
+                Destroy();
+                _data = Utility::Exchange(other._data);
+                _length = Utility::Exchange(other._length);
+            }
+            return *this;
+        }
 
       private:
-        void Construct(const char* data, usz length);
+        void Create(const char* data, usz length);
+        void Destroy();
 
       public:
         constexpr usz Length() const { return _length; }

@@ -10,9 +10,12 @@ namespace Ryn
         WindowSettings settings;
         Configure(settings);
 
-        Input = new InputContext();
+        Input = Memory::Allocate<InputContext>();
+        Log::Info("Input: ", reinterpret_cast<usz>(Input));
         Window = Window::Create(settings);
+        Log::Info("Window: ", reinterpret_cast<usz>(Window));
         Renderer = Renderer::Create(*Window);
+        Log::Info("Renderer: ", reinterpret_cast<usz>(Renderer));
 
         Window->SetEventCallback([this](const Event& event) { OnEvent(event); });
 
@@ -26,9 +29,9 @@ namespace Ryn
 
         Finalize();
 
-        delete Renderer;
-        delete Window;
-        delete Input;
+        Memory::Free<Ryn::Renderer>(Renderer);
+        Memory::Free<Ryn::Window>(Window);
+        Memory::Free<InputContext>(Input);
     }
 
     void Game::OnEvent(const Event& event)

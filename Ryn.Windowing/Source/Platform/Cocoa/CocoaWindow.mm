@@ -97,9 +97,9 @@ namespace Ryn
     String CocoaWindow::GetTitle() const
     {
         const char* title = [[_window title] UTF8String];
-        usz length = Ryn::String::Length(title);
-        char* buffer = new char[length + 1];
-        Ryn::Memory::Copy(buffer, title, length);
+        usz length = String::Length(title);
+        char* buffer = Memory::Allocate<char>(length + 1);
+        Memory::Copy(buffer, title, length);
         buffer[length] = '\0';
         return String{buffer, length};
     }
@@ -111,7 +111,7 @@ namespace Ryn
 
     Window* Window::Create(const WindowSettings& settings)
     {
-        return new CocoaWindow(settings);
+        return Memory::Allocate<CocoaWindow>(settings);
     }
 
     void Window::PollEvents()

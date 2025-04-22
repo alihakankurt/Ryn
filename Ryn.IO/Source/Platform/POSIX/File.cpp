@@ -22,7 +22,7 @@ namespace Ryn
         }
 
         usz fileSize = static_cast<usz>(fileStats.st_size);
-        char* buffer = new char[fileSize];
+        char* buffer = Memory::Allocate<char>(fileSize + 1);
 
         usz bytesReadTotal = 0;
         while (bytesReadTotal < fileSize)
@@ -30,7 +30,7 @@ namespace Ryn
             ssize_t bytesRead = read(file, buffer + bytesReadTotal, fileSize - bytesReadTotal);
             if (bytesRead == -1)
             {
-                delete[] buffer;
+                Memory::Free<char>(buffer, fileSize + 1);
                 return String{};
             }
 
@@ -38,6 +38,8 @@ namespace Ryn
         }
 
         close(file);
+        buffer[fileSize] = '\0';
+
         return String{buffer, fileSize};
     }
 

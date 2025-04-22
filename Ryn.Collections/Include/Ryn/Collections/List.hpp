@@ -37,10 +37,10 @@ namespace Ryn
 
         template <usz N>
         List(const TValue (&array)[N]) :
+            _data{Memory::Allocate<TValue>(N)},
             _count{N},
             _capacity{N}
         {
-            _data = new TValue[_capacity];
             for (usz index = 0; index < N; index += 1)
             {
                 _data[index] = array[index];
@@ -49,10 +49,10 @@ namespace Ryn
 
         template <usz N>
         List(TValue (&&array)[N]) :
+            _data{Memory::Allocate<TValue>(N)},
             _count{N},
             _capacity{N}
         {
-            _data = new TValue[_capacity];
             for (usz index = 0; index < N; index += 1)
             {
                 _data[index] = Utility::Move(array[index]);
@@ -60,18 +60,19 @@ namespace Ryn
         }
 
         List(usz capacity) :
+            _data{Memory::Allocate<TValue>(capacity)},
             _count{capacity},
-            _capacity{capacity}
-        {
-            _data = new TValue[_capacity];
-        }
+            _capacity{capacity} {}
 
         List(const List& other) :
+            _data{Memory::Allocate<TValue>(other._capacity)},
             _count{other._count},
             _capacity{other._capacity}
         {
-            _data = new TValue[_capacity];
-            Memory::Copy(&_data[0], &other._data[0], _count);
+            for (usz index = 0; index < _count; index += 1)
+            {
+                _data[index] = other._data[index];
+            }
         }
 
         constexpr List(List&& other) :
@@ -81,22 +82,24 @@ namespace Ryn
 
         ~List()
         {
-            delete[] _data;
+            Memory::Free<TValue>(_data, _capacity);
             _data = {};
-            _count = {};
-            _capacity = {};
+            _count = 0;
+            _capacity = 0;
         }
 
         List& operator=(const List& other)
         {
             if (this != &other)
             {
-                delete[] _data;
-                _data = new TValue[_capacity];
-                Memory::Copy(&_data[0], &other._data[0], _count);
-
+                Memory::Free<TValue>(_data, _capacity);
+                _data = Memory::Allocate<TValue>(other._capacity);
                 _count = other._count;
                 _capacity = other._capacity;
+                for (usz index = 0; index < _count; index += 1)
+                {
+                    _data[index] = other._data[index];
+                }
             }
             return *this;
         }
@@ -105,7 +108,7 @@ namespace Ryn
         {
             if (this != &other)
             {
-                delete[] _data;
+                Memory::Free<TValue>(_data, _capacity);
                 _data = Utility::Exchange(other._data);
                 _count = Utility::Exchange(other._count);
                 _capacity = Utility::Exchange(other._capacity);
@@ -124,11 +127,16 @@ namespace Ryn
             if (_capacity >= capacity)
                 return;
 
-            _capacity = capacity;
-            TValue* newData = new TValue[_capacity];
-            Memory::Copy(&newData[0], &_data[0], _count);
-            delete[] _data;
+            TValue* newData = Memory::Allocate<TValue>(capacity);
+            for (usz index = 0; index < _count; index += 1)
+            {
+                newData[index] = Utility::Move(_data[index]);
+            }
+
+            Memory::Free<TValue>(_data, _capacity);
+
             _data = newData;
+            _capacity = capacity;
         }
 
         void Add(const TValue& value)
@@ -162,8 +170,10 @@ namespace Ryn
         {
             if (index >= _count)
                 return;
-
+            
+            _data[index].~TValue();
             _count -= 1;
+
             for (usz removeIndex = index; removeIndex < _count; removeIndex += 1)
             {
                 _data[removeIndex] = _data[removeIndex + 1];
@@ -172,7 +182,7 @@ namespace Ryn
 
         void Clear()
         {
-            _count = {};
+            _count = 0;
         }
 
       public:

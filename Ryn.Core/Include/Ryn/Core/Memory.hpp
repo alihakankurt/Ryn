@@ -1,15 +1,23 @@
 #pragma once
 
 #include <Ryn/Core/Types.hpp>
+#include <Ryn/Core/Utility.hpp>
+
+void* operator new(Ryn::usz size, void* data);
+void* operator new[](Ryn::usz size, void* data);
 
 namespace Ryn
 {
-    namespace Memory
+    class Memory
     {
+      public:
+        Memory() = delete;
+        ~Memory() = delete;
+
         template <typename TValue>
         static constexpr isz Compare(const TValue* source1, const TValue* source2, usz count)
         {
-            if (count == 0 || source1 == source2)
+            if (!source1 || !source2 || count == 0 || source1 == source2)
                 return 0;
 
             usz size = count * sizeof(TValue);
@@ -18,7 +26,8 @@ namespace Ryn
 
             while (size >= sizeof(usz))
             {
-                if (isz difference = *reinterpret_cast<const isz*>(src1) - *reinterpret_cast<const isz*>(src2); difference != 0)
+                isz difference = *reinterpret_cast<const isz*>(src1) - *reinterpret_cast<const isz*>(src2);
+                if (difference != 0)
                 {
                     return difference;
                 }
@@ -30,7 +39,8 @@ namespace Ryn
 
             while (size >= sizeof(char))
             {
-                if (isz difference = *src1 - *src2; difference != 0)
+                isz difference = *src1 - *src2;
+                if (difference != 0)
                 {
                     return difference;
                 }
@@ -46,7 +56,7 @@ namespace Ryn
         template <typename TValue>
         static constexpr void Copy(TValue* destination, const TValue* source, usz count)
         {
-            if (count == 0 || destination == source)
+            if (!destination || !source || count == 0 || destination == source)
                 return;
 
             usz size = count * sizeof(TValue);
@@ -97,7 +107,7 @@ namespace Ryn
         template <typename TValue>
         static constexpr void Reverse(TValue* source, usz count)
         {
-            if (count == 0)
+            if (!source || count == 0)
                 return;
 
             while (count > 1)
@@ -109,5 +119,88 @@ namespace Ryn
                 count -= 2;
             }
         }
-    }
+
+        template <typename TValue>
+        static constexpr void Fill(TValue* destination, const TValue& value, usz count)
+        {
+            if (!destination || count == 0)
+                return;
+
+            usz size = count * sizeof(TValue);
+            char* dst = reinterpret_cast<char*>(destination);
+
+            while (size >= sizeof(usz))
+            {
+                *reinterpret_cast<usz*>(dst) = *reinterpret_cast<const usz*>(&value);
+                dst += sizeof(usz);
+                size -= sizeof(usz);
+            }
+
+            while (size >= sizeof(char))
+            {
+                *dst = *reinterpret_cast<const char*>(&value);
+                dst += sizeof(char);
+                size -= sizeof(char);
+            }
+        }
+
+        template <typename TValue, typename... TArgs>
+        static constexpr TValue* Construct(TValue* data, TArgs&&... args)
+        {
+            if (data)
+            {
+                new (data) TValue(Utility::Forward<TArgs>(args)...);
+            }
+
+            return data;
+        }
+
+        template <typename TValue, typename... TArgs>
+        static constexpr TValue* Allocate(TArgs&&... args)
+        {
+            TValue* data = static_cast<TValue*>(Memory::RawAllocate(sizeof(TValue)));
+            Memory::Construct(data, Utility::Forward<TArgs>(args)...);
+            return data;
+        }
+
+        template <typename TValue>
+        static constexpr void Free(const TValue* data)
+        {
+            if (!data)
+                return;
+
+            data->~TValue();
+            Memory::RawFree(data, sizeof(TValue));
+        }
+
+        template <typename TValue>
+        static constexpr TValue* Allocate(usz count)
+        {
+            if (count == 0)
+                return {};
+
+            usz size = count * sizeof(TValue);
+            TValue* data = static_cast<TValue*>(Memory::RawAllocate(size));
+            return data;
+        }
+
+        template <typename TValue>
+        static constexpr void Free(const TValue* data, usz count)
+        {
+            if (!data || count == 0)
+                return;
+
+            for (usz index = 0; index < count; index += 1)
+            {
+                data[index].~TValue();
+            }
+
+            usz size = count * sizeof(TValue);
+            Memory::RawFree(data, size);
+        }
+
+      private:
+        static void* RawAllocate(usz size);
+        static void RawFree(const void* data, usz size);
+    };
 }

@@ -4,6 +4,6 @@ namespace Ryn
 {
     Renderer* Renderer::Create(const Window& window)
     {
-        return new VulkanRenderer(window);
+        return Memory::Allocate<VulkanRenderer>(window);
     }
 }
