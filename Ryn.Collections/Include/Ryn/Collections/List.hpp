@@ -13,33 +13,38 @@ namespace Ryn
     template <typename TValue>
     class List : public Iterable<TValue, LinearIterator<TValue>, LinearIterator<const TValue>>
     {
-        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
-        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified!");
+      public:
+        using ValueType = Traits::RemoveVolatile<TValue>;
+        using IteratorType = LinearIterator<TValue>;
+        using ConstIteratorType = LinearIterator<const TValue>;
+
+        static_assert(!Traits::Reference<ValueType>, "Value type cannot be a reference!");
+        static_assert(!Traits::Const<ValueType>, "Value type cannot be const-qualified!");
 
       private:
         static constexpr usz InitialCapacity = 4;
 
       private:
-        TValue* _data;
         usz _count;
         usz _capacity;
+        ValueType* _data;
 
       public:
         constexpr List() :
-            _data{},
             _count{},
-            _capacity{} {}
+            _capacity{},
+            _data{} {}
 
-        constexpr List(TValue* data, usz count) :
-            _data{data},
+        constexpr List(usz count, ValueType* data) :
             _count{count},
-            _capacity{count} {}
+            _capacity{count},
+            _data{data} {}
 
         template <usz N>
-        List(const TValue (&array)[N]) :
-            _data{Memory::Allocate<TValue>(N)},
+        List(const ValueType (&array)[N]) :
             _count{N},
-            _capacity{N}
+            _capacity{N},
+            _data{Memory::Allocate<ValueType>(N)}
         {
             for (usz index = 0; index < N; index += 1)
             {
@@ -48,10 +53,10 @@ namespace Ryn
         }
 
         template <usz N>
-        List(TValue (&&array)[N]) :
-            _data{Memory::Allocate<TValue>(N)},
+        List(ValueType (&&array)[N]) :
             _count{N},
-            _capacity{N}
+            _capacity{N},
+            _data{Memory::Allocate<ValueType>(N)}
         {
             for (usz index = 0; index < N; index += 1)
             {
@@ -60,14 +65,14 @@ namespace Ryn
         }
 
         List(usz capacity) :
-            _data{Memory::Allocate<TValue>(capacity)},
             _count{capacity},
-            _capacity{capacity} {}
+            _capacity{capacity},
+            _data{Memory::Allocate<ValueType>(capacity)} {}
 
         List(const List& other) :
-            _data{Memory::Allocate<TValue>(other._capacity)},
             _count{other._count},
-            _capacity{other._capacity}
+            _capacity{other._capacity},
+            _data{Memory::Allocate<ValueType>(other._capacity)}
         {
             for (usz index = 0; index < _count; index += 1)
             {
@@ -76,26 +81,27 @@ namespace Ryn
         }
 
         constexpr List(List&& other) :
-            _data{Utility::Exchange(other._data)},
             _count{Utility::Exchange(other._count)},
-            _capacity{Utility::Exchange(other._capacity)} {}
+            _capacity{Utility::Exchange(other._capacity)},
+            _data{Utility::Exchange(other._data)} {}
 
         ~List()
         {
-            Memory::Free<TValue>(_data, _capacity);
-            _data = {};
+            Memory::Free<ValueType>(_data, _capacity);
             _count = 0;
             _capacity = 0;
+            _data = {};
         }
 
         List& operator=(const List& other)
         {
             if (this != &other)
             {
-                Memory::Free<TValue>(_data, _capacity);
-                _data = Memory::Allocate<TValue>(other._capacity);
+                Memory::Free<ValueType>(_data, _capacity);
+
                 _count = other._count;
                 _capacity = other._capacity;
+                _data = Memory::Allocate<ValueType>(other._capacity);
                 for (usz index = 0; index < _count; index += 1)
                 {
                     _data[index] = other._data[index];
@@ -108,52 +114,53 @@ namespace Ryn
         {
             if (this != &other)
             {
-                Memory::Free<TValue>(_data, _capacity);
-                _data = Utility::Exchange(other._data);
+                Memory::Free<ValueType>(_data, _capacity);
+
                 _count = Utility::Exchange(other._count);
                 _capacity = Utility::Exchange(other._capacity);
+                _data = Utility::Exchange(other._data);
             }
             return *this;
         }
 
         constexpr usz Count() const { return _count; }
 
-        constexpr Span<TValue> ToSpan() const { return Span<TValue>{_data, _count}; }
-        constexpr Span<TValue> ToSpan(usz start) const { return ToSpan().Slice(start); }
-        constexpr Span<TValue> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
+        constexpr Span<ValueType> ToSpan() const { return Span<ValueType>{_data, _count}; }
+        constexpr Span<ValueType> ToSpan(usz start) const { return ToSpan().Slice(start); }
+        constexpr Span<ValueType> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
 
         void Reserve(usz capacity)
         {
             if (_capacity >= capacity)
                 return;
 
-            TValue* newData = Memory::Allocate<TValue>(capacity);
+            ValueType* newData = Memory::Allocate<ValueType>(capacity);
             for (usz index = 0; index < _count; index += 1)
             {
                 newData[index] = Utility::Move(_data[index]);
             }
 
-            Memory::Free<TValue>(_data, _capacity);
+            Memory::Free<ValueType>(_data, _capacity);
 
-            _data = newData;
             _capacity = capacity;
+            _data = newData;
         }
 
-        void Add(const TValue& value)
+        void Add(const ValueType& value)
         {
             Reserve(_count + 1);
             _data[_count] = value;
             _count += 1;
         }
 
-        void Add(TValue&& value)
+        void Add(ValueType&& value)
         {
             Reserve(_count + 1);
             _data[_count] = Utility::Move(value);
             _count += 1;
         }
 
-        bool Remove(const TValue& value)
+        bool Remove(const ValueType& value)
         {
             for (usz index = 0; index < _count; index += 1)
             {
@@ -170,8 +177,8 @@ namespace Ryn
         {
             if (index >= _count)
                 return;
-            
-            _data[index].~TValue();
+
+            _data[index].~ValueType();
             _count -= 1;
 
             for (usz removeIndex = index; removeIndex < _count; removeIndex += 1)
@@ -186,9 +193,9 @@ namespace Ryn
         }
 
       public:
-        constexpr LinearIterator<TValue> begin() override { return LinearIterator<TValue>{_data}; }
-        constexpr LinearIterator<const TValue> begin() const override { return LinearIterator<const TValue>{_data}; }
-        constexpr LinearIterator<TValue> end() override { return LinearIterator<TValue>{_data + _count}; }
-        constexpr LinearIterator<const TValue> end() const override { return LinearIterator<const TValue>{_data + _count}; }
+        constexpr IteratorType begin() override { return IteratorType{_data}; }
+        constexpr ConstIteratorType begin() const override { return ConstIteratorType{_data}; }
+        constexpr IteratorType end() override { return IteratorType{_data + _count}; }
+        constexpr ConstIteratorType end() const override { return ConstIteratorType{_data + _count}; }
     };
 }

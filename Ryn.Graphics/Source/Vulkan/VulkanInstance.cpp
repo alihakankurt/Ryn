@@ -27,7 +27,7 @@ namespace Ryn
         }
 
         extensionNames.Add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        createInfo.enabledLayerCount = ValidationLayerNames.Count();
+        createInfo.enabledLayerCount = ValidationLayerNames.Count;
         createInfo.ppEnabledLayerNames = ValidationLayerNames.Data();
 
         VkDebugUtilsMessengerCreateInfoEXT debugMessengerCreateInfo{};

@@ -2,54 +2,56 @@
 
 namespace Ryn
 {
-    void String::Create(const char* data, usz length)
+    void String::Create(usz length, const char* data)
     {
-        _data = Memory::Allocate<char>(length + 1);
-        Memory::Copy(_data, data, length);
-        _data[length] = '\0';
         _length = length;
+        _data = Memory::Allocate<char>(_length + 1);
+        Memory::Copy(_data, data, _length);
+        _data[_length] = '\0';
     }
 
     void String::Destroy()
     {
         Memory::Free<char>(_data, _length + 1);
-        _data = {};
         _length = 0;
+        _data = {};
     }
 
-    String& String::Append(const char* data, usz length)
+    String& String::Append(usz length, const char* data)
     {
         usz newLength = _length + length;
         char* newData = Memory::Allocate<char>(newLength + 1);
 
-        Memory::Copy(&newData[0], &_data[0], _length);
-        Memory::Copy(&newData[_length], &data[0], length);
+        Memory::Copy(newData, _data, _length);
+        Memory::Copy(newData + _length, data, length);
         newData[newLength] = '\0';
 
         Memory::Free<char>(_data, _length + 1);
-        _data = newData;
+
         _length = newLength;
+        _data = newData;
         return *this;
     }
 
-    String& String::Insert(usz to, const char* data, usz length)
+    String& String::Insert(usz to, usz length, const char* data)
     {
         if (to >= _length)
         {
-            return Append(data, length);
+            return Append(length, data);
         }
 
         usz newLength = _length + length;
         char* newData = Memory::Allocate<char>(newLength + 1);
 
-        Memory::Copy(&newData[0], &_data[0], to);
-        Memory::Copy(&newData[to], &data[0], length);
-        Memory::Copy(&newData[to + length], &_data[to], _length - to);
+        Memory::Copy(newData, _data, to);
+        Memory::Copy(newData + to, data, length);
+        Memory::Copy(newData + to + length, _data + to, _length - to);
         newData[newLength] = '\0';
 
         Memory::Free<char>(_data, _length + 1);
-        _data = newData;
+
         _length = newLength;
+        _data = newData;
         return *this;
     }
 
@@ -61,13 +63,14 @@ namespace Ryn
         usz newLength = _length - (to - from + 1);
         char* newData = Memory::Allocate<char>(newLength + 1);
 
-        Memory::Copy(&newData[0], &_data[0], from);
-        Memory::Copy(&newData[from], &_data[to + 1], _length - to - 1);
+        Memory::Copy(newData, _data, from);
+        Memory::Copy(newData + from, _data + to + 1, _length - to - 1);
         newData[newLength] = '\0';
 
         Memory::Free<char>(_data, _length + 1);
-        _data = newData;
+
         _length = newLength;
+        _data = newData;
         return *this;
     }
 

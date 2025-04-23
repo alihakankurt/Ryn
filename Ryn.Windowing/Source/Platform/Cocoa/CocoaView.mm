@@ -73,7 +73,7 @@
 {
     Ryn::Key key = MapCocoaKey([event keyCode]);
     const char* chars = [[event characters] UTF8String];
-    Ryn::Span<const char> text{chars, Ryn::String::Length(chars)};
+    Ryn::Span<const char> text{Ryn::String::Length(chars), chars};
 
     Ryn::KeyPressEvent e{key, text};
     cocoaWindow->OnEvent(e);
@@ -83,7 +83,7 @@
 {
     Ryn::Key key = MapCocoaKey([event keyCode]);
     const char* chars = [[event characters] UTF8String];
-    Ryn::Span<const char> text{chars, Ryn::String::Length(chars)};
+    Ryn::Span<const char> text{Ryn::String::Length(chars), chars};
 
     Ryn::KeyReleaseEvent e{key, text};
     cocoaWindow->OnEvent(e);

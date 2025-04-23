@@ -112,7 +112,7 @@ namespace Ryn
         vkGetPhysicalDeviceFeatures(_physicalDevice, &physicalDeviceFeatures);
 
         List<const char*> extensionNames;
-        extensionNames.Reserve(DeviceExtensionNames.Count() + 1);
+        extensionNames.Reserve(DeviceExtensionNames.Count + 1);
         for (const char* extensionName : DeviceExtensionNames)
         {
             extensionNames.Add(extensionName);

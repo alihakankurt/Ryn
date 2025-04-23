@@ -19,19 +19,19 @@ namespace Ryn
         template <>
         struct Writer<char>
         {
-            static void Write(char value) { Log::Write(Span<const char>{&value, 1}); }
+            static void Write(char value) { Log::Write(Span<const char>{1, &value}); }
         };
 
         template <u32 N>
         struct Writer<char[N]>
         {
-            static void Write(const char (&value)[N]) { Log::Write(Span<const char>{value, N - 1}); }
+            static void Write(const char (&value)[N]) { Log::Write(Span<const char>{N - 1, value}); }
         };
 
         template <>
         struct Writer<const char*>
         {
-            static void Write(const char* value) { Log::Write(Span<const char>{value, String::Length(value)}); }
+            static void Write(const char* value) { Log::Write(Span<const char>{String::Length(value), value}); }
         };
 
         template <>

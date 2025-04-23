@@ -10,38 +10,42 @@ namespace Ryn
 {
     class String : public Iterable<char, LinearIterator<char>, LinearIterator<const char>>
     {
+      public:
+        using IteratorType = LinearIterator<char>;
+        using ConstIteratorType = LinearIterator<const char>;
+
       private:
-        char* _data;
         usz _length;
+        char* _data;
 
       public:
         constexpr String() :
-            _data{},
-            _length{} {}
+            _length{},
+            _data{} {}
 
-        constexpr String(char* data, usz length) :
-            _data{data},
-            _length{length} {}
+        constexpr String(usz length, char* data) :
+            _length{length},
+            _data{data} {}
 
         template <usz N>
         String(const char (&str)[N])
         {
-            Create(&str[0], N - 1);
+            Create(N - 1, str);
         }
 
         explicit String(Span<const char> span)
         {
-            Create(span.Data(), span.Length());
+            Create(span.Length(), span.Data());
         }
 
         String(const String& other)
         {
-            Create(other._data, other._length);
+            Create(other._length, other._data);
         }
 
         String(String&& other) :
-            _data{Utility::Exchange(other._data)},
-            _length{Utility::Exchange(other._length)} {}
+            _length{Utility::Exchange(other._length)},
+            _data{Utility::Exchange(other._data)} {}
 
         ~String()
         {
@@ -53,7 +57,7 @@ namespace Ryn
             if (this != &other)
             {
                 Destroy();
-                Create(other._data, other._length);
+                Create(other._length, other._data);
             }
             return *this;
         }
@@ -63,29 +67,29 @@ namespace Ryn
             if (this != &other)
             {
                 Destroy();
-                _data = Utility::Exchange(other._data);
                 _length = Utility::Exchange(other._length);
+                _data = Utility::Exchange(other._data);
             }
             return *this;
         }
 
       private:
-        void Create(const char* data, usz length);
+        void Create(usz length, const char* data);
         void Destroy();
 
       public:
         constexpr usz Length() const { return _length; }
 
-        String& Append(const char c) { return Append(&c, 1); }
-        String& Append(const char* str) { return Append(&str[0], String::Length(str)); }
-        String& Append(const String& other) { return Append(other.Data(), other.Length()); }
-        String& Append(Span<const char> span) { return Append(span.Data(), span.Length()); }
+        String& Append(const char c) { return Append(1, &c); }
+        String& Append(const char* str) { return Append(String::Length(str), str); }
+        String& Append(const String& other) { return Append(other.Length(), other.Data()); }
+        String& Append(Span<const char> span) { return Append(span.Length(), span.Data()); }
 
         String& Append(bool value)
         {
             char buffer[String::MaxBoolLength];
             Span<char> span = String::Format(buffer, value);
-            return Append(span.Data(), span.Length());
+            return Append(span.Length(), span.Data());
         }
 
         template <Traits::Integer TValue>
@@ -97,7 +101,7 @@ namespace Ryn
                 span = String::Format(buffer, static_cast<i64>(value));
             else
                 span = String::Format(buffer, static_cast<u64>(value));
-            return Append(span.Data(), span.Length());
+            return Append(span.Length(), span.Data());
         }
 
         template <Traits::FloatingPoint TValue>
@@ -105,11 +109,11 @@ namespace Ryn
         {
             char buffer[String::MaxFloatLength];
             Span<char> span = String::Format(buffer, static_cast<f64>(value));
-            return Append(span.Data(), span.Length());
+            return Append(span.Length(), span.Data());
         }
 
       private:
-        String& Append(const char* data, usz length);
+        String& Append(usz length, const char* data);
 
       public:
         String& operator+=(const char c) { return Append(c); }
@@ -138,16 +142,16 @@ namespace Ryn
             return String{*this}.Append(value);
         }
 
-        String& Insert(usz to, const char c) { return Insert(to, &c, 1); }
-        String& Insert(usz to, const char* str) { return Insert(to, &str[0], String::Length(str)); }
-        String& Insert(usz to, const String& other) { return Insert(to, other.Data(), other.Length()); }
-        String& Insert(usz to, Span<const char> span) { return Insert(to, span.Data(), span.Length()); }
+        String& Insert(usz to, const char c) { return Insert(to, 1, &c); }
+        String& Insert(usz to, const char* str) { return Insert(to, String::Length(str), str); }
+        String& Insert(usz to, const String& other) { return Insert(to, other.Length(), other.Data()); }
+        String& Insert(usz to, Span<const char> span) { return Insert(to, span.Length(), span.Data()); }
 
         String& Insert(usz to, bool value)
         {
             char buffer[String::MaxBoolLength];
             Span<char> span = String::Format(buffer, value);
-            return Insert(to, span.Data(), span.Length());
+            return Insert(to, span.Length(), span.Data());
         }
 
         template <Traits::Integer TValue>
@@ -159,7 +163,7 @@ namespace Ryn
                 span = String::Format(buffer, static_cast<i64>(value));
             else
                 span = String::Format(buffer, static_cast<u64>(value));
-            return Insert(to, span.Data(), span.Length());
+            return Insert(to, span.Length(), span.Data());
         }
 
         template <Traits::FloatingPoint TValue>
@@ -167,11 +171,11 @@ namespace Ryn
         {
             char buffer[String::MaxFloatLength];
             Span<char> span = String::Format(buffer, static_cast<f64>(value));
-            return Insert(to, span.Data(), span.Length());
+            return Insert(to, span.Length(), span.Data());
         }
 
       private:
-        String& Insert(usz to, const char* data, usz length);
+        String& Insert(usz to, usz length, const char* data);
 
       public:
         String& Remove(usz at) { return Remove(at, at); }
@@ -181,7 +185,7 @@ namespace Ryn
         constexpr bool operator!=(const String& other) const { return !(*this == other); }
 
       public:
-        constexpr Span<char> ToSpan() const { return Span<char>{_data, _length}; }
+        constexpr Span<char> ToSpan() const { return Span<char>{_length, _data}; }
         constexpr Span<char> ToSpan(usz start) const { return ToSpan().Slice(start); }
         constexpr Span<char> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
 
@@ -189,10 +193,10 @@ namespace Ryn
         constexpr operator Span<const char>() const { return ToSpan(); }
 
       public:
-        constexpr LinearIterator<char> begin() override { return LinearIterator<char>{_data}; }
-        constexpr LinearIterator<const char> begin() const override { return LinearIterator<const char>{_data}; }
-        constexpr LinearIterator<char> end() override { return LinearIterator<char>{_data + _length}; }
-        constexpr LinearIterator<const char> end() const override { return LinearIterator<const char>{_data + _length}; }
+        constexpr IteratorType begin() override { return IteratorType{_data}; }
+        constexpr ConstIteratorType begin() const override { return ConstIteratorType{_data}; }
+        constexpr IteratorType end() override { return IteratorType{_data + _length}; }
+        constexpr ConstIteratorType end() const override { return ConstIteratorType{_data + _length}; }
 
       public:
         static usz Length(const char* str);

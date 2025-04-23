@@ -101,7 +101,7 @@ namespace Ryn
         char* buffer = Memory::Allocate<char>(length + 1);
         Memory::Copy(buffer, title, length);
         buffer[length] = '\0';
-        return String{buffer, length};
+        return String{length, buffer};
     }
 
     void CocoaWindow::SetTitle(const String& title)

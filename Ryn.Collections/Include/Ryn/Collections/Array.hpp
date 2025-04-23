@@ -10,44 +10,50 @@ namespace Ryn
     template <typename TValue, usz TCount>
     class Array : public Iterable<TValue, LinearIterator<TValue>, LinearIterator<const TValue>>
     {
-        static_assert(TCount > 0, "Array cannot be empty!");
-        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
-        static_assert(!Traits::Const<TValue>, "Value type cannot be const-qualified!");
+      public:
+        using ValueType = Traits::RemoveVolatile<TValue>;
+        using IteratorType = LinearIterator<TValue>;
+        using ConstIteratorType = LinearIterator<const TValue>;
+
+        static constexpr usz Count = TCount;
+
+        static_assert(Count > 0, "Array cannot be empty!");
+        static_assert(!Traits::Reference<ValueType>, "Value type cannot be a reference!");
+        static_assert(!Traits::Const<ValueType>, "Value type cannot be a const-qualified!");
 
       private:
-        TValue _data[TCount];
+        ValueType _data[Count];
 
       public:
         constexpr Array() :
             _data{} {}
 
-        constexpr Array(const TValue& value)
+        constexpr Array(const ValueType& value)
         {
-            for (usz index = 0; index < TCount; index += 1)
+            for (usz index = 0; index < Count; index += 1)
                 _data[index] = value;
         }
 
-        constexpr Array(const TValue (&array)[TCount])
+        constexpr Array(const ValueType (&array)[Count])
         {
-            for (usz index = 0; index < TCount; index += 1)
+            for (usz index = 0; index < Count; index += 1)
                 _data[index] = array[index];
         }
 
-        constexpr Array(TValue (&&array)[TCount])
+        constexpr Array(ValueType (&&array)[Count])
         {
-            for (usz index = 0; index < TCount; index += 1)
+            for (usz index = 0; index < Count; index += 1)
                 _data[index] = Utility::Move(array[index]);
         }
 
-        constexpr usz Count() const { return TCount; }
-
-        constexpr operator Span<TValue>() { return Span<TValue>{&_data[0], TCount}; }
-        constexpr operator Span<const TValue>() const { return Span<const TValue>{&_data[0], TCount}; }
+        constexpr Span<ValueType> ToSpan() const { return Span<ValueType>{_data, Count}; }
+        constexpr Span<ValueType> ToSpan(usz start) const { return ToSpan().Slice(start); }
+        constexpr Span<ValueType> ToSpan(usz start, usz length) const { return ToSpan().Slice(start, length); }
 
       public:
-        constexpr LinearIterator<TValue> begin() override { return LinearIterator<TValue>{_data}; }
-        constexpr LinearIterator<const TValue> begin() const override { return LinearIterator<const TValue>{_data}; }
-        constexpr LinearIterator<TValue> end() override { return LinearIterator<TValue>{_data + TCount}; }
-        constexpr LinearIterator<const TValue> end() const override { return LinearIterator<const TValue>{_data + TCount}; }
+        constexpr IteratorType begin() override { return IteratorType{_data}; }
+        constexpr ConstIteratorType begin() const override { return ConstIteratorType{_data}; }
+        constexpr IteratorType end() override { return IteratorType{_data + Count}; }
+        constexpr ConstIteratorType end() const override { return ConstIteratorType{_data + Count}; }
     };
 }

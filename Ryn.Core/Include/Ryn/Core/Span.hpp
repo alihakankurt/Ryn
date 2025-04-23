@@ -11,69 +11,80 @@ namespace Ryn
     template <typename TValue>
     class Span : public Iterable<TValue, LinearIterator<TValue>, LinearIterator<const TValue>>
     {
-        static_assert(!Traits::Reference<TValue>, "Value type cannot be a reference!");
+      public:
+        using ValueType = Traits::RemoveVolatile<TValue>;
+        using IteratorType = LinearIterator<TValue>;
+        using ConstIteratorType = LinearIterator<const TValue>;
+
+        static_assert(!Traits::Reference<ValueType>, "Value type cannot be a reference!");
 
       private:
-        TValue* _data;
         usz _length;
+        ValueType* _data;
 
       public:
         constexpr Span() :
-            _data{},
-            _length{} {}
+            _length{},
+            _data{} {}
 
-        constexpr Span(TValue* data, usz length) :
-            _data{data},
-            _length{length} {}
-
-        template <usz N>
-        constexpr Span(TValue (&data)[N]) :
-            _data{&data[0]},
-            _length{N} {}
+        constexpr Span(usz length, ValueType* data) :
+            _length{length},
+            _data{data} {}
 
         template <usz N>
-        constexpr Span(TValue (&&data)[N]) :
-            _data{&data[0]},
-            _length{N} {}
+        constexpr Span(ValueType (&data)[N]) :
+            _length{N},
+            _data{data} {}
+
+        template <usz N>
+        constexpr Span(ValueType (&&data)[N]) :
+            _length{N},
+            _data{data} {}
 
         constexpr Span(const Span& other) :
-            _data{other._data},
-            _length{other._length} {}
+            _length{other._length},
+            _data{other._data} {}
 
-        constexpr Span(Span<TValue>&& other) :
-            _data{Utility::Exchange(other._data)},
-            _length{Utility::Exchange(other._length)} {}
+        constexpr Span(Span&& other) :
+            _length{Utility::Exchange(other._length)},
+            _data{Utility::Exchange(other._data)} {}
+
+        constexpr ~Span()
+        {
+            _length = 0;
+            _data = {};
+        }
 
         constexpr Span& operator=(const Span& other)
         {
             if (this != &other)
             {
-                _data = other._data;
                 _length = other._length;
+                _data = other._data;
             }
             return *this;
         }
 
-        constexpr Span& operator=(Span<TValue>&& other)
+        constexpr Span& operator=(Span&& other)
         {
             if (this != &other)
             {
-                _data = Utility::Exchange(other._data);
                 _length = Utility::Exchange(other._length);
+                _data = Utility::Exchange(other._data);
             }
             return *this;
         }
 
         constexpr usz Length() const { return _length; }
 
-        constexpr operator Span<const TValue>() const { return Span<const TValue>{_data, _length}; }
+        constexpr operator Span<const ValueType>() const { return Span<const ValueType>{_length, _data}; }
 
         constexpr Span Slice(usz start) const
         {
             if (!_data || start >= _length)
                 return Span{};
 
-            return Span{_data + start, _length - start};
+            return Span{_length - start, _data + start};
         }
 
         constexpr Span Slice(usz start, usz length) const
@@ -84,7 +95,7 @@ namespace Ryn
             if (start + length > _length || length == 0)
                 return Span{};
 
-            return Span{_data + start, length};
+            return Span{length, _data + start};
         }
 
         constexpr bool operator==(const Span& other) const
@@ -98,9 +109,9 @@ namespace Ryn
         }
 
       public:
-        constexpr LinearIterator<TValue> begin() override { return LinearIterator<TValue>{_data}; }
-        constexpr LinearIterator<const TValue> begin() const override { return LinearIterator<const TValue>{_data}; }
-        constexpr LinearIterator<TValue> end() override { return LinearIterator<TValue>{_data + _length}; }
-        constexpr LinearIterator<const TValue> end() const override { return LinearIterator<const TValue>{_data + _length}; }
+        constexpr IteratorType begin() override { return IteratorType{_data}; }
+        constexpr ConstIteratorType begin() const override { return ConstIteratorType{_data}; }
+        constexpr IteratorType end() override { return IteratorType{_data + _length}; }
+        constexpr ConstIteratorType end() const override { return ConstIteratorType{_data + _length}; }
     };
 }

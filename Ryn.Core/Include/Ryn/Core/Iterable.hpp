@@ -9,17 +9,23 @@ namespace Ryn
     template <typename TValue>
     class Iterator
     {
-      protected:
-        TValue* Data;
+      public:
+        using ValueType = Traits::RemoveVolatile<TValue>;
+        using MutableValueType = Traits::RemoveConst<ValueType>;
+
+        static constexpr bool IsContiguous = false;
 
         template <typename TOther>
         friend class Iterator;
+
+      protected:
+        ValueType* Data;
 
       public:
         constexpr Iterator() :
             Data{} {}
 
-        constexpr Iterator(TValue* data) :
+        constexpr Iterator(ValueType* data) :
             Data(data) {}
 
         virtual Iterator& operator++() = 0;
@@ -28,30 +34,39 @@ namespace Ryn
         virtual Iterator& operator+=(usz offset) = 0;
         virtual Iterator& operator-=(usz offset) = 0;
 
-        TValue& operator*() { return *Data; }
-        const TValue& operator*() const { return *Data; }
+        ValueType& operator*() { return *Data; }
+        const ValueType& operator*() const { return *Data; }
 
-        TValue* operator->() { return Data; }
-        const TValue* operator->() const { return Data; }
+        ValueType* operator->() { return Data; }
+        const ValueType* operator->() const { return Data; }
 
         bool operator!() const { return !Data; }
         operator bool() const { return Data; }
 
-        virtual bool operator==(const Iterator<Traits::RemoveConst<TValue>>& other) const { return Data == other.Data; }
-        virtual bool operator!=(const Iterator<Traits::RemoveConst<TValue>>& other) const { return Data != other.Data; }
+        virtual bool operator==(const Iterator<MutableValueType>& other) const { return Data == other.Data; }
+        virtual bool operator!=(const Iterator<MutableValueType>& other) const { return Data != other.Data; }
 
-        virtual bool operator==(const Iterator<const Traits::RemoveConst<TValue>>& other) const { return Data == other.Data; }
-        virtual bool operator!=(const Iterator<const Traits::RemoveConst<TValue>>& other) const { return Data != other.Data; }
+        virtual bool operator==(const Iterator<const MutableValueType>& other) const { return Data == other.Data; }
+        virtual bool operator!=(const Iterator<const MutableValueType>& other) const { return Data != other.Data; }
     };
 
     template <typename TValue>
     class LinearIterator : public Iterator<TValue>
     {
       public:
+        using ValueType = Traits::RemoveVolatile<TValue>;
+        using MutableValueType = Traits::RemoveConst<ValueType>;
+
+        static constexpr bool IsContiguous = true;
+
+        template <typename TOther>
+        friend class LinearIterator;
+
+      public:
         constexpr LinearIterator() :
             Iterator<TValue>{} {}
 
-        constexpr LinearIterator(TValue* data) :
+        constexpr LinearIterator(ValueType* data) :
             Iterator<TValue>{data} {}
 
         LinearIterator& operator++() override
@@ -78,20 +93,23 @@ namespace Ryn
             return *this;
         }
 
-        bool operator<(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data < other.Data; }
-        bool operator>(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data > other.Data; }
-        bool operator<=(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data <= other.Data; }
-        bool operator>=(const LinearIterator<Traits::RemoveConst<TValue>>& other) const { return this->Data >= other.Data; }
+        bool operator<(const LinearIterator<MutableValueType>& other) const { return this->Data < other.Data; }
+        bool operator>(const LinearIterator<MutableValueType>& other) const { return this->Data > other.Data; }
+        bool operator<=(const LinearIterator<MutableValueType>& other) const { return this->Data <= other.Data; }
+        bool operator>=(const LinearIterator<MutableValueType>& other) const { return this->Data >= other.Data; }
 
-        bool operator<(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data < other.Data; }
-        bool operator>(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data > other.Data; }
-        bool operator<=(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data <= other.Data; }
-        bool operator>=(const LinearIterator<const Traits::RemoveConst<TValue>>& other) const { return this->Data >= other.Data; }
+        bool operator<(const LinearIterator<const MutableValueType>& other) const { return this->Data < other.Data; }
+        bool operator>(const LinearIterator<const MutableValueType>& other) const { return this->Data > other.Data; }
+        bool operator<=(const LinearIterator<const MutableValueType>& other) const { return this->Data <= other.Data; }
+        bool operator>=(const LinearIterator<const MutableValueType>& other) const { return this->Data >= other.Data; }
     };
 
     template <typename TValue, typename TIterator = Iterator<TValue>, typename TConstIterator = Iterator<const TValue>>
     class Iterable
     {
+      public:
+        using ValueType = Traits::RemoveVolatile<TValue>;
+
       public:
         virtual TIterator begin() = 0;
         virtual TConstIterator begin() const = 0;
@@ -108,31 +126,31 @@ namespace Ryn
       public:
         bool IsEmpty() const { return begin() == end(); }
 
-        TValue* Data()
+        ValueType* Data()
         {
-            static_assert(Traits::Same<TIterator, LinearIterator<TValue>>, "Data() can only be called on linear iterators");
+            static_assert(TIterator::IsContiguous, "Data() is only available for contiguous iterators");
             return &*begin();
         }
 
-        const TValue* Data() const
+        const ValueType* Data() const
         {
-            static_assert(Traits::Same<TConstIterator, LinearIterator<const TValue>>, "Data() can only be called on linear iterators");
+            static_assert(TConstIterator::IsContiguous, "Data() is only available for contiguous iterators");
             return &*begin();
         }
 
-        TValue& First() { return *begin(); }
-        const TValue& First() const { return *begin(); }
+        ValueType& First() { return *begin(); }
+        const ValueType& First() const { return *begin(); }
 
-        TValue& Last() { return *(end() -= 1); }
-        const TValue& Last() const { return *(end() -= 1); }
+        ValueType& Last() { return *(end() -= 1); }
+        const ValueType& Last() const { return *(end() -= 1); }
 
-        TValue& At(usz index) { return *(begin() += index); }
-        const TValue& At(usz index) const { return *(begin() += index); }
+        ValueType& At(usz index) { return *(begin() += index); }
+        const ValueType& At(usz index) const { return *(begin() += index); }
 
-        TValue& operator[](usz index) { return At(index); }
-        const TValue& operator[](usz index) const { return At(index); }
+        ValueType& operator[](usz index) { return At(index); }
+        const ValueType& operator[](usz index) const { return At(index); }
 
-        TConstIterator FindFirst(Predicate<TValue> predicate) const
+        TConstIterator FindFirst(const Predicate<ValueType>& predicate) const
         {
             TConstIterator it = begin();
             while (it != end())
@@ -145,7 +163,7 @@ namespace Ryn
             return end();
         }
 
-        TConstIterator FindLast(Predicate<TValue> predicate) const
+        TConstIterator FindLast(const Predicate<ValueType>& predicate) const
         {
             TConstIterator it = end();
             while (it != begin())
@@ -158,7 +176,7 @@ namespace Ryn
             return end();
         }
 
-        bool IfAny(Predicate<TValue> predicate) const
+        bool IfAny(const Predicate<ValueType>& predicate) const
         {
             TConstIterator it = begin();
             while (it != end())
@@ -171,7 +189,7 @@ namespace Ryn
             return false;
         }
 
-        bool IfAll(Predicate<TValue> predicate) const
+        bool IfAll(const Predicate<TValue>& predicate) const
         {
             TConstIterator it = begin();
             while (it != end())

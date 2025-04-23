@@ -40,7 +40,7 @@ namespace Ryn
         close(file);
         buffer[fileSize] = '\0';
 
-        return String{buffer, fileSize};
+        return String{fileSize, buffer};
     }
 
     static bool WriteToFile(int file, const Span<const char> content)

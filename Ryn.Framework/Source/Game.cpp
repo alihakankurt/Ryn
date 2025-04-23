@@ -11,11 +11,8 @@ namespace Ryn
         Configure(settings);
 
         Input = Memory::Allocate<InputContext>();
-        Log::Info("Input: ", reinterpret_cast<usz>(Input));
         Window = Window::Create(settings);
-        Log::Info("Window: ", reinterpret_cast<usz>(Window));
         Renderer = Renderer::Create(*Window);
-        Log::Info("Renderer: ", reinterpret_cast<usz>(Renderer));
 
         Window->SetEventCallback([this](const Event& event) { OnEvent(event); });
 
